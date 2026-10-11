@@ -36,6 +36,16 @@ Set `HALO_SECURE_COOKIES=1` once it runs behind HTTPS.
 3. Scenarios tab → load a case. Steer it from Run; learners can send orders from the monitor's **Orders** button.
 4. Afterwards: Tracker → Sessions → the "ICU simulation case" entry has the full log.
 
+### Vent Lab (ventilator simulator)
+
+- Open `http://<nas-ip>:5050/vent/` (or tap **Vent Lab** on `/sim`). No account, no room code.
+- **Curriculum**: 36 cases in 10 lessons (trigger/target/cycle, modes, holds and mechanics, CO₂ and oxygen, auto-PEEP, ARDS, dyssynchrony, the crashing patient, liberation). Interactive cases are graded on what the learner's settings do to the patient (plateau, auto-PEEP, missed triggers, pH, SpO₂…), so any sound fix passes. Before/after/model-answer waveforms after each check.
+- **Tutorials**: screen tour with numbered markers, normal VC breath, normal PC/PSV/PRVC waveforms, hold maneuvers, loops, esophageal pressure.
+- **Free play**: five patients (normal, COPD/asthma, ARDS, obesity, awake on PSV) and one-tap events (pneumothorax, plug, bronchospasm, mainstem, cuff leak, disconnect, wake-up, cardiac oscillations).
+- **Scenario builder**: set up the vent and patient, add a question and optional targets, save. "Copy link" gives learners a URL that opens it as a gradable case. Export/import as JSON.
+- Physics runs in the learner's browser (single-compartment equation of motion with flow limitation, recruitment, Pes/Ptp and steady-state gas exchange). Files: `static/vent/` — `engine.js`, `curriculum.js`, `app.js`, `index.html`.
+- Tests: `node tests/vent_engine.test.js` (physiology vs hand calculations) and `node tests/vent_curriculum.test.js` (every case's starting state fails and its model answer passes).
+
 ### Student chart (orders, results, cost)
 
 - Learners open `http://<nas-ip>:5050/chart?room=<CODE>` (or tap **Student chart** on `/sim`) on their own device. No account.
