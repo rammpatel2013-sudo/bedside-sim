@@ -1,0 +1,3460 @@
+{
+ "version": 1,
+ "priceNote": "Approximate Medicare reference prices (CMS fee schedules), rounded; for cost awareness, not hospital charges.",
+ "items": [
+  {
+   "id": "cbc",
+   "name": "CBC with differential",
+   "cat": "Labs",
+   "syn": [
+    "cbc",
+    "complete blood count",
+    "blood count",
+    "hemogram",
+    "h/h",
+    "h&h",
+    "hgb",
+    "hemoglobin",
+    "wbc",
+    "platelets",
+    "plt"
+   ],
+   "tat": 30,
+   "price": 8,
+   "kind": "labs",
+   "default": [
+    [
+     "WBC",
+     "8.2",
+     "K/\u00b5L",
+     ""
+    ],
+    [
+     "Hgb",
+     "13.6",
+     "g/dL",
+     ""
+    ],
+    [
+     "Hct",
+     "40.8",
+     "%",
+     ""
+    ],
+    [
+     "Plt",
+     "245",
+     "K/\u00b5L",
+     ""
+    ],
+    [
+     "Neutrophils",
+     "64",
+     "%",
+     ""
+    ],
+    [
+     "Lymphocytes",
+     "26",
+     "%",
+     ""
+    ]
+   ]
+  },
+  {
+   "id": "bmp",
+   "name": "Basic metabolic panel",
+   "cat": "Labs",
+   "syn": [
+    "bmp",
+    "chem 7",
+    "chem7",
+    "chem-7",
+    "basic metabolic",
+    "lytes",
+    "electrolytes",
+    "renal function",
+    "bun",
+    "creatinine",
+    "cr",
+    "potassium",
+    "sodium",
+    "k+",
+    "na"
+   ],
+   "tat": 30,
+   "price": 8,
+   "kind": "labs",
+   "default": [
+    [
+     "Na",
+     "139",
+     "mmol/L",
+     ""
+    ],
+    [
+     "K",
+     "4.1",
+     "mmol/L",
+     ""
+    ],
+    [
+     "Cl",
+     "103",
+     "mmol/L",
+     ""
+    ],
+    [
+     "HCO3",
+     "25",
+     "mmol/L",
+     ""
+    ],
+    [
+     "BUN",
+     "14",
+     "mg/dL",
+     ""
+    ],
+    [
+     "Creatinine",
+     "0.9",
+     "mg/dL",
+     ""
+    ],
+    [
+     "Glucose",
+     "104",
+     "mg/dL",
+     ""
+    ],
+    [
+     "Anion gap",
+     "11",
+     "",
+     ""
+    ]
+   ]
+  },
+  {
+   "id": "cmp",
+   "name": "Comprehensive metabolic panel",
+   "cat": "Labs",
+   "syn": [
+    "cmp",
+    "chem 14",
+    "comprehensive metabolic",
+    "chem14"
+   ],
+   "tat": 30,
+   "price": 10,
+   "kind": "labs",
+   "default": [
+    [
+     "Na",
+     "139",
+     "mmol/L",
+     ""
+    ],
+    [
+     "K",
+     "4.1",
+     "mmol/L",
+     ""
+    ],
+    [
+     "Cl",
+     "103",
+     "mmol/L",
+     ""
+    ],
+    [
+     "HCO3",
+     "25",
+     "mmol/L",
+     ""
+    ],
+    [
+     "BUN",
+     "14",
+     "mg/dL",
+     ""
+    ],
+    [
+     "Creatinine",
+     "0.9",
+     "mg/dL",
+     ""
+    ],
+    [
+     "Glucose",
+     "104",
+     "mg/dL",
+     ""
+    ],
+    [
+     "Ca",
+     "9.2",
+     "mg/dL",
+     ""
+    ],
+    [
+     "Albumin",
+     "3.9",
+     "g/dL",
+     ""
+    ],
+    [
+     "AST",
+     "24",
+     "U/L",
+     ""
+    ],
+    [
+     "ALT",
+     "21",
+     "U/L",
+     ""
+    ],
+    [
+     "Alk phos",
+     "78",
+     "U/L",
+     ""
+    ],
+    [
+     "T bili",
+     "0.6",
+     "mg/dL",
+     ""
+    ]
+   ]
+  },
+  {
+   "id": "mg",
+   "name": "Magnesium",
+   "cat": "Labs",
+   "syn": [
+    "magnesium level",
+    "mg level",
+    "serum mg",
+    "serum magnesium"
+   ],
+   "tat": 30,
+   "price": 7,
+   "kind": "labs",
+   "default": [
+    [
+     "Mg",
+     "2.0",
+     "mg/dL",
+     ""
+    ]
+   ]
+  },
+  {
+   "id": "phos",
+   "name": "Phosphorus",
+   "cat": "Labs",
+   "syn": [
+    "phos",
+    "phosphate",
+    "phosphorus level"
+   ],
+   "tat": 30,
+   "price": 5,
+   "kind": "labs",
+   "default": [
+    [
+     "Phos",
+     "3.4",
+     "mg/dL",
+     ""
+    ]
+   ]
+  },
+  {
+   "id": "ica",
+   "name": "Ionized calcium",
+   "cat": "Labs",
+   "syn": [
+    "ionized calcium",
+    "ica",
+    "i-ca",
+    "ionized ca"
+   ],
+   "tat": 15,
+   "price": 14,
+   "kind": "labs",
+   "default": [
+    [
+     "iCa",
+     "1.18",
+     "mmol/L",
+     ""
+    ]
+   ]
+  },
+  {
+   "id": "lft",
+   "name": "Hepatic function panel",
+   "cat": "Labs",
+   "syn": [
+    "lft",
+    "lfts",
+    "liver function",
+    "hepatic panel",
+    "liver panel",
+    "ast",
+    "alt",
+    "bilirubin"
+   ],
+   "tat": 30,
+   "price": 8,
+   "kind": "labs",
+   "default": [
+    [
+     "AST",
+     "24",
+     "U/L",
+     ""
+    ],
+    [
+     "ALT",
+     "21",
+     "U/L",
+     ""
+    ],
+    [
+     "Alk phos",
+     "78",
+     "U/L",
+     ""
+    ],
+    [
+     "T bili",
+     "0.6",
+     "mg/dL",
+     ""
+    ],
+    [
+     "Albumin",
+     "3.9",
+     "g/dL",
+     ""
+    ]
+   ]
+  },
+  {
+   "id": "lipase",
+   "name": "Lipase",
+   "cat": "Labs",
+   "syn": [
+    "lipase",
+    "amylase"
+   ],
+   "tat": 30,
+   "price": 7,
+   "kind": "labs",
+   "default": [
+    [
+     "Lipase",
+     "32",
+     "U/L",
+     ""
+    ]
+   ]
+  },
+  {
+   "id": "ck",
+   "name": "Creatine kinase",
+   "cat": "Labs",
+   "syn": [
+    "ck",
+    "cpk",
+    "creatine kinase"
+   ],
+   "tat": 30,
+   "price": 7,
+   "kind": "labs",
+   "default": [
+    [
+     "CK",
+     "110",
+     "U/L",
+     ""
+    ]
+   ]
+  },
+  {
+   "id": "ammonia",
+   "name": "Ammonia",
+   "cat": "Labs",
+   "syn": [
+    "ammonia",
+    "nh3"
+   ],
+   "tat": 30,
+   "price": 14,
+   "kind": "labs",
+   "default": [
+    [
+     "Ammonia",
+     "28",
+     "\u00b5mol/L",
+     ""
+    ]
+   ]
+  },
+  {
+   "id": "tsh",
+   "name": "TSH",
+   "cat": "Labs",
+   "syn": [
+    "tsh",
+    "thyroid"
+   ],
+   "tat": 60,
+   "price": 17,
+   "kind": "labs",
+   "default": [
+    [
+     "TSH",
+     "1.8",
+     "mIU/L",
+     ""
+    ]
+   ]
+  },
+  {
+   "id": "cortisol",
+   "name": "Cortisol, random",
+   "cat": "Labs",
+   "syn": [
+    "cortisol",
+    "random cortisol"
+   ],
+   "tat": 60,
+   "price": 16,
+   "kind": "labs",
+   "default": [
+    [
+     "Cortisol",
+     "18",
+     "\u00b5g/dL",
+     ""
+    ]
+   ]
+  },
+  {
+   "id": "osm",
+   "name": "Serum osmolality",
+   "cat": "Labs",
+   "syn": [
+    "osm",
+    "osmolality",
+    "serum osm",
+    "osmolal gap"
+   ],
+   "tat": 45,
+   "price": 7,
+   "kind": "labs",
+   "default": [
+    [
+     "Osmolality",
+     "290",
+     "mOsm/kg",
+     ""
+    ]
+   ]
+  },
+  {
+   "id": "bhb",
+   "name": "Beta-hydroxybutyrate",
+   "cat": "Labs",
+   "syn": [
+    "bhb",
+    "beta hydroxybutyrate",
+    "ketones",
+    "serum ketones"
+   ],
+   "tat": 30,
+   "price": 7,
+   "kind": "labs",
+   "default": [
+    [
+     "BHB",
+     "0.2",
+     "mmol/L",
+     ""
+    ]
+   ]
+  },
+  {
+   "id": "glucose_poc",
+   "name": "Point-of-care glucose",
+   "cat": "Labs",
+   "syn": [
+    "fingerstick",
+    "finger stick",
+    "poc glucose",
+    "accucheck",
+    "accu-check",
+    "accuchek",
+    "glucose check",
+    "bedside glucose",
+    "fsbg",
+    "bg check"
+   ],
+   "tat": 1,
+   "price": 3,
+   "kind": "labs",
+   "default": [
+    [
+     "Glucose (POC)",
+     "112",
+     "mg/dL",
+     ""
+    ]
+   ]
+  },
+  {
+   "id": "lactate",
+   "name": "Lactate",
+   "cat": "Labs",
+   "syn": [
+    "lactate",
+    "lactic acid",
+    "lactic",
+    "lac",
+    "serum lactate"
+   ],
+   "tat": 15,
+   "price": 13,
+   "kind": "labs",
+   "default": [
+    [
+     "Lactate",
+     "1.1",
+     "mmol/L",
+     ""
+    ]
+   ]
+  },
+  {
+   "id": "procal",
+   "name": "Procalcitonin",
+   "cat": "Labs",
+   "syn": [
+    "procalcitonin",
+    "pct",
+    "procal"
+   ],
+   "tat": 60,
+   "price": 28,
+   "kind": "labs",
+   "default": [
+    [
+     "Procalcitonin",
+     "0.08",
+     "ng/mL",
+     ""
+    ]
+   ]
+  },
+  {
+   "id": "crp",
+   "name": "C-reactive protein",
+   "cat": "Labs",
+   "syn": [
+    "crp",
+    "c reactive protein"
+   ],
+   "tat": 60,
+   "price": 5,
+   "kind": "labs",
+   "default": [
+    [
+     "CRP",
+     "0.6",
+     "mg/dL",
+     ""
+    ]
+   ]
+  },
+  {
+   "id": "trop",
+   "name": "Troponin (high-sensitivity)",
+   "cat": "Labs",
+   "syn": [
+    "troponin",
+    "trop",
+    "hs troponin",
+    "hstrop",
+    "hs-trop",
+    "cardiac enzymes"
+   ],
+   "tat": 45,
+   "price": 10,
+   "kind": "labs",
+   "default": [
+    [
+     "hs-Troponin T",
+     "8",
+     "ng/L",
+     ""
+    ]
+   ]
+  },
+  {
+   "id": "bnp",
+   "name": "BNP",
+   "cat": "Labs",
+   "syn": [
+    "bnp",
+    "b-type natriuretic",
+    "natriuretic peptide"
+   ],
+   "tat": 45,
+   "price": 29,
+   "kind": "labs",
+   "default": [
+    [
+     "BNP",
+     "42",
+     "pg/mL",
+     ""
+    ]
+   ]
+  },
+  {
+   "id": "ntbnp",
+   "name": "NT-proBNP",
+   "cat": "Labs",
+   "syn": [
+    "nt-probnp",
+    "nt pro bnp",
+    "probnp",
+    "ntprobnp"
+   ],
+   "tat": 45,
+   "price": 17,
+   "kind": "labs",
+   "default": [
+    [
+     "NT-proBNP",
+     "110",
+     "pg/mL",
+     ""
+    ]
+   ]
+  },
+  {
+   "id": "ddimer",
+   "name": "D-dimer",
+   "cat": "Labs",
+   "syn": [
+    "d-dimer",
+    "ddimer",
+    "d dimer",
+    "dimer"
+   ],
+   "tat": 45,
+   "price": 10,
+   "kind": "labs",
+   "default": [
+    [
+     "D-dimer",
+     "0.32",
+     "\u00b5g/mL FEU",
+     ""
+    ]
+   ]
+  },
+  {
+   "id": "coags",
+   "name": "PT/INR and PTT",
+   "cat": "Labs",
+   "syn": [
+    "coags",
+    "coag",
+    "inr",
+    "ptt",
+    "aptt",
+    "pt/inr",
+    "coagulation",
+    "coag panel",
+    "coagulation panel"
+   ],
+   "tat": 30,
+   "price": 10,
+   "kind": "labs",
+   "default": [
+    [
+     "PT",
+     "12.8",
+     "s",
+     ""
+    ],
+    [
+     "INR",
+     "1.0",
+     "",
+     ""
+    ],
+    [
+     "PTT",
+     "29",
+     "s",
+     ""
+    ]
+   ]
+  },
+  {
+   "id": "fibrinogen",
+   "name": "Fibrinogen",
+   "cat": "Labs",
+   "syn": [
+    "fibrinogen",
+    "fibrin"
+   ],
+   "tat": 30,
+   "price": 8,
+   "kind": "labs",
+   "default": [
+    [
+     "Fibrinogen",
+     "320",
+     "mg/dL",
+     ""
+    ]
+   ]
+  },
+  {
+   "id": "antixa",
+   "name": "Anti-Xa (heparin) level",
+   "cat": "Labs",
+   "syn": [
+    "anti xa",
+    "anti-xa",
+    "heparin level",
+    "antixa"
+   ],
+   "tat": 60,
+   "price": 18,
+   "kind": "labs",
+   "default": [
+    [
+     "Anti-Xa",
+     "0.0",
+     "IU/mL",
+     ""
+    ]
+   ]
+  },
+  {
+   "id": "tns",
+   "name": "Type and screen",
+   "cat": "Labs",
+   "syn": [
+    "type and screen",
+    "type & screen",
+    "t&s",
+    "type and cross",
+    "type & cross",
+    "crossmatch",
+    "cross match",
+    "blood bank",
+    "t and s"
+   ],
+   "tat": 45,
+   "price": 20,
+   "kind": "labs",
+   "default": [
+    [
+     "ABO/Rh",
+     "O positive",
+     "",
+     ""
+    ],
+    [
+     "Antibody screen",
+     "Negative",
+     "",
+     ""
+    ]
+   ]
+  },
+  {
+   "id": "hapto",
+   "name": "Hemolysis labs (LDH, haptoglobin, retic)",
+   "cat": "Labs",
+   "syn": [
+    "ldh",
+    "haptoglobin",
+    "hemolysis labs",
+    "retic",
+    "reticulocyte"
+   ],
+   "tat": 60,
+   "price": 25,
+   "kind": "labs",
+   "default": [
+    [
+     "LDH",
+     "180",
+     "U/L",
+     ""
+    ],
+    [
+     "Haptoglobin",
+     "120",
+     "mg/dL",
+     ""
+    ],
+    [
+     "Reticulocytes",
+     "1.2",
+     "%",
+     ""
+    ]
+   ]
+  },
+  {
+   "id": "hcg",
+   "name": "hCG, quantitative",
+   "cat": "Labs",
+   "syn": [
+    "hcg",
+    "beta hcg",
+    "pregnancy test",
+    "bhcg",
+    "urine pregnancy"
+   ],
+   "tat": 30,
+   "price": 15,
+   "kind": "labs",
+   "default": [
+    [
+     "hCG",
+     "<2",
+     "mIU/mL",
+     ""
+    ]
+   ]
+  },
+  {
+   "id": "abg",
+   "name": "Arterial blood gas",
+   "cat": "Blood gas",
+   "syn": [
+    "abg",
+    "arterial blood gas",
+    "art gas",
+    "blood gas",
+    "gas",
+    "arterial gas",
+    "a gas",
+    "abgs"
+   ],
+   "tat": 10,
+   "price": 24,
+   "kind": "labs",
+   "default": [
+    [
+     "pH",
+     "7.40",
+     "",
+     ""
+    ],
+    [
+     "PaCO2",
+     "40",
+     "mmHg",
+     ""
+    ],
+    [
+     "PaO2",
+     "92",
+     "mmHg",
+     ""
+    ],
+    [
+     "HCO3",
+     "24",
+     "mmol/L",
+     ""
+    ],
+    [
+     "SaO2",
+     "97",
+     "%",
+     ""
+    ]
+   ]
+  },
+  {
+   "id": "vbg",
+   "name": "Venous blood gas",
+   "cat": "Blood gas",
+   "syn": [
+    "vbg",
+    "venous blood gas",
+    "venous gas"
+   ],
+   "tat": 10,
+   "price": 24,
+   "kind": "labs",
+   "default": [
+    [
+     "pH",
+     "7.37",
+     "",
+     ""
+    ],
+    [
+     "PvCO2",
+     "45",
+     "mmHg",
+     ""
+    ],
+    [
+     "HCO3",
+     "25",
+     "mmol/L",
+     ""
+    ]
+   ]
+  },
+  {
+   "id": "cooxi",
+   "name": "Co-oximetry (COHb, MetHb)",
+   "cat": "Blood gas",
+   "syn": [
+    "co-oximetry",
+    "cooximetry",
+    "carboxyhemoglobin",
+    "cohb",
+    "methemoglobin",
+    "methb",
+    "co level"
+   ],
+   "tat": 15,
+   "price": 15,
+   "kind": "labs",
+   "default": [
+    [
+     "COHb",
+     "1.2",
+     "%",
+     ""
+    ],
+    [
+     "MetHb",
+     "0.6",
+     "%",
+     ""
+    ]
+   ]
+  },
+  {
+   "id": "bcx",
+   "name": "Blood cultures x2",
+   "cat": "Microbiology",
+   "syn": [
+    "blood culture",
+    "blood cultures",
+    "bcx",
+    "bc x2",
+    "cultures",
+    "blood cx"
+   ],
+   "tat": 1440,
+   "price": 20,
+   "kind": "text",
+   "default": "No growth at 24 hours (preliminary)."
+  },
+  {
+   "id": "ucx",
+   "name": "Urine culture",
+   "cat": "Microbiology",
+   "syn": [
+    "urine culture",
+    "ucx",
+    "urine cx"
+   ],
+   "tat": 1440,
+   "price": 9,
+   "kind": "text",
+   "default": "No growth at 24 hours (preliminary)."
+  },
+  {
+   "id": "sputum",
+   "name": "Sputum / tracheal aspirate culture and Gram stain",
+   "cat": "Microbiology",
+   "syn": [
+    "sputum culture",
+    "sputum",
+    "tracheal aspirate",
+    "trach aspirate",
+    "endotracheal aspirate",
+    "gram stain",
+    "resp culture",
+    "respiratory culture"
+   ],
+   "tat": 720,
+   "price": 13,
+   "kind": "text",
+   "default": "Gram stain: few PMNs, no organisms seen. Culture pending."
+  },
+  {
+   "id": "rvp",
+   "name": "Respiratory viral PCR panel (incl. influenza, RSV, SARS-CoV-2)",
+   "cat": "Microbiology",
+   "syn": [
+    "viral panel",
+    "rvp",
+    "respiratory panel",
+    "resp viral panel",
+    "flu",
+    "influenza",
+    "flu swab",
+    "covid",
+    "covid test",
+    "sars-cov-2",
+    "rsv",
+    "viral pcr",
+    "nasal swab",
+    "respiratory pcr"
+   ],
+   "tat": 60,
+   "price": 140,
+   "kind": "text",
+   "default": "Negative for influenza A/B, RSV, SARS-CoV-2 and other panel targets."
+  },
+  {
+   "id": "legionella",
+   "name": "Legionella and pneumococcal urine antigens",
+   "cat": "Microbiology",
+   "syn": [
+    "legionella",
+    "urine antigen",
+    "urine antigens",
+    "strep pneumo antigen",
+    "pneumococcal antigen",
+    "legionella antigen"
+   ],
+   "tat": 60,
+   "price": 26,
+   "kind": "text",
+   "default": "Legionella urinary antigen: negative. S. pneumoniae urinary antigen: negative."
+  },
+  {
+   "id": "mrsa",
+   "name": "MRSA nares PCR",
+   "cat": "Microbiology",
+   "syn": [
+    "mrsa nares",
+    "mrsa swab",
+    "mrsa pcr",
+    "nasal mrsa",
+    "mrsa screen"
+   ],
+   "tat": 120,
+   "price": 40,
+   "kind": "text",
+   "default": "MRSA nares PCR: negative."
+  },
+  {
+   "id": "ua",
+   "name": "Urinalysis",
+   "cat": "Labs",
+   "syn": [
+    "ua",
+    "urinalysis",
+    "urine analysis",
+    "urine dip",
+    "dipstick"
+   ],
+   "tat": 30,
+   "price": 3,
+   "kind": "labs",
+   "default": [
+    [
+     "Specific gravity",
+     "1.015",
+     "",
+     ""
+    ],
+    [
+     "Nitrite",
+     "Negative",
+     "",
+     ""
+    ],
+    [
+     "Leukocyte esterase",
+     "Negative",
+     "",
+     ""
+    ],
+    [
+     "Protein",
+     "Negative",
+     "",
+     ""
+    ],
+    [
+     "Blood",
+     "Negative",
+     "",
+     ""
+    ]
+   ]
+  },
+  {
+   "id": "utox",
+   "name": "Urine drug screen",
+   "cat": "Labs",
+   "syn": [
+    "utox",
+    "urine tox",
+    "urine drug screen",
+    "uds",
+    "tox screen",
+    "drug screen"
+   ],
+   "tat": 45,
+   "price": 15,
+   "kind": "labs",
+   "default": [
+    [
+     "Amphetamines",
+     "Negative",
+     "",
+     ""
+    ],
+    [
+     "Cocaine",
+     "Negative",
+     "",
+     ""
+    ],
+    [
+     "Opiates",
+     "Negative",
+     "",
+     ""
+    ],
+    [
+     "Benzodiazepines",
+     "Negative",
+     "",
+     ""
+    ]
+   ]
+  },
+  {
+   "id": "stox",
+   "name": "Serum toxicology (EtOH, APAP, ASA)",
+   "cat": "Labs",
+   "syn": [
+    "serum tox",
+    "ethanol",
+    "etoh",
+    "alcohol level",
+    "acetaminophen level",
+    "tylenol level",
+    "apap",
+    "salicylate",
+    "asa level",
+    "aspirin level"
+   ],
+   "tat": 45,
+   "price": 33,
+   "kind": "labs",
+   "default": [
+    [
+     "Ethanol",
+     "<10",
+     "mg/dL",
+     ""
+    ],
+    [
+     "Acetaminophen",
+     "<10",
+     "\u00b5g/mL",
+     ""
+    ],
+    [
+     "Salicylate",
+     "<4",
+     "mg/dL",
+     ""
+    ]
+   ]
+  },
+  {
+   "id": "bal_studies",
+   "name": "BAL studies (cell count, culture, cytology)",
+   "cat": "Microbiology",
+   "syn": [
+    "bal studies",
+    "bal cell count",
+    "bal culture",
+    "lavage studies"
+   ],
+   "tat": 720,
+   "price": 120,
+   "kind": "text",
+   "default": "Cell count and culture pending; cytology pending."
+  },
+  {
+   "id": "pleural_fluid",
+   "name": "Pleural fluid studies (cell count, LDH, protein, pH, Gram stain, culture)",
+   "cat": "Microbiology",
+   "syn": [
+    "pleural fluid",
+    "pleural studies",
+    "light's criteria",
+    "thoracentesis studies",
+    "pleural ph"
+   ],
+   "tat": 120,
+   "price": 60,
+   "kind": "text",
+   "default": "Pending."
+  },
+  {
+   "id": "cxr",
+   "name": "Chest X-ray, portable",
+   "cat": "Imaging",
+   "syn": [
+    "cxr",
+    "chest x-ray",
+    "chest xray",
+    "chest x ray",
+    "chest film",
+    "portable chest",
+    "chest radiograph",
+    "pcxr",
+    "x-ray chest",
+    "xray"
+   ],
+   "tat": 15,
+   "price": 28,
+   "kind": "text",
+   "default": "Lungs clear. No effusion or pneumothorax. Normal cardiomediastinal silhouette. Lines and tubes: none."
+  },
+  {
+   "id": "ct_head",
+   "name": "CT head without contrast",
+   "cat": "Imaging",
+   "syn": [
+    "ct head",
+    "head ct",
+    "cth",
+    "noncon head",
+    "ct brain"
+   ],
+   "tat": 45,
+   "price": 110,
+   "kind": "text",
+   "default": "No acute intracranial abnormality."
+  },
+  {
+   "id": "ct_chest",
+   "name": "CT chest without contrast",
+   "cat": "Imaging",
+   "syn": [
+    "ct chest",
+    "chest ct",
+    "ct chest without contrast",
+    "noncontrast chest ct",
+    "ct thorax"
+   ],
+   "tat": 45,
+   "price": 140,
+   "kind": "text",
+   "default": "No consolidation, mass or effusion. No pneumothorax."
+  },
+  {
+   "id": "cta_chest",
+   "name": "CT angiogram chest (PE protocol)",
+   "cat": "Imaging",
+   "syn": [
+    "cta chest",
+    "ct angiogram",
+    "ctpa",
+    "cta",
+    "ct angio",
+    "ct angio chest",
+    "angio chest",
+    "pe protocol",
+    "ct pe",
+    "pe study",
+    "ct pulmonary angiogram",
+    "cta pe"
+   ],
+   "tat": 45,
+   "price": 230,
+   "kind": "text",
+   "default": "No pulmonary embolism. No acute thoracic abnormality."
+  },
+  {
+   "id": "ct_ap",
+   "name": "CT abdomen/pelvis with contrast",
+   "cat": "Imaging",
+   "syn": [
+    "ct abdomen",
+    "ct a/p",
+    "ct abd pelvis",
+    "ct abd/pelvis",
+    "abdominal ct"
+   ],
+   "tat": 60,
+   "price": 260,
+   "kind": "text",
+   "default": "No acute abdominal or pelvic abnormality."
+  },
+  {
+   "id": "ct_neck",
+   "name": "CT neck soft tissue with contrast",
+   "cat": "Imaging",
+   "syn": [
+    "ct neck",
+    "neck ct",
+    "soft tissue neck"
+   ],
+   "tat": 45,
+   "price": 160,
+   "kind": "text",
+   "default": "No airway narrowing, abscess or mass."
+  },
+  {
+   "id": "lus",
+   "name": "Bedside lung ultrasound (POCUS)",
+   "cat": "Imaging",
+   "syn": [
+    "lung ultrasound",
+    "lung us",
+    "pocus lung",
+    "lung pocus",
+    "blue protocol",
+    "lung sliding",
+    "thoracic ultrasound",
+    "chest ultrasound",
+    "pocus"
+   ],
+   "tat": 5,
+   "price": 60,
+   "kind": "text",
+   "default": "Bilateral lung sliding, A-line pattern, no B-lines, no effusion."
+  },
+  {
+   "id": "echo_pocus",
+   "name": "Bedside echo (POCUS, limited)",
+   "cat": "Imaging",
+   "syn": [
+    "bedside echo",
+    "pocus echo",
+    "cardiac pocus",
+    "limited echo",
+    "focused echo",
+    "rush exam",
+    "rush",
+    "fast exam"
+   ],
+   "tat": 5,
+   "price": 105,
+   "kind": "text",
+   "default": "Normal LV and RV size and function. No pericardial effusion. IVC 1.8 cm, ~40% collapsibility."
+  },
+  {
+   "id": "tte",
+   "name": "Transthoracic echocardiogram (formal)",
+   "cat": "Imaging",
+   "syn": [
+    "tte",
+    "echo",
+    "echocardiogram",
+    "transthoracic echo",
+    "formal echo",
+    "2d echo",
+    "cardiac echo"
+   ],
+   "tat": 120,
+   "price": 210,
+   "kind": "text",
+   "default": "LVEF 60%. Normal RV size and function. No significant valvular disease. No pericardial effusion."
+  },
+  {
+   "id": "le_duplex",
+   "name": "Lower extremity venous duplex",
+   "cat": "Imaging",
+   "syn": [
+    "le duplex",
+    "leg ultrasound",
+    "dvt study",
+    "venous duplex",
+    "lower extremity doppler",
+    "dvt ultrasound",
+    "leg doppler",
+    "le dopplers"
+   ],
+   "tat": 90,
+   "price": 200,
+   "kind": "text",
+   "default": "No deep venous thrombosis bilaterally."
+  },
+  {
+   "id": "ecg",
+   "name": "12-lead ECG",
+   "cat": "Cardiac",
+   "syn": [
+    "ecg",
+    "ekg",
+    "12 lead",
+    "12-lead",
+    "electrocardiogram",
+    "12 lead ecg"
+   ],
+   "tat": 5,
+   "price": 16,
+   "kind": "text",
+   "default": "Sinus rhythm, normal axis, normal intervals, no acute ST changes."
+  },
+  {
+   "id": "o2_nc",
+   "name": "Oxygen by nasal cannula",
+   "cat": "Respiratory",
+   "syn": [
+    "nasal cannula",
+    "nc",
+    "o2",
+    "oxygen",
+    "supplemental oxygen",
+    "2l",
+    "4l",
+    "nasal o2"
+   ],
+   "tat": 1,
+   "price": 0,
+   "kind": "text",
+   "default": "Started.",
+   "act": true
+  },
+  {
+   "id": "o2_nrb",
+   "name": "Non-rebreather mask",
+   "cat": "Respiratory",
+   "syn": [
+    "non-rebreather",
+    "nonrebreather",
+    "nrb",
+    "15l nrb",
+    "face mask",
+    "100% mask"
+   ],
+   "tat": 1,
+   "price": 0,
+   "kind": "text",
+   "default": "Started.",
+   "act": true
+  },
+  {
+   "id": "hfnc",
+   "name": "High-flow nasal cannula",
+   "cat": "Respiratory",
+   "syn": [
+    "hfnc",
+    "high flow",
+    "high-flow",
+    "heated high flow",
+    "optiflow",
+    "airvo",
+    "vapotherm"
+   ],
+   "tat": 2,
+   "price": 120,
+   "kind": "text",
+   "default": "Started.",
+   "act": true
+  },
+  {
+   "id": "niv",
+   "name": "Noninvasive ventilation (BiPAP/CPAP)",
+   "cat": "Respiratory",
+   "syn": [
+    "bipap",
+    "bi-pap",
+    "niv",
+    "nippv",
+    "cpap",
+    "noninvasive",
+    "non-invasive",
+    "nppv"
+   ],
+   "tat": 2,
+   "price": 160,
+   "kind": "text",
+   "default": "Started.",
+   "act": true
+  },
+  {
+   "id": "vent_settings",
+   "name": "Ventilator setting change",
+   "cat": "Respiratory",
+   "syn": [
+    "change vent",
+    "vent settings",
+    "increase peep",
+    "decrease peep",
+    "peep",
+    "fio2",
+    "tidal volume",
+    "decrease tidal volume",
+    "lower tidal volume",
+    "increase rate",
+    "decrease rate",
+    "respiratory rate",
+    "i:e",
+    "inspiratory time",
+    "ventilator",
+    "lung protective",
+    "6 ml/kg",
+    "ardsnet",
+    "pressure control",
+    "volume control",
+    "set rate"
+   ],
+   "tat": 1,
+   "price": 0,
+   "kind": "text",
+   "default": "Instructor will apply the requested settings.",
+   "act": true
+  },
+  {
+   "id": "plateau",
+   "name": "Inspiratory hold (plateau pressure)",
+   "cat": "Respiratory",
+   "syn": [
+    "plateau",
+    "plateau pressure",
+    "pplat",
+    "inspiratory hold",
+    "insp hold",
+    "inspiratory pause"
+   ],
+   "tat": 1,
+   "price": 0,
+   "kind": "text",
+   "default": "Measured on the vent \u2014 see monitor.",
+   "act": true
+  },
+  {
+   "id": "autopeep",
+   "name": "Expiratory hold (auto-PEEP)",
+   "cat": "Respiratory",
+   "syn": [
+    "auto-peep",
+    "autopeep",
+    "intrinsic peep",
+    "expiratory hold",
+    "exp hold",
+    "expiratory pause"
+   ],
+   "tat": 1,
+   "price": 0,
+   "kind": "text",
+   "default": "Measured on the vent \u2014 see monitor.",
+   "act": true
+  },
+  {
+   "id": "disconnect",
+   "name": "Disconnect from ventilator / bag manually",
+   "cat": "Respiratory",
+   "syn": [
+    "disconnect",
+    "bag the patient",
+    "bag him",
+    "bag her",
+    "manual ventilation",
+    "bvm",
+    "ambu",
+    "take off the vent",
+    "disconnect from vent",
+    "dopes"
+   ],
+   "tat": 1,
+   "price": 0,
+   "kind": "text",
+   "default": "Done.",
+   "act": true
+  },
+  {
+   "id": "suction",
+   "name": "Endotracheal suction / check tube",
+   "cat": "Respiratory",
+   "syn": [
+    "suction",
+    "suction the tube",
+    "pass suction catheter",
+    "check tube",
+    "inline suction",
+    "check ett"
+   ],
+   "tat": 1,
+   "price": 0,
+   "kind": "text",
+   "default": "Done.",
+   "act": true
+  },
+  {
+   "id": "sbt",
+   "name": "Spontaneous breathing trial",
+   "cat": "Respiratory",
+   "syn": [
+    "sbt",
+    "spontaneous breathing trial",
+    "breathing trial",
+    "cpap trial",
+    "ps trial",
+    "t-piece"
+   ],
+   "tat": 30,
+   "price": 0,
+   "kind": "text",
+   "default": "Instructor will report SBT tolerance.",
+   "act": true
+  },
+  {
+   "id": "cuff_leak",
+   "name": "Cuff leak test",
+   "cat": "Respiratory",
+   "syn": [
+    "cuff leak",
+    "cuff-leak",
+    "leak test"
+   ],
+   "tat": 5,
+   "price": 0,
+   "kind": "text",
+   "default": "Audible cuff leak present.",
+   "act": true
+  },
+  {
+   "id": "prone",
+   "name": "Prone positioning",
+   "cat": "Respiratory",
+   "syn": [
+    "prone",
+    "proning",
+    "prone position",
+    "flip prone",
+    "prone him",
+    "prone her"
+   ],
+   "tat": 15,
+   "price": 0,
+   "kind": "text",
+   "default": "Patient proned.",
+   "act": true
+  },
+  {
+   "id": "ino",
+   "name": "Inhaled nitric oxide",
+   "cat": "Respiratory",
+   "syn": [
+    "inhaled nitric oxide",
+    "ino",
+    "nitric oxide",
+    "nitric"
+   ],
+   "tat": 5,
+   "price": 3000,
+   "kind": "text",
+   "default": "Started at 20 ppm.",
+   "act": true
+  },
+  {
+   "id": "inh_epo",
+   "name": "Inhaled epoprostenol",
+   "cat": "Respiratory",
+   "syn": [
+    "inhaled epoprostenol",
+    "inhaled flolan",
+    "veletri inhaled",
+    "inhaled prostacyclin",
+    "ifl"
+   ],
+   "tat": 5,
+   "price": 300,
+   "kind": "text",
+   "default": "Started.",
+   "act": true
+  },
+  {
+   "id": "heliox",
+   "name": "Heliox",
+   "cat": "Respiratory",
+   "syn": [
+    "heliox",
+    "helium"
+   ],
+   "tat": 5,
+   "price": 150,
+   "kind": "text",
+   "default": "Started.",
+   "act": true
+  },
+  {
+   "id": "rt_eval",
+   "name": "Respiratory therapy evaluate and treat",
+   "cat": "Respiratory",
+   "syn": [
+    "rt eval",
+    "respiratory therapy",
+    "rt consult",
+    "call rt"
+   ],
+   "tat": 10,
+   "price": 0,
+   "kind": "text",
+   "default": "RT at bedside.",
+   "act": true
+  },
+  {
+   "id": "intubate",
+   "name": "Endotracheal intubation (RSI)",
+   "cat": "Procedures",
+   "syn": [
+    "intubate",
+    "intubation",
+    "rsi",
+    "ett",
+    "endotracheal",
+    "tube him",
+    "tube her",
+    "secure airway",
+    "definitive airway",
+    "airway"
+   ],
+   "tat": 5,
+   "price": 130,
+   "kind": "text",
+   "default": "Intubated. Instructor will confirm tube position and post-intubation status.",
+   "act": true
+  },
+  {
+   "id": "extubate",
+   "name": "Extubation",
+   "cat": "Procedures",
+   "syn": [
+    "extubate",
+    "extubation",
+    "pull the tube",
+    "remove tube"
+   ],
+   "tat": 2,
+   "price": 0,
+   "kind": "text",
+   "default": "Extubated.",
+   "act": true
+  },
+  {
+   "id": "cvc",
+   "name": "Central venous catheter",
+   "cat": "Procedures",
+   "syn": [
+    "central line",
+    "cvc",
+    "central venous",
+    "cordis",
+    "triple lumen",
+    "ij line",
+    "subclavian line",
+    "femoral line"
+   ],
+   "tat": 15,
+   "price": 140,
+   "kind": "text",
+   "default": "Placed.",
+   "act": true
+  },
+  {
+   "id": "aline",
+   "name": "Arterial line",
+   "cat": "Procedures",
+   "syn": [
+    "art line",
+    "arterial line",
+    "a-line",
+    "aline",
+    "radial line"
+   ],
+   "tat": 10,
+   "price": 55,
+   "kind": "text",
+   "default": "Placed. Arterial waveform on monitor.",
+   "act": true
+  },
+  {
+   "id": "needle_d",
+   "name": "Needle / finger thoracostomy (decompression)",
+   "cat": "Procedures",
+   "syn": [
+    "needle decompression",
+    "needle thoracostomy",
+    "finger thoracostomy",
+    "decompress",
+    "decompression",
+    "needle the chest",
+    "simple thoracostomy",
+    "needle dart"
+   ],
+   "tat": 1,
+   "price": 170,
+   "kind": "text",
+   "default": "Done.",
+   "act": true
+  },
+  {
+   "id": "chest_tube",
+   "name": "Chest tube",
+   "cat": "Procedures",
+   "syn": [
+    "chest tube",
+    "thoracostomy tube",
+    "tube thoracostomy",
+    "pigtail",
+    "ct placement"
+   ],
+   "tat": 15,
+   "price": 190,
+   "kind": "text",
+   "default": "Placed to suction.",
+   "act": true
+  },
+  {
+   "id": "thoracentesis",
+   "name": "Thoracentesis",
+   "cat": "Procedures",
+   "syn": [
+    "thoracentesis",
+    "tap the effusion",
+    "pleural tap"
+   ],
+   "tat": 20,
+   "price": 180,
+   "kind": "text",
+   "default": "Done.",
+   "act": true
+  },
+  {
+   "id": "bronch",
+   "name": "Bronchoscopy (diagnostic/therapeutic)",
+   "cat": "Procedures",
+   "syn": [
+    "bronchoscopy",
+    "bronch",
+    "bronchoscope",
+    "fob",
+    "therapeutic bronch"
+   ],
+   "tat": 20,
+   "price": 180,
+   "kind": "text",
+   "default": "Instructor will report findings.",
+   "act": true
+  },
+  {
+   "id": "bblocker",
+   "name": "Bronchial blocker / selective mainstem intubation",
+   "cat": "Procedures",
+   "syn": [
+    "bronchial blocker",
+    "endobronchial blocker",
+    "arndt",
+    "uniblocker",
+    "mainstem intubation",
+    "selective intubation",
+    "double lumen",
+    "dlt",
+    "lung isolation"
+   ],
+   "tat": 15,
+   "price": 200,
+   "kind": "text",
+   "default": "Instructor will confirm lung isolation.",
+   "act": true
+  },
+  {
+   "id": "cardioversion",
+   "name": "Synchronized cardioversion",
+   "cat": "Procedures",
+   "syn": [
+    "cardioversion",
+    "cardiovert",
+    "synchronized",
+    "sync shock"
+   ],
+   "tat": 1,
+   "price": 160,
+   "kind": "text",
+   "default": "Done.",
+   "act": true
+  },
+  {
+   "id": "defib",
+   "name": "Defibrillation",
+   "cat": "Procedures",
+   "syn": [
+    "defibrillate",
+    "defib",
+    "unsynchronized",
+    "200j",
+    "200 joules"
+   ],
+   "tat": 1,
+   "price": 0,
+   "kind": "text",
+   "default": "Done.",
+   "act": true
+  },
+  {
+   "id": "cpr",
+   "name": "CPR / ACLS",
+   "cat": "Procedures",
+   "syn": [
+    "cpr",
+    "compressions",
+    "start compressions",
+    "acls",
+    "code blue",
+    "call a code",
+    "cardiac arrest"
+   ],
+   "tat": 1,
+   "price": 170,
+   "kind": "text",
+   "default": "Started.",
+   "act": true
+  },
+  {
+   "id": "ogt",
+   "name": "Orogastric tube",
+   "cat": "Procedures",
+   "syn": [
+    "og tube",
+    "ogt",
+    "orogastric",
+    "ng tube",
+    "ngt",
+    "nasogastric"
+   ],
+   "tat": 5,
+   "price": 40,
+   "kind": "text",
+   "default": "Placed.",
+   "act": true
+  },
+  {
+   "id": "foley",
+   "name": "Urinary catheter",
+   "cat": "Procedures",
+   "syn": [
+    "foley",
+    "urinary catheter",
+    "bladder catheter",
+    "strict i/o"
+   ],
+   "tat": 5,
+   "price": 20,
+   "kind": "text",
+   "default": "Placed.",
+   "act": true
+  },
+  {
+   "id": "ecmo",
+   "name": "ECMO consult / cannulation",
+   "cat": "Consults",
+   "syn": [
+    "ecmo",
+    "vv ecmo",
+    "va ecmo",
+    "ecmo team",
+    "extracorporeal"
+   ],
+   "tat": 60,
+   "price": 0,
+   "kind": "text",
+   "default": "ECMO team notified; will evaluate.",
+   "act": true
+  },
+  {
+   "id": "propofol",
+   "name": "Propofol infusion",
+   "cat": "Medications",
+   "syn": [
+    "propofol",
+    "diprivan"
+   ],
+   "tat": 2,
+   "price": 5,
+   "kind": "text",
+   "default": "Given.",
+   "act": true
+  },
+  {
+   "id": "sedation",
+   "name": "Sedation (agent not specified)",
+   "cat": "Medications",
+   "syn": [
+    "sedation",
+    "sedate",
+    "sedative",
+    "sedation infusion"
+   ],
+   "tat": 2,
+   "price": 5,
+   "kind": "text",
+   "default": "Started \u2014 instructor may ask which agent and target RASS.",
+   "act": true
+  },
+  {
+   "id": "analgesia",
+   "name": "Analgesia (agent not specified)",
+   "cat": "Medications",
+   "syn": [
+    "analgesia",
+    "pain control",
+    "analgesic",
+    "pain medication",
+    "pain meds",
+    "analgosedation"
+   ],
+   "tat": 2,
+   "price": 2,
+   "kind": "text",
+   "default": "Given \u2014 instructor may ask which agent.",
+   "act": true
+  },
+  {
+   "id": "fentanyl",
+   "name": "Fentanyl",
+   "cat": "Medications",
+   "syn": [
+    "fentanyl",
+    "fent"
+   ],
+   "tat": 2,
+   "price": 2,
+   "kind": "text",
+   "default": "Given.",
+   "act": true
+  },
+  {
+   "id": "hydromorphone",
+   "name": "Hydromorphone",
+   "cat": "Medications",
+   "syn": [
+    "hydromorphone",
+    "dilaudid"
+   ],
+   "tat": 2,
+   "price": 2,
+   "kind": "text",
+   "default": "Given.",
+   "act": true
+  },
+  {
+   "id": "midazolam",
+   "name": "Midazolam",
+   "cat": "Medications",
+   "syn": [
+    "midazolam",
+    "versed"
+   ],
+   "tat": 2,
+   "price": 1,
+   "kind": "text",
+   "default": "Given.",
+   "act": true
+  },
+  {
+   "id": "dexmed",
+   "name": "Dexmedetomidine infusion",
+   "cat": "Medications",
+   "syn": [
+    "dexmedetomidine",
+    "precedex"
+   ],
+   "tat": 2,
+   "price": 40,
+   "kind": "text",
+   "default": "Given.",
+   "act": true
+  },
+  {
+   "id": "ketamine",
+   "name": "Ketamine",
+   "cat": "Medications",
+   "syn": [
+    "ketamine",
+    "ketamine push",
+    "ketamine infusion"
+   ],
+   "tat": 2,
+   "price": 5,
+   "kind": "text",
+   "default": "Given.",
+   "act": true
+  },
+  {
+   "id": "etomidate",
+   "name": "Etomidate",
+   "cat": "Medications",
+   "syn": [
+    "etomidate",
+    "amidate"
+   ],
+   "tat": 2,
+   "price": 5,
+   "kind": "text",
+   "default": "Given.",
+   "act": true
+  },
+  {
+   "id": "roc",
+   "name": "Rocuronium",
+   "cat": "Medications",
+   "syn": [
+    "rocuronium",
+    "roc",
+    "zemuron"
+   ],
+   "tat": 2,
+   "price": 15,
+   "kind": "text",
+   "default": "Given.",
+   "act": true
+  },
+  {
+   "id": "sux",
+   "name": "Succinylcholine",
+   "cat": "Medications",
+   "syn": [
+    "succinylcholine",
+    "sux",
+    "anectine"
+   ],
+   "tat": 2,
+   "price": 8,
+   "kind": "text",
+   "default": "Given.",
+   "act": true
+  },
+  {
+   "id": "cisatra",
+   "name": "Cisatracurium infusion (neuromuscular blockade)",
+   "cat": "Medications",
+   "syn": [
+    "cisatracurium",
+    "nimbex",
+    "paralytic",
+    "paralyze",
+    "paralysis",
+    "nmb",
+    "neuromuscular blockade",
+    "paralytic infusion"
+   ],
+   "tat": 2,
+   "price": 30,
+   "kind": "text",
+   "default": "Given.",
+   "act": true
+  },
+  {
+   "id": "norepi",
+   "name": "Norepinephrine infusion",
+   "cat": "Medications",
+   "syn": [
+    "norepinephrine",
+    "norepi",
+    "levophed",
+    "levo",
+    "pressor",
+    "pressors",
+    "vasopressor"
+   ],
+   "tat": 2,
+   "price": 15,
+   "kind": "text",
+   "default": "Given.",
+   "act": true
+  },
+  {
+   "id": "vaso",
+   "name": "Vasopressin infusion",
+   "cat": "Medications",
+   "syn": [
+    "vasopressin",
+    "vaso",
+    "pitressin"
+   ],
+   "tat": 2,
+   "price": 100,
+   "kind": "text",
+   "default": "Given.",
+   "act": true
+  },
+  {
+   "id": "epi_inf",
+   "name": "Epinephrine infusion",
+   "cat": "Medications",
+   "syn": [
+    "epinephrine drip",
+    "epi drip",
+    "epinephrine infusion",
+    "epi infusion"
+   ],
+   "tat": 2,
+   "price": 10,
+   "kind": "text",
+   "default": "Given.",
+   "act": true
+  },
+  {
+   "id": "epi_push",
+   "name": "Epinephrine 1 mg IV push",
+   "cat": "Medications",
+   "syn": [
+    "epi 1mg",
+    "epinephrine 1 mg",
+    "push epi",
+    "code epi",
+    "epinephrine push",
+    "epi push",
+    "epinephrine"
+   ],
+   "tat": 2,
+   "price": 3,
+   "kind": "text",
+   "default": "Given.",
+   "act": true
+  },
+  {
+   "id": "pushdose",
+   "name": "Push-dose phenylephrine / epinephrine",
+   "cat": "Medications",
+   "syn": [
+    "push dose",
+    "push-dose",
+    "phenylephrine",
+    "neo",
+    "neosynephrine",
+    "push dose epi",
+    "push dose pressor"
+   ],
+   "tat": 2,
+   "price": 5,
+   "kind": "text",
+   "default": "Given.",
+   "act": true
+  },
+  {
+   "id": "dobutamine",
+   "name": "Dobutamine infusion",
+   "cat": "Medications",
+   "syn": [
+    "dobutamine",
+    "dobut"
+   ],
+   "tat": 2,
+   "price": 10,
+   "kind": "text",
+   "default": "Given.",
+   "act": true
+  },
+  {
+   "id": "milrinone",
+   "name": "Milrinone infusion",
+   "cat": "Medications",
+   "syn": [
+    "milrinone"
+   ],
+   "tat": 2,
+   "price": 20,
+   "kind": "text",
+   "default": "Given.",
+   "act": true
+  },
+  {
+   "id": "albuterol",
+   "name": "Albuterol nebulizer / MDI",
+   "cat": "Medications",
+   "syn": [
+    "albuterol",
+    "neb",
+    "nebs",
+    "duoneb",
+    "nebulizer",
+    "bronchodilator",
+    "continuous neb",
+    "salbutamol",
+    "ventolin"
+   ],
+   "tat": 2,
+   "price": 1,
+   "kind": "text",
+   "default": "Given.",
+   "act": true
+  },
+  {
+   "id": "ipratropium",
+   "name": "Ipratropium nebulizer",
+   "cat": "Medications",
+   "syn": [
+    "ipratropium",
+    "atrovent",
+    "duoneb"
+   ],
+   "tat": 2,
+   "price": 1,
+   "kind": "text",
+   "default": "Given.",
+   "act": true
+  },
+  {
+   "id": "methylpred",
+   "name": "Methylprednisolone",
+   "cat": "Medications",
+   "syn": [
+    "methylprednisolone",
+    "solumedrol",
+    "solu-medrol",
+    "steroids",
+    "steroid",
+    "solu medrol",
+    "prednisone",
+    "dexamethasone",
+    "hydrocortisone"
+   ],
+   "tat": 2,
+   "price": 5,
+   "kind": "text",
+   "default": "Given.",
+   "act": true
+  },
+  {
+   "id": "mag",
+   "name": "Magnesium sulfate 2 g IV",
+   "cat": "Medications",
+   "syn": [
+    "magnesium sulfate",
+    "mag sulfate",
+    "magnesium 2g",
+    "iv magnesium",
+    "mag 2g",
+    "give magnesium",
+    "mgso4"
+   ],
+   "tat": 2,
+   "price": 5,
+   "kind": "text",
+   "default": "Given.",
+   "act": true
+  },
+  {
+   "id": "terbutaline",
+   "name": "Terbutaline SC",
+   "cat": "Medications",
+   "syn": [
+    "terbutaline"
+   ],
+   "tat": 2,
+   "price": 10,
+   "kind": "text",
+   "default": "Given.",
+   "act": true
+  },
+  {
+   "id": "ceftriaxone",
+   "name": "Ceftriaxone",
+   "cat": "Medications",
+   "syn": [
+    "ceftriaxone",
+    "rocephin"
+   ],
+   "tat": 2,
+   "price": 2,
+   "kind": "text",
+   "default": "Given.",
+   "act": true
+  },
+  {
+   "id": "cefepime",
+   "name": "Cefepime",
+   "cat": "Medications",
+   "syn": [
+    "cefepime",
+    "maxipime"
+   ],
+   "tat": 2,
+   "price": 8,
+   "kind": "text",
+   "default": "Given.",
+   "act": true
+  },
+  {
+   "id": "piptazo",
+   "name": "Piperacillin-tazobactam",
+   "cat": "Medications",
+   "syn": [
+    "piperacillin",
+    "pip-tazo",
+    "pip tazo",
+    "zosyn",
+    "piptazo"
+   ],
+   "tat": 2,
+   "price": 10,
+   "kind": "text",
+   "default": "Given.",
+   "act": true
+  },
+  {
+   "id": "meropenem",
+   "name": "Meropenem",
+   "cat": "Medications",
+   "syn": [
+    "meropenem",
+    "merrem"
+   ],
+   "tat": 2,
+   "price": 15,
+   "kind": "text",
+   "default": "Given.",
+   "act": true
+  },
+  {
+   "id": "vanc",
+   "name": "Vancomycin",
+   "cat": "Medications",
+   "syn": [
+    "vancomycin",
+    "vanc",
+    "vanco"
+   ],
+   "tat": 2,
+   "price": 5,
+   "kind": "text",
+   "default": "Given.",
+   "act": true
+  },
+  {
+   "id": "linezolid",
+   "name": "Linezolid",
+   "cat": "Medications",
+   "syn": [
+    "linezolid",
+    "zyvox"
+   ],
+   "tat": 2,
+   "price": 30,
+   "kind": "text",
+   "default": "Given.",
+   "act": true
+  },
+  {
+   "id": "azithro",
+   "name": "Azithromycin",
+   "cat": "Medications",
+   "syn": [
+    "azithromycin",
+    "azithro",
+    "zithromax"
+   ],
+   "tat": 2,
+   "price": 3,
+   "kind": "text",
+   "default": "Given.",
+   "act": true
+  },
+  {
+   "id": "doxy",
+   "name": "Doxycycline",
+   "cat": "Medications",
+   "syn": [
+    "doxycycline",
+    "doxy"
+   ],
+   "tat": 2,
+   "price": 10,
+   "kind": "text",
+   "default": "Given.",
+   "act": true
+  },
+  {
+   "id": "oseltamivir",
+   "name": "Oseltamivir",
+   "cat": "Medications",
+   "syn": [
+    "oseltamivir",
+    "tamiflu"
+   ],
+   "tat": 2,
+   "price": 15,
+   "kind": "text",
+   "default": "Given.",
+   "act": true
+  },
+  {
+   "id": "abx_broad",
+   "name": "Broad-spectrum antibiotics (unspecified)",
+   "cat": "Medications",
+   "syn": [
+    "antibiotics",
+    "abx",
+    "broad spectrum",
+    "broad-spectrum",
+    "empiric antibiotics"
+   ],
+   "tat": 2,
+   "price": 10,
+   "kind": "text",
+   "default": "Given \u2014 instructor may ask which agents.",
+   "act": true
+  },
+  {
+   "id": "heparin",
+   "name": "Heparin infusion",
+   "cat": "Medications",
+   "syn": [
+    "heparin",
+    "heparin drip",
+    "ufh",
+    "anticoagulation",
+    "anticoagulate"
+   ],
+   "tat": 2,
+   "price": 10,
+   "kind": "text",
+   "default": "Given.",
+   "act": true
+  },
+  {
+   "id": "enox",
+   "name": "Enoxaparin",
+   "cat": "Medications",
+   "syn": [
+    "enoxaparin",
+    "lovenox",
+    "lmwh"
+   ],
+   "tat": 2,
+   "price": 10,
+   "kind": "text",
+   "default": "Given.",
+   "act": true
+  },
+  {
+   "id": "tpa",
+   "name": "Alteplase (systemic thrombolysis)",
+   "cat": "Medications",
+   "syn": [
+    "alteplase",
+    "tpa",
+    "t-pa",
+    "thrombolysis",
+    "thrombolytic",
+    "lytics",
+    "tnk",
+    "tenecteplase",
+    "systemic lysis"
+   ],
+   "tat": 2,
+   "price": 9000,
+   "kind": "text",
+   "default": "Given.",
+   "act": true
+  },
+  {
+   "id": "txa",
+   "name": "Tranexamic acid",
+   "cat": "Medications",
+   "syn": [
+    "tranexamic acid",
+    "txa",
+    "cyklokapron"
+   ],
+   "tat": 2,
+   "price": 15,
+   "kind": "text",
+   "default": "Given.",
+   "act": true
+  },
+  {
+   "id": "nebtxa",
+   "name": "Nebulized tranexamic acid",
+   "cat": "Medications",
+   "syn": [
+    "nebulized txa",
+    "neb txa",
+    "inhaled txa"
+   ],
+   "tat": 2,
+   "price": 15,
+   "kind": "text",
+   "default": "Given.",
+   "act": true
+  },
+  {
+   "id": "lr",
+   "name": "Lactated Ringer's bolus",
+   "cat": "Medications",
+   "syn": [
+    "lactated ringer",
+    "lactated ringers",
+    "lr",
+    "lr bolus",
+    "fluid bolus",
+    "bolus",
+    "ivf",
+    "iv fluids",
+    "fluids",
+    "crystalloid",
+    "30 ml/kg",
+    "30ml/kg"
+   ],
+   "tat": 2,
+   "price": 2,
+   "kind": "text",
+   "default": "Given.",
+   "act": true
+  },
+  {
+   "id": "ns",
+   "name": "Normal saline bolus",
+   "cat": "Medications",
+   "syn": [
+    "normal saline",
+    "ns",
+    "saline",
+    "0.9%",
+    "ns bolus"
+   ],
+   "tat": 2,
+   "price": 2,
+   "kind": "text",
+   "default": "Given.",
+   "act": true
+  },
+  {
+   "id": "albumin",
+   "name": "Albumin 5%",
+   "cat": "Medications",
+   "syn": [
+    "albumin"
+   ],
+   "tat": 2,
+   "price": 50,
+   "kind": "text",
+   "default": "Given.",
+   "act": true
+  },
+  {
+   "id": "prbc",
+   "name": "Packed red blood cells, 1 unit",
+   "cat": "Medications",
+   "syn": [
+    "prbc",
+    "prbcs",
+    "packed red",
+    "transfuse",
+    "transfusion",
+    "blood transfusion",
+    "rbc",
+    "unit of blood",
+    "give blood"
+   ],
+   "tat": 2,
+   "price": 220,
+   "kind": "text",
+   "default": "Given.",
+   "act": true
+  },
+  {
+   "id": "ffp",
+   "name": "Fresh frozen plasma",
+   "cat": "Medications",
+   "syn": [
+    "ffp",
+    "plasma",
+    "fresh frozen plasma"
+   ],
+   "tat": 2,
+   "price": 60,
+   "kind": "text",
+   "default": "Given.",
+   "act": true
+  },
+  {
+   "id": "plt_tx",
+   "name": "Platelets, 1 unit",
+   "cat": "Medications",
+   "syn": [
+    "platelet transfusion",
+    "transfuse platelets",
+    "plt transfusion",
+    "give platelets"
+   ],
+   "tat": 2,
+   "price": 500,
+   "kind": "text",
+   "default": "Given.",
+   "act": true
+  },
+  {
+   "id": "mtp",
+   "name": "Massive transfusion protocol",
+   "cat": "Medications",
+   "syn": [
+    "mtp",
+    "massive transfusion",
+    "massive transfusion protocol"
+   ],
+   "tat": 2,
+   "price": 1500,
+   "kind": "text",
+   "default": "Given.",
+   "act": true
+  },
+  {
+   "id": "furosemide",
+   "name": "Furosemide",
+   "cat": "Medications",
+   "syn": [
+    "furosemide",
+    "lasix",
+    "diuresis",
+    "diurese",
+    "diuretic"
+   ],
+   "tat": 2,
+   "price": 2,
+   "kind": "text",
+   "default": "Given.",
+   "act": true
+  },
+  {
+   "id": "nitro",
+   "name": "Nitroglycerin",
+   "cat": "Medications",
+   "syn": [
+    "nitroglycerin",
+    "nitro",
+    "ntg"
+   ],
+   "tat": 2,
+   "price": 10,
+   "kind": "text",
+   "default": "Given.",
+   "act": true
+  },
+  {
+   "id": "amio",
+   "name": "Amiodarone",
+   "cat": "Medications",
+   "syn": [
+    "amiodarone",
+    "amio"
+   ],
+   "tat": 2,
+   "price": 10,
+   "kind": "text",
+   "default": "Given.",
+   "act": true
+  },
+  {
+   "id": "diltiazem",
+   "name": "Diltiazem",
+   "cat": "Medications",
+   "syn": [
+    "diltiazem",
+    "cardizem",
+    "dilt"
+   ],
+   "tat": 2,
+   "price": 5,
+   "kind": "text",
+   "default": "Given.",
+   "act": true
+  },
+  {
+   "id": "metoprolol",
+   "name": "Metoprolol IV",
+   "cat": "Medications",
+   "syn": [
+    "metoprolol",
+    "lopressor",
+    "beta blocker"
+   ],
+   "tat": 2,
+   "price": 2,
+   "kind": "text",
+   "default": "Given.",
+   "act": true
+  },
+  {
+   "id": "adenosine",
+   "name": "Adenosine",
+   "cat": "Medications",
+   "syn": [
+    "adenosine"
+   ],
+   "tat": 2,
+   "price": 10,
+   "kind": "text",
+   "default": "Given.",
+   "act": true
+  },
+  {
+   "id": "atropine",
+   "name": "Atropine",
+   "cat": "Medications",
+   "syn": [
+    "atropine"
+   ],
+   "tat": 2,
+   "price": 5,
+   "kind": "text",
+   "default": "Given.",
+   "act": true
+  },
+  {
+   "id": "calcium",
+   "name": "Calcium chloride / gluconate",
+   "cat": "Medications",
+   "syn": [
+    "calcium chloride",
+    "calcium gluconate",
+    "cacl",
+    "give calcium"
+   ],
+   "tat": 2,
+   "price": 5,
+   "kind": "text",
+   "default": "Given.",
+   "act": true
+  },
+  {
+   "id": "bicarb",
+   "name": "Sodium bicarbonate",
+   "cat": "Medications",
+   "syn": [
+    "bicarbonate",
+    "bicarb",
+    "sodium bicarb",
+    "nahco3"
+   ],
+   "tat": 2,
+   "price": 5,
+   "kind": "text",
+   "default": "Given.",
+   "act": true
+  },
+  {
+   "id": "insulin_dex",
+   "name": "Insulin + dextrose (hyperkalemia)",
+   "cat": "Medications",
+   "syn": [
+    "insulin and dextrose",
+    "insulin dextrose",
+    "insulin d50",
+    "shift potassium"
+   ],
+   "tat": 2,
+   "price": 5,
+   "kind": "text",
+   "default": "Given.",
+   "act": true
+  },
+  {
+   "id": "insulin_inf",
+   "name": "Insulin infusion",
+   "cat": "Medications",
+   "syn": [
+    "insulin drip",
+    "insulin infusion",
+    "insulin gtt"
+   ],
+   "tat": 2,
+   "price": 10,
+   "kind": "text",
+   "default": "Given.",
+   "act": true
+  },
+  {
+   "id": "d50",
+   "name": "Dextrose 50%",
+   "cat": "Medications",
+   "syn": [
+    "d50",
+    "dextrose",
+    "amp of d50"
+   ],
+   "tat": 2,
+   "price": 3,
+   "kind": "text",
+   "default": "Given.",
+   "act": true
+  },
+  {
+   "id": "naloxone",
+   "name": "Naloxone",
+   "cat": "Medications",
+   "syn": [
+    "naloxone",
+    "narcan"
+   ],
+   "tat": 2,
+   "price": 25,
+   "kind": "text",
+   "default": "Given.",
+   "act": true
+  },
+  {
+   "id": "ondansetron",
+   "name": "Ondansetron",
+   "cat": "Medications",
+   "syn": [
+    "ondansetron",
+    "zofran"
+   ],
+   "tat": 2,
+   "price": 1,
+   "kind": "text",
+   "default": "Given.",
+   "act": true
+  },
+  {
+   "id": "ppi",
+   "name": "Pantoprazole IV",
+   "cat": "Medications",
+   "syn": [
+    "pantoprazole",
+    "protonix",
+    "ppi"
+   ],
+   "tat": 2,
+   "price": 3,
+   "kind": "text",
+   "default": "Given.",
+   "act": true
+  },
+  {
+   "id": "octreotide",
+   "name": "Octreotide infusion",
+   "cat": "Medications",
+   "syn": [
+    "octreotide",
+    "sandostatin"
+   ],
+   "tat": 2,
+   "price": 40,
+   "kind": "text",
+   "default": "Given.",
+   "act": true
+  },
+  {
+   "id": "acetaminophen",
+   "name": "Acetaminophen",
+   "cat": "Medications",
+   "syn": [
+    "acetaminophen",
+    "tylenol",
+    "apap",
+    "paracetamol"
+   ],
+   "tat": 2,
+   "price": 1,
+   "kind": "text",
+   "default": "Given.",
+   "act": true
+  },
+  {
+   "id": "hob",
+   "name": "Head of bed 30\u00b0",
+   "cat": "Nursing",
+   "syn": [
+    "hob",
+    "head of bed",
+    "elevate head",
+    "raise head of bed"
+   ],
+   "tat": 1,
+   "price": 0,
+   "kind": "text",
+   "default": "Done.",
+   "act": true
+  },
+  {
+   "id": "position_bleed",
+   "name": "Position bleeding side down",
+   "cat": "Nursing",
+   "syn": [
+    "bleeding side down",
+    "lateral decubitus",
+    "bad lung down",
+    "affected side down",
+    "position side down"
+   ],
+   "tat": 1,
+   "price": 0,
+   "kind": "text",
+   "default": "Done.",
+   "act": true
+  },
+  {
+   "id": "restraints",
+   "name": "Soft restraints",
+   "cat": "Nursing",
+   "syn": [
+    "restraints",
+    "soft restraints"
+   ],
+   "tat": 1,
+   "price": 0,
+   "kind": "text",
+   "default": "Applied.",
+   "act": true
+  },
+  {
+   "id": "cont_monitor",
+   "name": "Continuous pulse oximetry and telemetry",
+   "cat": "Nursing",
+   "syn": [
+    "telemetry",
+    "tele",
+    "continuous pulse ox",
+    "cardiac monitor",
+    "monitor"
+   ],
+   "tat": 1,
+   "price": 0,
+   "kind": "text",
+   "default": "On monitor."
+  },
+  {
+   "id": "iv_access",
+   "name": "Large-bore IV access x2",
+   "cat": "Nursing",
+   "syn": [
+    "iv access",
+    "large bore",
+    "2 large bore",
+    "two large bore",
+    "piv",
+    "peripheral iv",
+    "18g",
+    "16g"
+   ],
+   "tat": 3,
+   "price": 15,
+   "kind": "text",
+   "default": "Two large-bore IVs placed.",
+   "act": true
+  },
+  {
+   "id": "io_access",
+   "name": "Intraosseous access",
+   "cat": "Nursing",
+   "syn": [
+    "io",
+    "intraosseous",
+    "io access"
+   ],
+   "tat": 2,
+   "price": 60,
+   "kind": "text",
+   "default": "IO placed.",
+   "act": true
+  },
+  {
+   "id": "c_pulm",
+   "name": "Pulmonary / critical care consult",
+   "cat": "Consults",
+   "syn": [
+    "pulm consult",
+    "pulmonary consult",
+    "pccm consult",
+    "icu consult",
+    "micu consult",
+    "critical care consult",
+    "consult icu"
+   ],
+   "tat": 15,
+   "price": 0,
+   "kind": "text",
+   "default": "Consultant on the way.",
+   "act": true
+  },
+  {
+   "id": "c_ip",
+   "name": "Interventional pulmonology consult",
+   "cat": "Consults",
+   "syn": [
+    "ip consult",
+    "interventional pulmonology",
+    "interventional pulm"
+   ],
+   "tat": 30,
+   "price": 0,
+   "kind": "text",
+   "default": "IP will see the patient.",
+   "act": true
+  },
+  {
+   "id": "c_ir",
+   "name": "Interventional radiology consult (embolization)",
+   "cat": "Consults",
+   "syn": [
+    "ir consult",
+    "interventional radiology",
+    "embolization",
+    "bronchial artery embolization",
+    "bae"
+   ],
+   "tat": 30,
+   "price": 0,
+   "kind": "text",
+   "default": "IR notified; reviewing imaging.",
+   "act": true
+  },
+  {
+   "id": "c_cards",
+   "name": "Cardiology consult",
+   "cat": "Consults",
+   "syn": [
+    "cardiology consult",
+    "cards consult",
+    "cardiology"
+   ],
+   "tat": 30,
+   "price": 0,
+   "kind": "text",
+   "default": "Cardiology notified.",
+   "act": true
+  },
+  {
+   "id": "c_pert",
+   "name": "PE response team (PERT)",
+   "cat": "Consults",
+   "syn": [
+    "pert",
+    "pe response team",
+    "pulmonary embolism response"
+   ],
+   "tat": 15,
+   "price": 0,
+   "kind": "text",
+   "default": "PERT activated.",
+   "act": true
+  },
+  {
+   "id": "c_ts",
+   "name": "Thoracic surgery consult",
+   "cat": "Consults",
+   "syn": [
+    "thoracic surgery",
+    "cardiothoracic surgery",
+    "ct surgery",
+    "ts consult"
+   ],
+   "tat": 30,
+   "price": 0,
+   "kind": "text",
+   "default": "Thoracic surgery notified.",
+   "act": true
+  },
+  {
+   "id": "c_anes",
+   "name": "Anesthesia / difficult airway team",
+   "cat": "Consults",
+   "syn": [
+    "anesthesia",
+    "difficult airway",
+    "airway team",
+    "call anesthesia"
+   ],
+   "tat": 10,
+   "price": 0,
+   "kind": "text",
+   "default": "Anesthesia en route.",
+   "act": true
+  },
+  {
+   "id": "c_ent",
+   "name": "ENT consult",
+   "cat": "Consults",
+   "syn": [
+    "ent",
+    "ent consult",
+    "otolaryngology"
+   ],
+   "tat": 30,
+   "price": 0,
+   "kind": "text",
+   "default": "ENT notified.",
+   "act": true
+  },
+  {
+   "id": "c_gi",
+   "name": "GI consult (endoscopy)",
+   "cat": "Consults",
+   "syn": [
+    "gi consult",
+    "gastroenterology",
+    "egd",
+    "endoscopy"
+   ],
+   "tat": 30,
+   "price": 0,
+   "kind": "text",
+   "default": "GI notified.",
+   "act": true
+  },
+  {
+   "id": "c_palliative",
+   "name": "Palliative care / goals of care",
+   "cat": "Consults",
+   "syn": [
+    "palliative",
+    "goals of care",
+    "code status",
+    "family meeting"
+   ],
+   "tat": 60,
+   "price": 0,
+   "kind": "text",
+   "default": "Palliative care will see the patient.",
+   "act": true
+  }
+ ],
+ "sets": [
+  {
+   "id": "set_icu_adm",
+   "name": "ICU admission labs",
+   "items": [
+    "cbc",
+    "bmp",
+    "mg",
+    "phos",
+    "coags",
+    "lactate",
+    "tns",
+    "abg",
+    "cxr",
+    "ecg"
+   ]
+  },
+  {
+   "id": "set_sepsis",
+   "name": "Sepsis bundle (1 hour)",
+   "items": [
+    "bcx",
+    "lactate",
+    "abx_broad",
+    "lr",
+    "cbc",
+    "cmp",
+    "procal",
+    "ua",
+    "ucx",
+    "cxr"
+   ]
+  },
+  {
+   "id": "set_rsi",
+   "name": "Rapid sequence intubation",
+   "items": [
+    "intubate",
+    "etomidate",
+    "ketamine",
+    "roc",
+    "pushdose",
+    "ogt",
+    "cxr",
+    "abg"
+   ]
+  },
+  {
+   "id": "set_postint",
+   "name": "Post-intubation bundle",
+   "items": [
+    "cxr",
+    "abg",
+    "propofol",
+    "fentanyl",
+    "ogt",
+    "hob",
+    "plateau",
+    "sputum"
+   ]
+  },
+  {
+   "id": "set_ards",
+   "name": "ARDS / lung-protective ventilation",
+   "items": [
+    "vent_settings",
+    "plateau",
+    "abg",
+    "cisatra",
+    "prone",
+    "echo_pocus",
+    "furosemide"
+   ]
+  },
+  {
+   "id": "set_asthma",
+   "name": "Severe asthma exacerbation",
+   "items": [
+    "albuterol",
+    "ipratropium",
+    "methylpred",
+    "mag",
+    "abg",
+    "cxr",
+    "terbutaline",
+    "heliox"
+   ]
+  },
+  {
+   "id": "set_copd",
+   "name": "COPD exacerbation",
+   "items": [
+    "albuterol",
+    "ipratropium",
+    "methylpred",
+    "azithro",
+    "niv",
+    "abg",
+    "cxr",
+    "rvp"
+   ]
+  },
+  {
+   "id": "set_hypox",
+   "name": "Acute hypoxemia work-up",
+   "items": [
+    "abg",
+    "cxr",
+    "lus",
+    "echo_pocus",
+    "ecg",
+    "bnp",
+    "trop",
+    "ddimer"
+   ]
+  },
+  {
+   "id": "set_pe",
+   "name": "Suspected PE",
+   "items": [
+    "cta_chest",
+    "echo_pocus",
+    "le_duplex",
+    "trop",
+    "bnp",
+    "heparin",
+    "c_pert",
+    "ecg"
+   ]
+  },
+  {
+   "id": "set_hemoptysis",
+   "name": "Massive hemoptysis",
+   "items": [
+    "position_bleed",
+    "iv_access",
+    "tns",
+    "coags",
+    "cbc",
+    "bblocker",
+    "bronch",
+    "c_ir",
+    "cta_chest",
+    "nebtxa"
+   ]
+  },
+  {
+   "id": "set_ptx",
+   "name": "Suspected tension pneumothorax",
+   "items": [
+    "disconnect",
+    "needle_d",
+    "chest_tube",
+    "lus",
+    "cxr",
+    "abg"
+   ]
+  },
+  {
+   "id": "set_extub",
+   "name": "Extubation readiness",
+   "items": [
+    "sbt",
+    "cuff_leak",
+    "abg",
+    "cxr",
+    "methylpred"
+   ]
+  },
+  {
+   "id": "set_mtp",
+   "name": "Massive transfusion",
+   "items": [
+    "mtp",
+    "tns",
+    "coags",
+    "fibrinogen",
+    "ica",
+    "cbc",
+    "txa",
+    "calcium"
+   ]
+  },
+  {
+   "id": "set_pah",
+   "name": "Pulmonary hypertension crisis",
+   "items": [
+    "echo_pocus",
+    "ino",
+    "inh_epo",
+    "norepi",
+    "vaso",
+    "dobutamine",
+    "abg",
+    "c_cards"
+   ]
+  },
+  {
+   "id": "set_pneumonia",
+   "name": "Severe pneumonia",
+   "items": [
+    "bcx",
+    "sputum",
+    "rvp",
+    "legionella",
+    "mrsa",
+    "procal",
+    "ceftriaxone",
+    "azithro",
+    "vanc",
+    "cxr"
+   ]
+  }
+ ]
+}

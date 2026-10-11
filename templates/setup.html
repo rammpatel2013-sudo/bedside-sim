@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}{{ "Create sign-in" if mode == "setup" else "Account" }} — HALO Tracker{% endblock %}
+{% block content %}
+{% if mode == "setup" %}
+<h1>Create the educator sign-in</h1>
+<div class="muted">First run. This username and password protect the tracker and the simulation instructor console. Learners never need it.</div>
+{% else %}
+<h1>Account</h1>
+<div class="muted">Change the educator username or password.</div>
+{% endif %}
+<form method="post" style="display:flex;flex-direction:column;gap:14px;max-width:340px;margin-top:20px;">
+  {% if mode == "account" %}
+  <div class="field"><label for="c">Current password</label><input id="c" name="current" type="password" autocomplete="current-password" required></div>
+  {% endif %}
+  <div class="field"><label for="u">Username</label><input id="u" name="username" value="{{ username or '' }}" autocomplete="username" required></div>
+  <div class="field"><label for="p">{{ "Password" if mode == "setup" else "New password" }} (at least 10 characters)</label><input id="p" name="password" type="password" autocomplete="new-password" minlength="10" required></div>
+  <div class="field"><label for="p2">Repeat password</label><input id="p2" name="password2" type="password" autocomplete="new-password" minlength="10" required></div>
+  {% if error %}<div style="color:#b3261e;font-size:14px;">{{ error }}</div>{% endif %}
+  {% if done %}<div style="color:#0f6e63;font-size:14px;">{{ done }}</div>{% endif %}
+  <button type="submit" style="align-self:flex-start;">{{ "Create sign-in" if mode == "setup" else "Save" }}</button>
+</form>
+{% endblock %}

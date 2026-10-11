@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Session — HALO Tracker{% endblock %}
+{% block content %}
+<h1>{{ session.procedure_name }}</h1>
+<div class="muted">{{ session.date }} &nbsp;·&nbsp; {{ session.location or "no location noted" }}</div>
+{% if session.notes %}<div class="card" style="margin-top: 12px;">{{ session.notes }}</div>{% endif %}
+
+{% if sim_run %}
+<h2>Simulation log</h2>
+<div class="muted" style="margin-bottom:8px;">Case: {{ sim_run.case_title }} &nbsp;·&nbsp; room {{ sim_run.room }}</div>
+{% if sim_log %}
+<table>
+  <tr><th style="width:70px;">Time</th><th>Event</th></tr>
+  {% for e in sim_log %}
+  <tr><td>{{ '%d:%02d' % ((e.t or 0) // 60, (e.t or 0) % 60) }}</td><td>{{ e.text }}</td></tr>
+  {% endfor %}
+</table>
+{% else %}<div class="muted">No events logged yet.</div>{% endif %}
+{% endif %}
+
+<h2>Participants &amp; debrief</h2>
+<table>
+  <tr><th>Staff</th><th>Attempts</th><th>Time to landmark</th><th>Outcome</th><th>Debrief notes</th></tr>
+  {% for p in participants %}
+  <tr>
+    <td>{{ p.staff_name }}</td>
+    <td>{{ p.attempts or "—" }}</td>
+    <td>{{ p.time_to_landmark_sec and (p.time_to_landmark_sec ~ "s") or "—" }}</td>
+    <td>{{ p.outcome or "—" }}</td>
+    <td class="muted">{{ p.debrief_notes or "—" }}</td>
+  </tr>
+  {% endfor %}
+</table>
+
+<h2>Log a participant rep</h2>
+<form method="post" style="display: flex; flex-direction: column; gap: 14px; max-width: 480px;">
+  <div class="field">
+    <label>Staff member</label>
+    <select name="staff_id" required>
+      {% for st in all_staff %}
+      <option value="{{ st.id }}">{{ st.name }}{% if st.role %} ({{ st.role }}){% endif %}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="field"><label>Attempts before success</label><input type="number" name="attempts" min="0"></div>
+  <div class="field"><label>Time to landmark (seconds)</label><input type="number" name="time_to_landmark_sec" min="0"></div>
+  <div class="field"><label>Outcome</label><input name="outcome" placeholder="e.g. airway confirmed, lateral miss, etc."></div>
+  <div class="field"><label>Debrief notes</label><textarea name="debrief_notes"></textarea></div>
+  <button type="submit" style="align-self: flex-start;">Add entry</button>
+</form>
+<div class="muted" style="margin-top: 10px;">No staff listed? Add them on the <a href="{{ url_for('staff') }}">Staff</a> page first.</div>
+{% endblock %}

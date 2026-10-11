@@ -1,0 +1,14 @@
+services:
+  halo-tracker:
+    build: .
+    container_name: halo-tracker
+    restart: unless-stopped
+    ports:
+      - "5050:5000"
+    environment:
+      # The educator sign-in is created on screen the first time you open the app.
+      # Set to 1 once this runs behind HTTPS (droplet / Cloudflare Tunnel)
+      - HALO_SECURE_COOKIES=0
+    volumes:
+      # Same data folder as before: existing halo.db is kept and upgraded in place.
+      - ./data:/app/data

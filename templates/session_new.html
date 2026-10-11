@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}New session — HALO Tracker{% endblock %}
+{% block content %}
+<h1>Log a new session</h1>
+<form method="post" style="display: flex; flex-direction: column; gap: 14px; max-width: 480px;">
+  <div class="field"><label>Date</label><input type="date" name="date" value="{{ today }}" required></div>
+  <div class="field">
+    <label>Procedure</label>
+    <select name="procedure_id" required>
+      {% for p in procedures %}
+      <option value="{{ p.id }}">{{ p.name }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="field"><label>Location</label><input name="location" placeholder="e.g. RICU bay 4, in-situ"></div>
+  <div class="field"><label>Session notes</label><textarea name="notes" placeholder="setup notes, cartridge type used, etc."></textarea></div>
+  <button type="submit" style="align-self: flex-start;">Create session</button>
+</form>
+{% endblock %}

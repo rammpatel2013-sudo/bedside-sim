@@ -1,0 +1,115 @@
+{
+ "id": "ards",
+ "title": "ARDS — refractory hypoxemia on the vent",
+ "learnerTitle": "MICU bed 4 — 52M, influenza pneumonia, intubated",
+ "system": "Pulmonary",
+ "setting": "ICU",
+ "level": "Resident / fellow / APP",
+ "status": "draft — needs clinical review",
+ "summary": "52M with influenza A pneumonia intubated 2 h ago in the ED on non-protective settings; severe hypoxemia on arrival to the MICU.",
+ "objectives": [
+  "Calculate predicted body weight and set VT ~6 mL/kg PBW",
+  "Measure plateau pressure; target Pplat ≤30 and driving pressure ≤15 cmH2O",
+  "Apply a PEEP/FiO2 strategy and accept permissive hypercapnia",
+  "Prone ≥16 h/day when P/F <150 on FiO2 ≥0.6 and PEEP ≥5; consider early neuromuscular blockade",
+  "Recognize ECMO referral criteria"
+ ],
+ "chart": {
+  "patient": {"age": 52, "sex": "M", "height_cm": 170, "weight_kg": 95, "pbw_kg": 66, "code": "Full code", "allergies": "NKDA"},
+  "problems": ["Acute hypoxemic respiratory failure, intubated", "Influenza A pneumonia (rapid test positive in ED)", "Suspected ARDS", "Obesity (BMI 33)", "Hypertension"],
+  "hpi": "5 days of fever, myalgias and cough, 2 days of progressive dyspnea. In the ED SpO2 78% on non-rebreather; intubated with etomidate/rocuronium and placed on VC 550 mL, RR 18, PEEP 5, FiO2 0.8. Transferred to MICU 2 h after intubation.",
+  "pmh": "Hypertension. Obesity. No known lung disease. Unvaccinated for influenza this season.",
+  "meds": ["Lisinopril 20 mg daily", "Oseltamivir 75 mg (first dose given in ED)", "Propofol 30 mcg/kg/min", "Fentanyl 50 mcg/h"],
+  "allergies": "NKDA",
+  "social": "Bus driver. Never smoker. Lives with wife.",
+  "exam": "Sedated, RASS −3. Diffuse coarse crackles bilaterally. Equal breath sounds. Warm extremities, CRT 3 s. No edema.",
+  "initial": ["cbc", "bmp", "abg", "cxr"]
+ },
+ "stages": [
+  {"id": "a", "name": "Arrival — hypoxemic on initial settings",
+   "vitals": {"hr": 112, "sbp": 128, "dbp": 72, "spo2": 86, "rr": 18, "etco2": 42, "temp": 38.4},
+   "rhythm": "st", "pulse": true, "art": true, "ventOn": true,
+   "vent": {"mode": "VC", "vt": 550, "rr": 18, "peep": 5, "fio2": 0.8, "ti": 0.9}, "lung": {"c": 18, "r": 12}, "t": 0,
+   "nurse": "Sat is 86 on 80 percent. The ED settings haven't been touched.",
+   "cue": "VT 550 = 8.3 mL/kg PBW; Pplat ~36, DP ~31. Expect: PBW calculation, VT ~400, PEEP 12–14, RR up to 28–30, plateau check, repeat ABG.",
+   "branches": [
+    {"label": "Lung-protective settings: VT ~400, PEEP 12–14, RR up", "to": "b", "q": "good", "kw": ["400", "6 ml", "tidal", "lung protective", "ardsnet", "peep", "plateau"]},
+    {"label": "FiO2 to 100% only", "to": "a", "q": "mid", "kw": ["fio2", "100%", "oxygen"]},
+    {"label": "Proning before fixing ventilator settings", "to": "c", "q": "mid", "kw": ["prone"]}],
+   "auto": {"after": 240, "to": "d"}},
+  {"id": "b", "name": "Lung-protective settings",
+   "vitals": {"hr": 104, "sbp": 122, "dbp": 70, "spo2": 90, "rr": 28, "etco2": 52, "temp": 38.2},
+   "vent": {"mode": "VC", "vt": 400, "rr": 28, "peep": 14, "fio2": 0.8, "ti": 0.8}, "lung": {"c": 24, "r": 12}, "t": 60,
+   "nurse": "Sat is up to 90. Gas is back — pH 7.24. Do you want bicarb?",
+   "cue": "Pplat ~31, DP ~17, P/F ~83 → severe ARDS. pH 7.24 is acceptable (permissive hypercapnia; no bicarb). Next: prone + NMB; consider recruitment/PEEP titration.",
+   "branches": [
+    {"label": "Proning + neuromuscular blockade", "to": "c", "q": "good", "kw": ["prone", "paraly", "cisatra", "nmb", "nimbex"]},
+    {"label": "Raises tidal volume to correct CO2 / gives bicarbonate", "to": "a", "q": "bad", "kw": ["increase tidal", "raise tidal", "bicarb", "bicarbonate"]}],
+   "auto": {"after": 300, "to": "d"}},
+  {"id": "c", "name": "Proned + paralyzed",
+   "vitals": {"hr": 96, "sbp": 118, "dbp": 66, "spo2": 95, "rr": 28, "etco2": 48, "temp": 37.9},
+   "vent": {"fio2": 0.6}, "lung": {"c": 28, "r": 12}, "t": 90,
+   "nurse": "He's prone. Sat 95 — can we come down on the oxygen?",
+   "cue": "Success. Discuss ≥16 h prone sessions, FiO2 wean target SpO2 88–95%, conservative fluids once off pressors, ECMO criteria if worsening.",
+   "branches": []},
+  {"id": "d", "name": "Refractory hypoxemia",
+   "vitals": {"hr": 124, "sbp": 104, "dbp": 58, "spo2": 79, "rr": 18, "etco2": 46, "temp": 38.6}, "t": 45,
+   "nurse": "Sat's 79 and dropping. What do you want to do?",
+   "cue": "Exclude tube/plug/PTX (DOPES), then lung-protective settings and prone. Discuss ECMO referral (P/F <80 >6 h, pH <7.25 with PaCO2 ≥60).",
+   "branches": [
+    {"label": "DOPES check, then lung-protective settings", "to": "b", "q": "good", "kw": ["dopes", "suction", "bag", "tidal", "peep", "lung protective", "disconnect"]},
+    {"label": "Prone + paralysis", "to": "c", "q": "good", "kw": ["prone", "paraly"]}]}
+ ],
+ "results": {
+  "abg": {"by_stage": {
+    "a": {"rows": [["pH", "7.31", "", "L"], ["PaCO2", "44", "mmHg", ""], ["PaO2", "54", "mmHg", "L"], ["HCO3", "22", "mmol/L", "L"], ["SaO2", "86", "%", "L"], ["FiO2", "0.80", "", ""], ["P/F ratio", "68", "", "L"]]},
+    "b": {"rows": [["pH", "7.24", "", "L"], ["PaCO2", "58", "mmHg", "H"], ["PaO2", "66", "mmHg", "L"], ["HCO3", "24", "mmol/L", ""], ["SaO2", "90", "%", "L"], ["FiO2", "0.80", "", ""], ["P/F ratio", "83", "", "L"]]},
+    "c": {"rows": [["pH", "7.27", "", "L"], ["PaCO2", "55", "mmHg", "H"], ["PaO2", "88", "mmHg", ""], ["HCO3", "24", "mmol/L", ""], ["SaO2", "95", "%", ""], ["FiO2", "0.60", "", ""], ["P/F ratio", "147", "", "L"]]},
+    "d": {"rows": [["pH", "7.22", "", "L"], ["PaCO2", "52", "mmHg", "H"], ["PaO2", "46", "mmHg", "L"], ["HCO3", "21", "mmol/L", "L"], ["SaO2", "79", "%", "L"], ["FiO2", "1.00", "", ""], ["P/F ratio", "46", "", "L"]]}},
+   "default": {"rows": [["pH", "7.31", "", "L"], ["PaCO2", "44", "mmHg", ""], ["PaO2", "54", "mmHg", "L"]]}},
+  "plateau": {"by_stage": {
+    "a": {"text": "Inspiratory hold: Pplat 36 cmH2O, PEEP 5 → driving pressure 31. Ppeak 41."},
+    "b": {"text": "Inspiratory hold: Pplat 31 cmH2O, PEEP 14 → driving pressure 17. Ppeak 36."},
+    "c": {"text": "Inspiratory hold: Pplat 28 cmH2O, PEEP 14 → driving pressure 14."},
+    "d": {"text": "Inspiratory hold: Pplat 36 cmH2O, PEEP 5 → driving pressure 31."}},
+   "default": {"text": "Pplat 36 cmH2O."}},
+  "autopeep": {"text": "Expiratory hold: total PEEP equals set PEEP (no intrinsic PEEP)."},
+  "cxr": {"text": "Portable AP: ETT tip 4 cm above the carina. Diffuse bilateral airspace opacities. No pneumothorax. No large effusion. Cardiac silhouette normal size. OG tube in stomach."},
+  "lus": {"text": "Bilateral lung sliding present. Diffuse bilateral B-lines with irregular pleural line and subpleural consolidations, worst at the bases. No effusion. No pneumothorax."},
+  "echo_pocus": {"text": "Hyperdynamic LV, EF >60%. RV mildly dilated (RV:LV ~0.8), normal function, no septal flattening. No pericardial effusion. IVC 2.1 cm, minimal respiratory variation."},
+  "tte": {"text": "LVEF 65%. RV mildly dilated with normal systolic function (TAPSE 19 mm). Estimated RVSP 38 mmHg. No significant valvular disease."},
+  "cbc": {"rows": [["WBC", "14.2", "K/µL", "H"], ["Hgb", "13.1", "g/dL", ""], ["Hct", "39.5", "%", ""], ["Plt", "168", "K/µL", ""], ["Neutrophils", "86", "%", "H"], ["Lymphocytes", "6", "%", "L"]]},
+  "bmp": {"rows": [["Na", "136", "mmol/L", ""], ["K", "4.4", "mmol/L", ""], ["Cl", "102", "mmol/L", ""], ["HCO3", "22", "mmol/L", "L"], ["BUN", "22", "mg/dL", "H"], ["Creatinine", "1.1", "mg/dL", ""], ["Glucose", "164", "mg/dL", "H"], ["Anion gap", "12", "", ""]]},
+  "cmp": {"rows": [["Na", "136", "mmol/L", ""], ["K", "4.4", "mmol/L", ""], ["HCO3", "22", "mmol/L", "L"], ["BUN", "22", "mg/dL", "H"], ["Creatinine", "1.1", "mg/dL", ""], ["Glucose", "164", "mg/dL", "H"], ["Albumin", "3.2", "g/dL", "L"], ["AST", "68", "U/L", "H"], ["ALT", "41", "U/L", "H"], ["T bili", "0.7", "mg/dL", ""]]},
+  "lactate": {"rows": [["Lactate", "2.1", "mmol/L", "H"]]},
+  "procal": {"rows": [["Procalcitonin", "0.9", "ng/mL", "H"]]},
+  "rvp": {"text": "Influenza A (H1N1) DETECTED. RSV, SARS-CoV-2 and other targets not detected."},
+  "sputum": {"text": "Gram stain: many PMNs, no predominant organism. Culture pending.", "tat": 720},
+  "mrsa": {"text": "MRSA nares PCR: negative."},
+  "trop": {"rows": [["hs-Troponin T", "22", "ng/L", "H"]]},
+  "bnp": {"rows": [["BNP", "180", "pg/mL", "H"]]},
+  "ck": {"rows": [["CK", "640", "U/L", "H"]]},
+  "ecg": {"text": "Sinus tachycardia 112. Normal axis. No acute ST changes."},
+  "ct_chest": {"text": "Bilateral dependent consolidation with ground-glass opacities, gradient anterior to posterior. No pneumothorax. (Note: patient transported on FiO2 1.0; desaturated to 82% during transfer.)"},
+  "prone": {"text": "Proned with 5-person team; ETT and lines secured. Instructor will report the response."},
+  "cisatra": {"text": "Cisatracurium bolus and infusion started; sedation deepened to RASS −5 first."}
+ },
+ "debrief": {
+  "expected": [
+   {"label": "Lung-protective settings (VT ~6 mL/kg PBW)", "items": ["vent_settings"], "within_min": 5},
+   {"label": "Plateau / driving pressure measured", "items": ["plateau"], "within_min": 8},
+   {"label": "Repeat ABG after vent changes", "items": ["abg"], "within_min": 15},
+   {"label": "Prone positioning for P/F <150", "items": ["prone"], "within_min": 20},
+   {"label": "Neuromuscular blockade considered", "items": ["cisatra"], "within_min": 25},
+   {"label": "Bedside lung / cardiac ultrasound", "items": ["lus", "echo_pocus"], "within_min": 20}
+  ],
+  "low_value": ["ct_chest", "cta_chest", "ddimer", "bicarb", "tte"],
+  "teaching": [
+   "PBW (male) = 50 + 0.91 × (height cm − 152.4); 170 cm → 66 kg, so 6 mL/kg ≈ 400 mL.",
+   "Driving pressure (Pplat − PEEP) tracks mortality in ARDS; target ≤15 cmH2O.",
+   "PROSEVA: prone ≥16 h/day for P/F <150 reduced 28-day mortality.",
+   "Permissive hypercapnia: pH ≥7.20–7.25 is acceptable; bicarbonate does not fix the problem.",
+   "Transporting a P/F <100 patient to CT is a risk with little benefit when the bedside answer is already clear."
+  ]
+ }
+}

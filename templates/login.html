@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Sign in — HALO Tracker{% endblock %}
+{% block content %}
+<h1>Sign in</h1>
+<div class="muted">Educators only. Learners join a simulation at <a href="/sim">/sim</a> with a room code.</div>
+<form method="post" style="display:flex;flex-direction:column;gap:14px;max-width:320px;margin-top:20px;">
+  <div class="field"><label for="u">Username</label><input id="u" name="username" autocomplete="username" required></div>
+  <div class="field"><label for="p">Password</label><input id="p" name="password" type="password" autocomplete="current-password" required></div>
+  {% if error %}<div style="color:#b3261e;font-size:14px;">{{ error }}</div>{% endif %}
+  <button type="submit" style="align-self:flex-start;">Sign in</button>
+</form>
+{% endblock %}

@@ -1,0 +1,110 @@
+{
+ "id": "asthma",
+ "title": "Status asthmaticus — auto-PEEP after intubation",
+ "learnerTitle": "ED resus 2 — 24F, severe asthma, just intubated",
+ "system": "Pulmonary",
+ "setting": "ED → ICU",
+ "level": "Resident / fellow / APP",
+ "status": "draft — needs clinical review",
+ "summary": "24F with severe asthma intubated in the ED 10 minutes ago; now hypotensive with high airway pressures from dynamic hyperinflation.",
+ "objectives": [
+  "Recognize dynamic hyperinflation: expiratory flow not returning to zero, rising auto-PEEP, hypotension",
+  "Disconnect from the ventilator as a diagnostic and therapeutic step",
+  "Set low RR, short Ti and long expiratory time; accept hypercapnia",
+  "Measure auto-PEEP (expiratory hold) and plateau pressure",
+  "Maximize bronchodilators, systemic steroids, IV magnesium"
+ ],
+ "chart": {
+  "patient": {"age": 24, "sex": "F", "height_cm": 165, "weight_kg": 60, "pbw_kg": 57, "code": "Full code", "allergies": "Penicillin (hives)"},
+  "problems": ["Status asthmaticus, intubated", "Hypotension after intubation", "Viral URI × 3 days"],
+  "hpi": "Lifelong asthma, 2 prior ICU admissions, one prior intubation (age 19). 3 days of URI symptoms, then 12 h of worsening wheeze despite home albuterol every 1–2 h. Arrived tripoding, speaking single words, SpO2 88%. Continuous albuterol, ipratropium, methylprednisolone 125 mg and magnesium 2 g given; became drowsy with a silent chest and was intubated with ketamine/rocuronium (8.0 ETT). Placed on VC 450, RR 28, PEEP 5, FiO2 0.4.",
+  "pmh": "Severe persistent asthma. Allergic rhinitis.",
+  "meds": ["Budesonide-formoterol 160/4.5, 2 puffs BID (admits poor adherence)", "Albuterol MDI as needed"],
+  "allergies": "Penicillin (hives)",
+  "social": "Graduate student. Vapes nicotine. Has a cat.",
+  "exam": "Sedated. Very diminished breath sounds bilaterally with faint expiratory wheeze. Prolonged expiration. Trachea midline. Neck veins distended. Cool hands.",
+  "initial": ["abg", "bmp"]
+ },
+ "stages": [
+  {"id": "a", "name": "Breath stacking + hypotension",
+   "vitals": {"hr": 128, "sbp": 78, "dbp": 42, "spo2": 91, "rr": 28, "etco2": 58, "temp": 37.2},
+   "rhythm": "st", "pulse": true, "art": true, "ventOn": true,
+   "vent": {"mode": "VC", "vt": 450, "rr": 28, "peep": 5, "fio2": 0.4, "ti": 0.9}, "lung": {"c": 50, "r": 40}, "t": 0,
+   "nurse": "Her pressure is dropping and the vent keeps alarming high pressure.",
+   "cue": "RR 28 with long time constant → auto-PEEP ~11. Look at the flow trace: expiration never reaches zero. Expect: disconnect, RR 10–12, Ti 0.8, check auto-PEEP, keep bronchodilators.",
+   "branches": [
+    {"label": "Disconnects from vent / lowers RR and lengthens expiration", "to": "b", "q": "good", "kw": ["disconnect", "rate", "rr", "expir", "i:e", "auto-peep", "autopeep", "expiratory hold", "bag"]},
+    {"label": "Bronchodilators / steroids only", "to": "a", "q": "mid", "kw": ["albuterol", "steroid", "solu", "methylpred", "magnes", "ketamine", "epinephrine"]},
+    {"label": "Fluids / pressors only", "to": "a", "q": "mid", "kw": ["fluid", "bolus", "norepi", "pressor", "phenyl"]},
+    {"label": "Increases RR to fix the CO2", "to": "c", "q": "bad", "kw": ["increase rate", "increase rr", "raise rate", "hyperventil"]}],
+   "auto": {"after": 150, "to": "c"}},
+  {"id": "b", "name": "Auto-PEEP relieved",
+   "vitals": {"hr": 108, "sbp": 112, "dbp": 64, "spo2": 94, "rr": 12, "etco2": 62, "temp": 37.2},
+   "vent": {"mode": "VC", "vt": 400, "rr": 12, "peep": 5, "fio2": 0.4, "ti": 0.8}, "lung": {"c": 50, "r": 35}, "t": 30,
+   "nurse": "Her BP came right up after we disconnected. CO2 is 62 now — is that OK?",
+   "cue": "Permissive hypercapnia; pH ≥7.20 acceptable. Re-check auto-PEEP and plateau (<30). Continue bronchodilators via in-line neb, steroids, consider ketamine infusion.",
+   "branches": []},
+  {"id": "c", "name": "Worsening stacking — near arrest",
+   "vitals": {"hr": 140, "sbp": 64, "dbp": 34, "spo2": 86, "rr": 32, "etco2": 66, "temp": 37.3},
+   "vent": {"rr": 32}, "t": 30,
+   "nurse": "BP is 64 systolic and peaks are over 50!",
+   "cue": "Dynamic hyperinflation → obstructive shock. Disconnect now, gentle lateral chest compression to exhale, then low RR. Rule out tension pneumothorax (POCUS).",
+   "branches": [
+    {"label": "Disconnects + manual chest compression to exhale", "to": "b", "q": "good", "kw": ["disconnect", "rate", "expir", "bag"]},
+    {"label": "Needle decompression without evidence of pneumothorax", "to": "c", "q": "bad", "kw": ["needle", "decompress"]}]}
+ ],
+ "results": {
+  "abg": {"by_stage": {
+    "a": {"rows": [["pH", "7.18", "", "L"], ["PaCO2", "72", "mmHg", "H"], ["PaO2", "88", "mmHg", ""], ["HCO3", "26", "mmol/L", ""], ["SaO2", "95", "%", ""], ["FiO2", "0.40", "", ""]]},
+    "b": {"rows": [["pH", "7.22", "", "L"], ["PaCO2", "68", "mmHg", "H"], ["PaO2", "96", "mmHg", ""], ["HCO3", "27", "mmol/L", ""], ["SaO2", "97", "%", ""], ["FiO2", "0.40", "", ""]]},
+    "c": {"rows": [["pH", "7.08", "", "L"], ["PaCO2", "88", "mmHg", "H"], ["PaO2", "70", "mmHg", "L"], ["HCO3", "25", "mmol/L", ""], ["Lactate", "4.4", "mmol/L", "H"]]}},
+   "default": {"rows": [["pH", "7.18", "", "L"], ["PaCO2", "72", "mmHg", "H"]]}},
+  "autopeep": {"by_stage": {
+    "a": {"text": "Expiratory hold: total PEEP 16 cmH2O with set PEEP 5 → auto-PEEP 11 cmH2O."},
+    "b": {"text": "Expiratory hold: total PEEP 6 cmH2O with set PEEP 5 → auto-PEEP ~1 cmH2O."},
+    "c": {"text": "Expiratory hold: total PEEP 19 cmH2O with set PEEP 5 → auto-PEEP 14 cmH2O."}},
+   "default": {"text": "Auto-PEEP 11 cmH2O."}},
+  "plateau": {"by_stage": {
+    "a": {"text": "Inspiratory hold: Pplat 25 cmH2O; Ppeak 48 cmH2O (large peak–plateau gap = high airway resistance)."},
+    "b": {"text": "Inspiratory hold: Pplat 14 cmH2O; Ppeak 36 cmH2O."},
+    "c": {"text": "Inspiratory hold: Pplat 28 cmH2O; Ppeak 52 cmH2O."}},
+   "default": {"text": "Pplat 25, Ppeak 48 cmH2O."}},
+  "disconnect": {"by_stage": {
+    "a": {"text": "Prolonged hiss of exhaled air for ~20 s after disconnection; BP rises to 104/60 within a minute."},
+    "c": {"text": "Long exhalation after disconnection; BP recovers to 98/58."}},
+   "default": {"text": "Done."}},
+  "cxr": {"text": "Portable AP: ETT 5 cm above the carina. Marked hyperinflation with flattened hemidiaphragms. No pneumothorax. No focal consolidation. No pneumomediastinum."},
+  "lus": {"text": "Lung sliding present bilaterally (anterior and lateral). A-line pattern. No B-lines. No effusion."},
+  "echo_pocus": {"text": "Small, hyperdynamic, underfilled LV and RV. No pericardial effusion. IVC distended (2.3 cm) without respiratory variation."},
+  "bmp": {"rows": [["Na", "139", "mmol/L", ""], ["K", "3.3", "mmol/L", "L"], ["Cl", "104", "mmol/L", ""], ["HCO3", "26", "mmol/L", ""], ["BUN", "11", "mg/dL", ""], ["Creatinine", "0.7", "mg/dL", ""], ["Glucose", "188", "mg/dL", "H"], ["Anion gap", "9", "", ""]]},
+  "cbc": {"rows": [["WBC", "13.1", "K/µL", "H"], ["Hgb", "14.2", "g/dL", ""], ["Plt", "290", "K/µL", ""], ["Eosinophils", "6", "%", "H"]]},
+  "lactate": {"rows": [["Lactate", "3.1", "mmol/L", "H"]]},
+  "mg": {"rows": [["Mg", "2.6", "mg/dL", "H"]]},
+  "phos": {"rows": [["Phos", "2.1", "mg/dL", "L"]]},
+  "rvp": {"text": "Rhinovirus/enterovirus DETECTED. Influenza, RSV, SARS-CoV-2 not detected."},
+  "ecg": {"text": "Sinus tachycardia 128. Right axis deviation. No ST changes."},
+  "trop": {"rows": [["hs-Troponin T", "9", "ng/L", ""]]},
+  "ct_chest": {"text": "Hyperinflation, bronchial wall thickening, mucus plugging in both lower lobes. No pneumothorax. (Transport: SBP fell to 70 during the move.)"},
+  "albuterol": {"text": "In-line continuous albuterol started via the ventilator circuit."},
+  "methylpred": {"text": "Methylprednisolone 125 mg was given in the ED 40 min ago; 60 mg IV q6–8h ordered."},
+  "mag": {"text": "Magnesium 2 g IV was given in the ED; second 2 g dose infusing."}
+ },
+ "debrief": {
+  "expected": [
+   {"label": "Disconnect from vent / relieve hyperinflation", "items": ["disconnect", "vent_settings"], "within_min": 3},
+   {"label": "Auto-PEEP measured (expiratory hold)", "items": ["autopeep"], "within_min": 6},
+   {"label": "Plateau pressure checked", "items": ["plateau"], "within_min": 10},
+   {"label": "Bronchodilators continued in-line", "items": ["albuterol", "ipratropium"], "within_min": 10},
+   {"label": "Repeat blood gas", "items": ["abg"], "within_min": 15},
+   {"label": "Pneumothorax excluded at bedside", "items": ["lus", "cxr"], "within_min": 15}
+  ],
+  "low_value": ["ct_chest", "cta_chest", "ddimer", "bnp", "procal", "needle_d"],
+  "teaching": [
+   "Post-intubation hypotension in asthma is dynamic hyperinflation until proven otherwise — disconnect first.",
+   "Expiratory time is the lever: RR 10–12, Ti 0.7–0.8 s, high inspiratory flow; minute ventilation matters more than VT.",
+   "Peak–plateau gap reflects airway resistance; plateau and auto-PEEP reflect hyperinflation risk.",
+   "Permissive hypercapnia is expected; pH ≥7.20 is usually tolerated.",
+   "Ketamine (bronchodilating) is a reasonable sedative; avoid histamine-releasing agents."
+  ]
+ }
+}

@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Patient chart · Bedside Sim</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#eef2f4;--panel:#fff;--ink:#16232c;--mute:#5d6c77;--line:#d3dbe0;--accent:#0b6e8a;--accent-ink:#fff;--soft:#e1edf2;--hi:#b42318;--lo:#1d5fbf;--ok:#1f7a4d;--warn:#9a6700;
+ --num:'Barlow Condensed',system-ui,sans-serif;--ui:'IBM Plex Sans',system-ui,-apple-system,sans-serif}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f161b;--panel:#172129;--ink:#e3ebf0;--mute:#93a4b0;--line:#2b3943;--accent:#3fb1cf;--accent-ink:#06222b;--soft:#1d3440;--hi:#ff8a80;--lo:#8ab4ff;--ok:#4cc38a;--warn:#e0a935}}
+:root[data-theme="dark"]{--bg:#0f161b;--panel:#172129;--ink:#e3ebf0;--mute:#93a4b0;--line:#2b3943;--accent:#3fb1cf;--accent-ink:#06222b;--soft:#1d3440;--hi:#ff8a80;--lo:#8ab4ff;--ok:#4cc38a;--warn:#e0a935}
+*{box-sizing:border-box}html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 var(--ui);-webkit-text-size-adjust:100%;padding:env(safe-area-inset-top,0) env(safe-area-inset-right,0) env(safe-area-inset-bottom,0) env(safe-area-inset-left,0)}
+button,input,textarea{font:inherit;color:inherit}button{cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.hide{display:none!important}
+.join{min-height:100%;display:grid;place-items:center;padding:24px}
+.join form{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:24px;width:min(420px,100%)}
+.join h1{font:600 2rem var(--num);margin:0 0 4px}.join p{color:var(--mute);margin:0 0 16px}
+.join input{width:100%;font:600 1.6rem var(--num);letter-spacing:.12em;text-transform:uppercase;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--bg)}
+.btn{border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:9px 14px;min-height:42px}
+.btn.pri{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:600}
+.btn.sm{min-height:34px;padding:5px 10px;font-size:.88rem}
+.btn:disabled{opacity:.5;cursor:default}
+.banner{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}
+.banner h1{font:600 1.35rem/1.1 var(--num);margin:0}
+.banner .meta{display:flex;gap:14px;flex-wrap:wrap;color:var(--mute);font-size:.9rem}
+.banner .meta b{color:var(--ink);font-weight:600}
+.allergy{color:var(--hi);font-weight:600}
+.cost{margin-left:auto;text-align:right}
+.cost b{display:block;font:600 1.5rem/1 var(--num)}.cost span{font-size:.78rem;color:var(--mute)}
+.live{width:9px;height:9px;border-radius:50%;background:var(--mute);display:inline-block;margin-right:6px}.live.on{background:var(--ok)}
+.wrap{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(320px,1fr);gap:14px;padding:14px;max-width:1300px;margin:0 auto}
+@media (max-width:880px){.wrap{grid-template-columns:1fr}.ordcol{order:-1}}
+.tabs{display:flex;gap:4px;margin-bottom:10px}
+.tab{border:1px solid var(--line);background:var(--panel);border-radius:999px;padding:7px 16px;color:var(--mute)}
+.tab[aria-selected="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.badge{background:var(--hi);color:#fff;border-radius:999px;padding:0 7px;font-size:.78rem;margin-left:6px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin-bottom:12px}
+.card h2{font:600 1.15rem var(--num);margin:0 0 8px;letter-spacing:.01em}
+.card p{margin:0;max-width:72ch}
+.card ul{margin:0;padding-left:20px}.card li{margin:3px 0}
+.res{border-left:4px solid var(--line)}
+.res.new{border-left-color:var(--accent);animation:pulse 1.6s ease-out 1}
+@keyframes pulse{0%{background:var(--soft)}100%{background:var(--panel)}}
+@media (prefers-reduced-motion:reduce){.res.new{animation:none}}
+.res h3{display:flex;justify-content:space-between;gap:8px;margin:0 0 6px;font-size:1rem}
+.res h3 small{color:var(--mute);font-weight:400;white-space:nowrap}
+table.lab{border-collapse:collapse;width:100%;max-width:520px}
+table.lab td{padding:4px 8px;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}
+table.lab td:nth-child(2){font-weight:600;text-align:right;width:6em}
+table.lab td:nth-child(3){color:var(--mute);width:6em}
+.H{color:var(--hi)}.L{color:var(--lo)}
+.res pre{white-space:pre-wrap;font:inherit;margin:0;max-width:72ch}
+.res img{max-width:100%;border-radius:6px;margin-top:8px;background:#000}
+.empty{color:var(--mute);padding:8px 0}
+.ordcol .card{position:relative}
+.search{position:relative}
+.search textarea{width:100%;min-height:52px;resize:vertical;border:1px solid var(--line);border-radius:8px;padding:10px;background:var(--bg)}
+.sugg{border:1px solid var(--line);border-radius:8px;margin-top:6px;overflow:hidden;background:var(--panel)}
+.sugg button{display:flex;justify-content:space-between;gap:10px;width:100%;text-align:left;border:0;border-bottom:1px solid var(--line);background:none;padding:9px 12px}
+.sugg button:last-child{border-bottom:0}
+.sugg button[aria-selected="true"],.sugg button:hover{background:var(--soft)}
+.sugg small{color:var(--mute)}
+.price{font-variant-numeric:tabular-nums;color:var(--mute);white-space:nowrap}
+.hint{font-size:.82rem;color:var(--mute);margin-top:6px}
+.cart{margin-top:10px}
+.cart .row{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:6px 0;border-bottom:1px dashed var(--line)}
+.cart .row button{border:0;background:none;color:var(--mute);font-size:1.1rem;padding:2px 8px}
+.signbar{display:flex;align-items:center;gap:10px;margin-top:10px}
+.signbar .tot{margin-right:auto;color:var(--mute);font-size:.9rem}
+details.set{border:1px solid var(--line);border-radius:8px;margin-bottom:6px;background:var(--bg)}
+details.set summary{padding:9px 12px;cursor:pointer;font-weight:500}
+details.set .items{padding:0 12px 10px}
+details.set label{display:flex;gap:8px;align-items:center;padding:4px 0;font-size:.92rem}
+details.set label .price{margin-left:auto}
+details.set input{width:18px;height:18px}
+.olist .o{display:flex;gap:10px;align-items:baseline;padding:7px 0;border-bottom:1px solid var(--line);font-size:.92rem}
+.olist .o .n{flex:1;min-width:0}
+.chip{font-size:.75rem;border-radius:999px;padding:2px 8px;white-space:nowrap;background:var(--soft)}
+.chip.pending{color:var(--warn)}.chip.done,.chip.resulted{color:var(--ok)}.chip.queued{color:var(--accent)}
+.toast{position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:8px;font-size:.9rem;z-index:50;max-width:90vw}
+.note{font-size:.8rem;color:var(--mute);margin-top:8px}
+</style></head><body>
+<div id="joinView" class="join"><form id="joinForm">
+ <h1>Patient chart</h1><p>Enter the room code your instructor gave you.</p>
+ <input id="code" maxlength="10" autocomplete="off" autocapitalize="characters" aria-label="Room code">
+ <p style="margin-top:14px"><button class="btn pri" type="submit">Open chart</button></p>
+</form></div>
+<div id="chartView" class="hide">
+ <header class="banner">
+  <div><h1 id="title">Patient chart</h1><div class="meta" id="meta"></div></div>
+  <div class="cost"><b id="cost">$0</b><span>orders placed (approx. Medicare)</span></div>
+  <div style="font-size:.85rem;color:var(--mute)"><span class="live" id="live"></span>Room <b id="roomLbl"></b></div>
+ </header>
+ <div class="wrap">
+  <main>
+   <div class="tabs" role="tablist">
+    <button class="tab" role="tab" aria-selected="true" data-t="sum">Summary</button>
+    <button class="tab" role="tab" aria-selected="false" data-t="res">Results<span class="badge hide" id="newBadge">0</span></button>
+   </div>
+   <section id="t-sum"></section>
+   <section id="t-res" class="hide"></section>
+  </main>
+  <aside class="ordcol">
+   <div class="card">
+    <h2>Place orders</h2>
+    <div class="search">
+     <textarea id="q" placeholder="Search or type orders — e.g. ABG, chest x-ray, start norepinephrine" aria-label="Search or type orders"></textarea>
+     <div class="sugg hide" id="sugg" role="listbox"></div>
+    </div>
+    <div class="hint">Tap a suggestion to add it, or type in plain words and press Sign — several orders in one line work. On iPad, use the keyboard's mic to dictate.</div>
+    <div class="cart" id="cart"></div>
+    <div class="signbar"><span class="tot" id="cartTot"></span><button class="btn" id="clearBtn" type="button">Clear</button><button class="btn pri" id="signBtn" type="button">Sign orders</button></div>
+   </div>
+   <div class="card"><h2>Order sets</h2><div id="sets"></div></div>
+   <div class="card"><h2>My orders</h2><div class="olist" id="olist"><div class="empty">None yet.</div></div><div class="note" id="priceNote"></div></div>
+  </aside>
+ </div>
+</div>
+<script>
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const money=n=>'$'+Math.round(n||0).toLocaleString();
+const LS={get(k,d){try{const v=localStorage.getItem('bsim.'+k);return v==null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem('bsim.'+k,JSON.stringify(v))}catch(e){}}};
+function toast(m){const t=document.createElement('div');t.className='toast';t.textContent=m;document.body.appendChild(t);setTimeout(()=>t.remove(),2600)}
+let CODE='',CAT=null,byId={},data=null,cart=[],seen=new Set(LS.get('seen',[])),newCount=0,tab='sum',firstLoad=true;
+
+// ---------- join ----------
+const qp=new URLSearchParams(location.search);
+$('#code').value=(qp.get('room')||LS.get('room','')).toUpperCase();
+$('#joinForm').onsubmit=e=>{e.preventDefault();const c=$('#code').value.toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,10);if(!c)return;LS.set('room',c);start(c)};
+if(qp.get('room'))start($('#code').value.toUpperCase().replace(/[^A-Z0-9]/g,''));
+
+async function start(code){CODE=code;$('#joinView').classList.add('hide');$('#chartView').classList.remove('hide');$('#roomLbl').textContent=code;
+ history.replaceState(null,'','/chart?room='+code);
+ try{CAT=await (await fetch('/api/content/catalog')).json();CAT.items.forEach(i=>byId[i.id]=i);$('#priceNote').textContent=CAT.priceNote||'';renderSets()}catch(e){toast('Could not load the order catalog')}
+ await load();connect();setInterval(load,4000);setInterval(tickEta,1000)}
+
+// ---------- live ----------
+let ws=null,retry=0;
+function connect(){const proto=location.protocol==='https:'?'wss':'ws';ws=new WebSocket(`${proto}://${location.host}/ws/${CODE}?role=chart`);
+ ws.onopen=()=>{retry=0;$('#live').classList.add('on')};
+ ws.onmessage=e=>{let m;try{m=JSON.parse(e.data)}catch(_){return}if(m.t==='chart')load();if(m.t==='doc'&&m.path==='sims/'+CODE)load()};
+ ws.onclose=()=>{$('#live').classList.remove('on');setTimeout(connect,Math.min(8000,500*2**retry++))}}
+let loading=false;
+async function load(){if(loading)return;loading=true;try{const r=await fetch(`/api/room/${CODE}/chart`);if(r.ok){const d=await r.json();const changed=JSON.stringify(d)!==JSON.stringify(data);data=d;if(changed)render()}}catch(e){}finally{loading=false}}
+
+// ---------- render ----------
+function render(){const d=data;$('#title').textContent=d.title||'Patient chart';
+ const p=(d.chart&&d.chart.patient)||{};
+ $('#meta').innerHTML=d.chart?[p.age?`<span><b>${esc(p.age)}${esc(p.sex||'')}</b></span>`:'',p.height_cm?`<span>${esc(p.height_cm)} cm · ${esc(p.weight_kg)} kg</span>`:'',p.code?`<span>${esc(p.code)}</span>`:'',`<span class="allergy">Allergies: ${esc(p.allergies||d.chart.allergies||'—')}</span>`].join(''):'<span>Waiting for the instructor to load a case…</span>';
+ $('#cost').textContent=money(d.cost);
+ // summary
+ const c=d.chart;
+ $('#t-sum').innerHTML=c?[
+  sec('Problem list',c.problems&&`<ul>${c.problems.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`),
+  sec('History of present illness',c.hpi&&`<p>${esc(c.hpi)}</p>`),
+  sec('Past history',c.pmh&&`<p>${esc(c.pmh)}</p>`),
+  sec('Medications',c.meds&&`<ul>${c.meds.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`),
+  sec('Social',c.social&&`<p>${esc(c.social)}</p>`),
+  sec('Exam',c.exam&&`<p>${esc(c.exam)}</p>`)].join(''):'<div class="card"><p class="empty">No chart yet. The instructor will load the case — this page updates by itself.</p></div>';
+ // results
+ const res=d.orders.filter(o=>o.result).slice().reverse();
+ let fresh=0;
+ $('#t-res').innerHTML=res.length?res.map(o=>{const isNew=!seen.has(o.id);if(isNew&&!firstLoad)fresh++;return resultCard(o,isNew&&!firstLoad)}).join(''):'<div class="card"><p class="empty">No results yet. Place orders on the right.</p></div>';
+ if(fresh){newCount+=fresh;toast(fresh===1?'New result':`${fresh} new results`)}
+ res.forEach(o=>{if(firstLoad||tab==='res')seen.add(o.id)});LS.set('seen',[...seen].slice(-500));
+ if(tab==='res'){newCount=0}
+ $('#newBadge').textContent=newCount;$('#newBadge').classList.toggle('hide',!newCount);
+ // orders
+ const ol=d.orders.filter(o=>o.source!=='initial').slice().reverse();
+ $('#olist').innerHTML=ol.length?ol.map(o=>`<div class="o"><span class="n">${esc(o.name)}</span>${statusChip(o)}<span class="price">${o.price?money(o.price):''}</span></div>`).join(''):'<div class="empty">None yet.</div>';
+ firstLoad=false}
+const sec=(h,body)=>body?`<div class="card"><h2>${h}</h2>${body}</div>`:'';
+function statusChip(o){if(o.status==='pending')return `<span class="chip pending" data-eta="${Date.now()+(o.eta||0)*1000}">Pending · ${fmtEta(o.eta)}</span>`;
+ if(o.status==='queued')return '<span class="chip queued">Sent to instructor</span>';if(o.status==='done')return '<span class="chip done">Done</span>';return '<span class="chip resulted">Resulted</span>'}
+const fmtEta=s=>s>=3600?'>1 h':s>=60?Math.ceil(s/60)+' min':Math.max(0,s)+' s';
+function tickEta(){document.querySelectorAll('[data-eta]').forEach(el=>{const s=Math.round((+el.dataset.eta-Date.now())/1000);el.textContent='Pending · '+(s>0?fmtEta(s):'any moment')})}
+function resultCard(o,isNew){const r=o.result;const t=new Date(o.placed*1000).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+ let body;if(r.kind==='labs')body=`<table class="lab">${(r.rows||[]).map(x=>`<tr><td>${esc(x[0])}</td><td class="${x[3]==='H'?'H':x[3]==='L'?'L':''}">${esc(x[1])}${x[3]?' '+esc(x[3]):''}</td><td>${esc(x[2]||'')}</td></tr>`).join('')}</table>`;
+ else body=`<pre>${esc(r.text||'')}</pre>`;
+ if(r.image)body+=`<img src="${esc(r.image)}" alt="${esc(r.title||o.name)}">`;
+ return `<div class="card res${isNew?' new':''}"><h3><span>${esc(r.title||o.name)}</span><small>${o.source==='initial'?'on arrival':t}</small></h3>${body}</div>`}
+
+// tabs
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{tab=b.dataset.t;document.querySelectorAll('.tab').forEach(x=>x.setAttribute('aria-selected',x===b));$('#t-sum').classList.toggle('hide',tab!=='sum');$('#t-res').classList.toggle('hide',tab!=='res');if(tab==='res'){newCount=0;(data?data.orders:[]).forEach(o=>o.result&&seen.add(o.id));LS.set('seen',[...seen].slice(-500));$('#newBadge').classList.add('hide');document.querySelectorAll('.res.new').forEach(e=>e.classList.remove('new'))}});
+
+// ---------- ordering ----------
+function score(it,q){const n=it.name.toLowerCase();if(n===q)return 100;if(n.startsWith(q))return 80;if((it.syn||[]).some(s=>s===q))return 90;if((it.syn||[]).some(s=>s.startsWith(q)))return 70;if(n.includes(q))return 50;if((it.syn||[]).some(s=>s.includes(q)))return 40;return 0}
+let sel=-1,list=[];
+function suggest(){const raw=$('#q').value;const last=raw.split(/[,;\n]/).pop().trim().toLowerCase();
+ if(!CAT||last.length<2){$('#sugg').classList.add('hide');list=[];return}
+ list=CAT.items.map(it=>[score(it,last),it]).filter(x=>x[0]>0).sort((a,b)=>b[0]-a[0]).slice(0,7).map(x=>x[1]);sel=-1;
+ $('#sugg').innerHTML=list.map((it,i)=>`<button type="button" role="option" data-i="${i}"><span>${esc(it.name)} <small>${esc(it.cat)}</small></span><span class="price">${it.price?money(it.price):''}</span></button>`).join('');
+ $('#sugg').classList.toggle('hide',!list.length)}
+$('#q').addEventListener('input',suggest);
+$('#q').addEventListener('keydown',e=>{if(!list.length)return;if(e.key==='ArrowDown'){sel=Math.min(list.length-1,sel+1);e.preventDefault()}else if(e.key==='ArrowUp'){sel=Math.max(0,sel-1);e.preventDefault()}else if(e.key==='Enter'&&sel>=0){e.preventDefault();pick(list[sel]);return}else return;
+ $('#sugg').querySelectorAll('button').forEach((b,i)=>b.setAttribute('aria-selected',i===sel))});
+$('#sugg').addEventListener('click',e=>{const b=e.target.closest('[data-i]');if(b)pick(list[+b.dataset.i])});
+function pick(it){addCart(it.id);const parts=$('#q').value.split(/([,;\n])/);parts.pop();$('#q').value=parts.join('').replace(/[,;\n]\s*$/,'');$('#sugg').classList.add('hide');list=[];$('#q').focus()}
+function addCart(id){if(!cart.includes(id))cart.push(id);renderCart()}
+function renderCart(){$('#cart').innerHTML=cart.map(id=>{const it=byId[id];return `<div class="row"><span>${esc(it.name)}</span><span class="price">${it.price?money(it.price):''}<button type="button" data-rm="${id}" aria-label="Remove ${esc(it.name)}">×</button></span></div>`}).join('');
+ const t=cart.reduce((a,id)=>a+(byId[id].price||0),0);$('#cartTot').textContent=cart.length?`${cart.length} selected · ${money(t)}`:''}
+$('#cart').addEventListener('click',e=>{const b=e.target.closest('[data-rm]');if(b){cart=cart.filter(x=>x!==b.dataset.rm);renderCart()}});
+$('#clearBtn').onclick=()=>{cart=[];$('#q').value='';renderCart();suggest()};
+$('#signBtn').onclick=async()=>{const text=$('#q').value.trim();if(!cart.length&&!text){toast('Nothing to sign');return}
+ $('#signBtn').disabled=true;
+ try{const r=await fetch(`/api/room/${CODE}/order`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({items:cart,text})});const j=await r.json();
+  if(!r.ok){toast(j.error||'Order not sent');return}
+  const q=j.placed.filter(o=>o.status==='queued').length;toast(`${j.placed.length} order${j.placed.length===1?'':'s'} signed${q?` · ${q} sent to the instructor`:''}`);
+  cart=[];$('#q').value='';renderCart();suggest();load()}catch(e){toast('No connection — order not sent')}finally{$('#signBtn').disabled=false}};
+function renderSets(){$('#sets').innerHTML=CAT.sets.map(s=>`<details class="set"><summary>${esc(s.name)}</summary><div class="items">${s.items.map(id=>{const it=byId[id];return it?`<label><input type="checkbox" value="${id}" checked>${esc(it.name)}<span class="price">${it.price?money(it.price):''}</span></label>`:''}).join('')}<button type="button" class="btn sm" data-add="${s.id}" style="margin-top:6px">Add checked to orders</button></div></details>`).join('')}
+$('#sets').addEventListener('click',e=>{const b=e.target.closest('[data-add]');if(!b)return;b.closest('.items').querySelectorAll('input:checked').forEach(i=>addCart(i.value));b.closest('details').open=false;toast('Added — review and sign')});
+</script>
+</body></html>

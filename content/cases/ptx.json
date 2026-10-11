@@ -1,0 +1,115 @@
+{
+ "id": "ptx",
+ "title": "Tension pneumothorax on the vent",
+ "learnerTitle": "MICU bed 7 — 61M, COPD, RLL pneumonia, ventilated day 2",
+ "system": "Pulmonary",
+ "setting": "ICU",
+ "level": "Resident / fellow / APP",
+ "status": "draft — needs clinical review",
+ "summary": "61M with COPD ventilated for RLL pneumonia; a left subclavian central line was placed 20 minutes ago. Sudden high airway pressures and desaturation.",
+ "objectives": [
+  "Use peak vs plateau pressure: both up = compliance problem; peak only = resistance problem",
+  "Run DOPES: disconnect and bag, check tube, suction, look for pneumothorax",
+  "Diagnose tension pneumothorax clinically or by POCUS and decompress before imaging",
+  "Treat PEA from an obstructive cause; place a chest tube after decompression"
+ ],
+ "chart": {
+  "patient": {"age": 61, "sex": "M", "height_cm": 178, "weight_kg": 74, "pbw_kg": 73, "code": "Full code", "allergies": "NKDA"},
+  "problems": ["Acute hypercapnic + hypoxemic respiratory failure, intubated (day 2)", "RLL community-acquired pneumonia", "COPD (FEV1 48%)", "Left subclavian CVC placed today (2 needle passes)"],
+  "hpi": "Admitted 2 days ago with RLL pneumonia and COPD exacerbation; failed BiPAP and was intubated. Improving on ceftriaxone/azithromycin. A left subclavian triple-lumen catheter was placed 20 minutes ago for poor peripheral access; the operator reports two passes. Post-procedure CXR not yet done.",
+  "pmh": "COPD on home tiotropium. 45 pack-year smoker. Hypertension.",
+  "meds": ["Ceftriaxone 2 g daily", "Azithromycin 500 mg daily", "Methylprednisolone 40 mg q12h", "Ipratropium-albuterol in-line q4h", "Propofol 20 mcg/kg/min", "Fentanyl 25 mcg/h", "Heparin 5,000 units SC q8h"],
+  "allergies": "NKDA",
+  "social": "Retired machinist. Quit smoking 1 year ago.",
+  "exam": "Before the event: RASS −2, scattered rhonchi R base, equal air entry. Left subclavian dressing clean.",
+  "initial": ["cbc", "bmp", "abg", "cxr"]
+ },
+ "stages": [
+  {"id": "a", "name": "Stable on the vent",
+   "vitals": {"hr": 92, "sbp": 124, "dbp": 70, "spo2": 96, "rr": 18, "etco2": 38, "temp": 37.4},
+   "rhythm": "sinus", "pulse": true, "art": true, "ventOn": true,
+   "vent": {"mode": "VC", "vt": 420, "rr": 18, "peep": 8, "fio2": 0.5, "ti": 0.9}, "lung": {"c": 40, "r": 10}, "t": 0,
+   "nurse": "Line's in. He's been comfortable.",
+   "cue": "Baseline. Let the learner review the chart, then trigger the event.",
+   "branches": [{"label": "(Instructor) Trigger the event", "to": "b", "q": "mid", "kw": []}]},
+  {"id": "b", "name": "Sudden high airway pressures",
+   "vitals": {"hr": 128, "sbp": 88, "dbp": 50, "spo2": 85, "rr": 18, "etco2": 28, "temp": 37.4},
+   "lung": {"c": 14, "r": 10}, "t": 20,
+   "nurse": "The high-pressure alarm keeps going off and he's desatting. His left side isn't moving much.",
+   "cue": "Ppeak AND Pplat up → compliance problem. Absent left breath sounds, tracheal deviation to the right, distended neck veins. Decompress now.",
+   "branches": [
+    {"label": "Needle / finger thoracostomy (left)", "to": "d", "q": "good", "kw": ["needle", "decompress", "thoracost", "chest tube", "finger"]},
+    {"label": "Disconnect and bag, check tube, suction", "to": "b", "q": "mid", "kw": ["bag", "disconnect", "dopes", "suction"]},
+    {"label": "Orders a chest X-ray or CT first", "to": "c", "q": "bad", "kw": ["x-ray", "xray", "cxr", "imaging", "ct"]}],
+   "auto": {"after": 120, "to": "c"}},
+  {"id": "c", "name": "PEA arrest",
+   "vitals": {"hr": 132, "sbp": 40, "dbp": 22, "spo2": 70, "rr": 18, "etco2": 12, "temp": 37.3},
+   "rhythm": "st", "pulse": false, "lung": {"c": 10, "r": 10}, "t": 15,
+   "nurse": "I can't feel a pulse!",
+   "cue": "PEA from obstructive shock. Start CPR and decompress — epinephrine alone will not fix this.",
+   "branches": [
+    {"label": "CPR + decompression", "to": "d", "q": "good", "kw": ["needle", "decompress", "thoracost", "finger", "chest tube"]},
+    {"label": "CPR + epinephrine only", "to": "c", "q": "mid", "kw": ["epi", "cpr", "compress"]}]},
+  {"id": "d", "name": "Decompressed — chest tube",
+   "vitals": {"hr": 104, "sbp": 112, "dbp": 64, "spo2": 94, "rr": 18, "etco2": 36, "temp": 37.4},
+   "rhythm": "sinus", "pulse": true, "lung": {"c": 36, "r": 10}, "t": 30,
+   "nurse": "Big rush of air. Pressures are coming down.",
+   "cue": "Place a chest tube, then CXR. Debrief: peak–plateau logic, complication of subclavian access, POCUS signs.",
+   "branches": []}
+ ],
+ "results": {
+  "cxr": {"by_stage": {
+    "a": {"text": "Portable AP (this morning): ETT 4 cm above the carina. RLL consolidation, improved. No pneumothorax. Hyperinflation."},
+    "b": {"text": "Portable AP: Large left pneumothorax with complete lung collapse, mediastinal shift to the right and depression of the left hemidiaphragm — tension physiology. Left subclavian CVC tip in the SVC."},
+    "c": {"text": "Portable AP: Large left tension pneumothorax."},
+    "d": {"text": "Portable AP: Left chest tube in place; left lung re-expanded with a small residual apical pneumothorax. Mediastinum midline."}},
+   "default": {"text": "No pneumothorax."}},
+  "lus": {"by_stage": {
+    "a": {"text": "Lung sliding present bilaterally."},
+    "b": {"text": "LEFT: no lung sliding anywhere on the anterior chest, no B-lines, barcode sign on M-mode; no lung point found. RIGHT: sliding present."},
+    "c": {"text": "LEFT: no lung sliding, barcode sign. RIGHT: sliding present."},
+    "d": {"text": "LEFT: lung sliding restored anteriorly; lung point at the apex."}},
+   "default": {"text": "Sliding present bilaterally."}},
+  "plateau": {"by_stage": {
+    "a": {"text": "Inspiratory hold: Ppeak 23, Pplat 18 cmH2O (PEEP 8)."},
+    "b": {"text": "Inspiratory hold: Ppeak 43, Pplat 38 cmH2O — BOTH elevated (compliance problem, not resistance)."},
+    "c": {"text": "Inspiratory hold: Ppeak 52, Pplat 47 cmH2O."},
+    "d": {"text": "Inspiratory hold: Ppeak 25, Pplat 20 cmH2O."}},
+   "default": {"text": "Ppeak 43, Pplat 38."}},
+  "disconnect": {"by_stage": {"b": {"text": "Bagging is very stiff. SpO2 does not improve. No improvement in BP."}}, "default": {"text": "Done."}},
+  "suction": {"by_stage": {"b": {"text": "Suction catheter passes easily to full depth; scant secretions. Pressures unchanged."}}, "default": {"text": "Scant secretions."}},
+  "needle_d": {"by_stage": {"b": {"text": "Rush of air on decompression (left 4th/5th ICS, anterior axillary line). BP and SpO2 improving."}, "c": {"text": "Rush of air. Pulse returns."}}, "default": {"text": "Done."}},
+  "chest_tube": {"text": "Left 28 Fr chest tube placed to −20 cmH2O suction; continuous air leak; lung re-expanding."},
+  "abg": {"by_stage": {
+    "a": {"rows": [["pH", "7.38", "", ""], ["PaCO2", "46", "mmHg", "H"], ["PaO2", "78", "mmHg", "L"], ["HCO3", "27", "mmol/L", "H"], ["FiO2", "0.50", "", ""]]},
+    "b": {"rows": [["pH", "7.22", "", "L"], ["PaCO2", "61", "mmHg", "H"], ["PaO2", "58", "mmHg", "L"], ["HCO3", "25", "mmol/L", ""], ["FiO2", "1.00", "", ""]]},
+    "d": {"rows": [["pH", "7.34", "", "L"], ["PaCO2", "48", "mmHg", "H"], ["PaO2", "82", "mmHg", ""], ["HCO3", "26", "mmol/L", ""], ["FiO2", "0.60", "", ""]]}},
+   "default": {"rows": [["pH", "7.22", "", "L"], ["PaCO2", "61", "mmHg", "H"], ["PaO2", "58", "mmHg", "L"]]}},
+  "echo_pocus": {"by_stage": {
+    "b": {"text": "Small hyperdynamic LV, compressed RV. IVC plethoric (2.4 cm). No pericardial effusion."},
+    "c": {"text": "Organized but weak cardiac activity (pseudo-PEA). No pericardial effusion. IVC plethoric."}},
+   "default": {"text": "Normal biventricular function. No effusion."}},
+  "cbc": {"rows": [["WBC", "11.8", "K/µL", "H"], ["Hgb", "12.4", "g/dL", "L"], ["Plt", "210", "K/µL", ""]]},
+  "bmp": {"rows": [["Na", "138", "mmol/L", ""], ["K", "4.2", "mmol/L", ""], ["Cl", "99", "mmol/L", ""], ["HCO3", "28", "mmol/L", "H"], ["BUN", "19", "mg/dL", ""], ["Creatinine", "0.9", "mg/dL", ""], ["Glucose", "152", "mg/dL", "H"]]},
+  "ecg": {"by_stage": {"b": {"text": "Sinus tachycardia 128. Low-voltage QRS in left precordial leads. No ST elevation."}}, "default": {"text": "Sinus rhythm 92. Right axis. No acute changes."}},
+  "cta_chest": {"text": "Not performed — patient too unstable to transport (tension physiology on bedside assessment)."},
+  "ct_chest": {"text": "Not performed — patient too unstable to transport."}
+ },
+ "debrief": {
+  "expected": [
+   {"label": "DOPES: disconnect/bag, check tube, suction", "items": ["disconnect", "suction"], "within_min": 2, "from_stage": "b"},
+   {"label": "Peak vs plateau pressure assessed", "items": ["plateau"], "within_min": 3, "from_stage": "b"},
+   {"label": "Bedside lung ultrasound", "items": ["lus"], "within_min": 4, "from_stage": "b"},
+   {"label": "Decompression before imaging", "items": ["needle_d", "chest_tube"], "within_min": 5, "from_stage": "b"},
+   {"label": "Chest tube placed", "items": ["chest_tube"], "within_min": 15, "from_stage": "b"},
+   {"label": "Confirmatory CXR after the tube", "items": ["cxr"], "within_min": 20, "from_stage": "d"}
+  ],
+  "low_value": ["cta_chest", "ct_chest", "ddimer", "bnp", "trop"],
+  "teaching": [
+   "Ppeak ↑ with Pplat ↑ = compliance (pneumothorax, mainstem, edema, abdominal); Ppeak ↑ alone = resistance (plug, kink, bronchospasm, biting).",
+   "Tension pneumothorax is a clinical diagnosis; imaging delays treatment.",
+   "POCUS: absent sliding + barcode sign supports PTX; lung point confirms; sliding anywhere excludes it at that spot.",
+   "Subclavian access carries the highest pneumothorax risk among central line sites; check post-procedure."
+  ]
+ }
+}

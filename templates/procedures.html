@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Procedures — HALO Tracker{% endblock %}
+{% block content %}
+<h1>Procedures</h1>
+<div class="muted">The procedure catalog this NAS instance tracks.</div>
+
+<h2>Add a procedure</h2>
+<form class="inline" method="post">
+  <div class="field"><label>Name</label><input name="name" placeholder="e.g. Needle thoracostomy" required></div>
+  <div class="field"><label>Description</label><input name="description" placeholder="short description" style="width: 320px;"></div>
+  <button type="submit" style="align-self: flex-end;">Add</button>
+</form>
+
+<h2>Catalog</h2>
+<table>
+  <tr><th>Name</th><th>Description</th></tr>
+  {% for p in procedures %}
+  <tr><td>{{ p.name }}</td><td class="muted">{{ p.description }}</td></tr>
+  {% endfor %}
+</table>
+{% endblock %}

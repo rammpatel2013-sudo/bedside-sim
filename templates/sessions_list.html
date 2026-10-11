@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Sessions — HALO Tracker{% endblock %}
+{% block content %}
+<h1>All sessions</h1>
+<div style="margin: 12px 0 20px;">
+  <a class="button-link" href="{{ url_for('session_new') }}">+ Log a new session</a>
+</div>
+<table>
+  <tr><th>Date</th><th>Procedure</th><th>Location</th><th></th></tr>
+  {% for s in sessions %}
+  <tr>
+    <td>{{ s.date }}</td>
+    <td>{{ s.procedure_name }}</td>
+    <td>{{ s.location or "—" }}</td>
+    <td><a class="button-link" href="{{ url_for('session_detail', session_id=s.id) }}">Open →</a></td>
+  </tr>
+  {% endfor %}
+</table>
+{% endblock %}

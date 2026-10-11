@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Staff — HALO Tracker{% endblock %}
+{% block content %}
+<h1>Staff roster</h1>
+<div class="muted">Who's cycled through which procedures, and when.</div>
+
+<h2>Add staff</h2>
+<form class="inline" method="post">
+  <div class="field"><label>Name</label><input name="name" placeholder="e.g. J. Rivera" required></div>
+  <div class="field"><label>Role</label><input name="role" placeholder="RN / RT / Fellow / Attending"></div>
+  <button type="submit" style="align-self: flex-end;">Add</button>
+</form>
+
+<h2>Roster</h2>
+<table>
+  <tr><th>Name</th><th>Role</th><th>Total reps logged</th><th>Last rep</th></tr>
+  {% for s in staff %}
+  <tr>
+    <td>{{ s.name }}</td>
+    <td class="muted">{{ s.role or "—" }}</td>
+    <td>{{ s.total_reps }}</td>
+    <td class="muted">{{ s.last_rep or "never" }}</td>
+  </tr>
+  {% endfor %}
+</table>
+{% endblock %}

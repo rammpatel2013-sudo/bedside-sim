@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}HALO Tracker{% endblock %}</title>
+<style>
+  :root { --ink:#1c1c1a; --muted:#6b6a63; --paper:#f7f6f2; --card:#ffffff; --border:#e3e1d8; --teal:#0f6e63; --clay:#c2673a; }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: system-ui, -apple-system, sans-serif; background: var(--paper); color: var(--ink); }
+  nav { display: flex; gap: 20px; align-items: center; padding: 16px 32px; background: #1c1c1a; }
+  nav a { color: #f7f6f2; text-decoration: none; font-size: 14px; font-weight: 500; }
+  nav a:hover { color: var(--clay); }
+  nav .brand { font-weight: 700; font-size: 16px; margin-right: 12px; color: #fff; }
+  main { max-width: 960px; margin: 0 auto; padding: 32px; }
+  h1 { font-size: 28px; margin: 0 0 4px; }
+  h2 { font-size: 18px; margin: 28px 0 12px; }
+  .muted { color: var(--muted); font-size: 14px; }
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; margin-bottom: 10px; }
+  .row { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+  table { width: 100%; border-collapse: collapse; background: var(--card); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+  th, td { text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--border); font-size: 14px; }
+  th { background: #efeee7; font-weight: 600; }
+  tr:last-child td { border-bottom: none; }
+  form.inline { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+  input, select, textarea { font-family: inherit; font-size: 14px; padding: 8px 10px; border: 1px solid var(--border); border-radius: 6px; background: #fff; }
+  textarea { width: 100%; min-height: 60px; }
+  button { font-family: inherit; font-size: 14px; font-weight: 600; padding: 8px 16px; border-radius: 6px; border: none; background: var(--teal); color: #fff; cursor: pointer; }
+  button:hover { background: #0b5a51; }
+  .tag { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; padding: 3px 8px; border-radius: 4px; }
+  .tag.teal { background: #eef4f2; color: var(--teal); }
+  .tag.clay { background: #fbeee6; color: var(--clay); }
+  a.button-link { display: inline-block; font-weight: 600; font-size: 14px; color: var(--teal); text-decoration: none; }
+  .field { display: flex; flex-direction: column; gap: 4px; }
+  .field label { font-size: 12px; color: var(--muted); }
+</style>
+</head>
+<body>
+<nav>
+  <span class="brand">HALO Tracker</span>
+  <a href="{{ url_for('dashboard') }}">Dashboard</a>
+  <a href="{{ url_for('sessions_list') }}">Sessions</a>
+  <a href="{{ url_for('procedures') }}">Procedures</a>
+  <a href="{{ url_for('staff') }}">Staff</a>
+  <a href="/sim" target="_blank" rel="noopener">Simulation ↗</a>
+  {% if session.user %}<a href="{{ url_for('account') }}" style="margin-left:auto;">Account</a><a href="{{ url_for('logout') }}">Sign out</a>{% endif %}
+</nav>
+<main>
+{% block content %}{% endblock %}
+</main>
+</body>
+</html>
