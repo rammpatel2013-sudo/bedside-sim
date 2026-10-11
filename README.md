@@ -11,11 +11,21 @@ Self-hosted session/scenario tracker for the ICU in-situ simulation program (cri
 - **Automatic logging**: loading a scenario creates a tracker session (procedure "ICU simulation case") with the timestamped sim log attached. Add participants and debrief notes on that session as usual.
 - No AI service and no cloud account: live sync runs through this container. New cases are drafted in Claude and pasted in as scenario JSON.
 
-## Upgrading from the old HALO Tracker
+## Installing and updating on the NAS (no SSH)
 
-Replace the files in `/docker/halo-tracker/` with these, **keep the `data/` folder**, then rebuild the project in Container Manager (or `docker compose up -d --build`). Existing sessions, staff and procedures are kept; new tables are added on first start.
+Updates are automatic: every change pushed to GitHub builds a new image, and the Watchtower helper on the NAS installs it within ~10 minutes. Your `data/` folder (database, sign-in, uploads) is never touched.
 
-**Sign-in:** open `http://<nas-ip>:5050` right after the rebuild. The first screen asks you to create the educator username and password (stored hashed in `data/admin.json`). Change it later under **Account**. Lost it? Add `HALO_ADMIN_USER` and `HALO_ADMIN_PASS` lines under `environment:` in `docker-compose.yml`, rebuild, sign in with those, then remove them again — or delete `data/admin.json` and set it up afresh.
+**One-time setup (Container Manager):**
+1. In File Station, the project folder `/docker/halo-tracker/` only needs two things: `docker-compose.yml` (from this repo) and your existing `data/` folder. Other files can stay or go.
+2. Container Manager → **Project** → `halo-tracker` → **Action → Stop**, then **Action → Clean**.
+3. Select the project → **Edit** (YAML), paste this repo's `docker-compose.yml`, **Save**, then **Build** (it pulls instead of building — about 1 minute).
+4. Open `http://<nas-ip>:5050`. Existing sign-in and sessions are kept.
+
+**Updating by hand** (if you remove the watchtower block): Container Manager → **Image** → `ghcr.io/…/bedside-sim` → **Update**, or Project → **Action → Build** again.
+
+**Building from source instead:** `docker compose -f docker-compose.build.yml up -d --build`.
+
+Sign-in: the first screen after a fresh install asks you to create the educator username and password (stored hashed in `data/admin.json`). Change it under **Account**. Lost it? Delete `data/admin.json` and set it up again.
 
 Set `HALO_SECURE_COOKIES=1` once it runs behind HTTPS.
 

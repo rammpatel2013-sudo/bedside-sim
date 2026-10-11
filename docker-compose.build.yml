@@ -1,0 +1,13 @@
+# Alternative: build from the source files in this folder instead of pulling the GitHub image.
+# Use with:  docker compose -f docker-compose.build.yml up -d --build
+services:
+  halo-tracker:
+    build: .
+    container_name: halo-tracker
+    restart: unless-stopped
+    ports:
+      - "5050:5000"
+    environment:
+      - HALO_SECURE_COOKIES=0
+    volumes:
+      - ./data:/app/data

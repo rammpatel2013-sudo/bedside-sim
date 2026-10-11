@@ -1,14 +1,31 @@
+# HALO Tracker + Bedside Sim — NAS / server deployment.
+# Uses the image GitHub builds on every update; Watchtower swaps in new versions automatically.
+# Your data (database, sign-in, uploads) lives in ./data next to this file and is never touched.
 services:
   halo-tracker:
-    build: .
+    image: ghcr.io/rammpatel2013-sudo/bedside-sim:latest
     container_name: halo-tracker
     restart: unless-stopped
     ports:
       - "5050:5000"
     environment:
-      # The educator sign-in is created on screen the first time you open the app.
       # Set to 1 once this runs behind HTTPS (droplet / Cloudflare Tunnel)
       - HALO_SECURE_COOKIES=0
     volumes:
-      # Same data folder as before: existing halo.db is kept and upgraded in place.
       - ./data:/app/data
+    labels:
+      - com.centurylinklabs.watchtower.enable=true
+
+  # Checks for a new halo-tracker image every 10 minutes and restarts it with the update.
+  # Only touches containers labelled above. Remove this block to update manually instead.
+  watchtower:
+    image: containrrr/watchtower
+    container_name: halo-watchtower
+    restart: unless-stopped
+    environment:
+      - WATCHTOWER_LABEL_ENABLE=true
+      - WATCHTOWER_POLL_INTERVAL=600
+      - WATCHTOWER_CLEANUP=true
+      - DOCKER_API_VERSION=1.43
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
