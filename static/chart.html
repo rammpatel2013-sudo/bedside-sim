@@ -87,6 +87,28 @@ details.set input{width:18px;height:18px}
 .monframe{position:relative;width:100%;aspect-ratio:16/10;max-height:calc(100vh - 190px);background:#000;border-radius:6px;overflow:hidden}
 .monframe iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
 .row-sm{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:8px}
+
+/* v2 layout: five tabs, orders with sub-tabs */
+.tabs{flex-wrap:wrap}
+.page{max-width:1300px;margin:0 auto;padding:14px}
+.panel{display:none}.panel.on{display:block}
+.ordgrid{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(300px,1fr);gap:14px;align-items:start}
+@media (max-width:880px){.ordgrid{grid-template-columns:1fr}}
+.subtabs{display:flex;gap:2px;border-bottom:1px solid var(--line);margin:-4px 0 12px;overflow-x:auto}
+.subtab{border:0;background:none;padding:9px 12px;color:var(--mute);border-bottom:3px solid transparent;white-space:nowrap}
+.subtab[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent);font-weight:600}
+.filter{width:100%;border:1px solid var(--line);border-radius:8px;padding:9px 12px;background:var(--bg);margin-bottom:10px}
+.grp{margin-bottom:12px}
+.grp h3{font:600 1rem var(--num);color:var(--mute);margin:6px 0 4px;letter-spacing:.02em}
+.item{display:flex;align-items:center;gap:10px;padding:7px 4px;border-bottom:1px solid var(--line)}
+.item input{width:20px;height:20px;flex:none}
+.item label{flex:1;min-width:0;cursor:pointer}
+.item small{display:block;color:var(--mute);font-size:.78rem}
+.item.ordered label{color:var(--mute)}
+.sticky{position:sticky;top:76px}
+.res-group h2{margin-top:4px}
+.imgres img{max-height:70vh;object-fit:contain;width:100%}
+.monframe{aspect-ratio:16/10}
 </style></head><body>
 <div id="joinView" class="join"><form id="joinForm">
  <h1>Patient chart</h1><p>Enter the room code your instructor gave you.</p>
@@ -99,34 +121,53 @@ details.set input{width:18px;height:18px}
   <div class="cost"><b id="cost">$0</b><span>orders placed (approx. Medicare)</span></div>
   <div style="font-size:.85rem;color:var(--mute)"><span class="live" id="live"></span>Room <b id="roomLbl"></b></div>
  </header>
- <div class="wrap">
-  <main>
-   <div class="tabs" role="tablist">
-    <button class="tab" role="tab" aria-selected="true" data-t="sum">Summary</button>
-    <button class="tab" role="tab" aria-selected="false" data-t="res">Results<span class="badge hide" id="newBadge">0</span></button>
-    <button class="tab" role="tab" aria-selected="false" data-t="mon">Monitor</button>
-   </div>
-   <section id="t-sum"></section>
-   <section id="t-res" class="hide"></section>
-   <section id="t-mon" class="hide"><div class="card" style="padding:8px">
-    <div class="monframe"><iframe id="monFrame" title="Live bedside monitor" allow="autoplay; fullscreen"></iframe></div>
-    <div class="row-sm"><span class="hint" style="margin:0">Live — vitals, alarms and ventilator settings update as the patient changes. Tap the monitor once to turn on sound. Order from the Summary or Results tab, or the monitor's Orders button.</span><a class="btn sm" id="monPop" target="_blank" rel="noopener">Full screen</a></div>
-   </div></section>
-  </main>
-  <aside class="ordcol">
-   <div class="card">
-    <h2>Place orders</h2>
-    <div class="search">
-     <textarea id="q" placeholder="Search or type orders — e.g. ABG, chest x-ray, start norepinephrine" aria-label="Search or type orders"></textarea>
-     <div class="sugg hide" id="sugg" role="listbox"></div>
+ <div class="page">
+  <div class="tabs" role="tablist" aria-label="Chart sections">
+   <button class="tab" role="tab" data-t="mon">Monitor</button>
+   <button class="tab" role="tab" data-t="sum">Summary</button>
+   <button class="tab" role="tab" data-t="ord">Orders<span class="badge hide" id="cartBadge">0</span></button>
+   <button class="tab" role="tab" data-t="res">Results<span class="badge hide" id="resBadge">0</span></button>
+   <button class="tab" role="tab" data-t="img">Imaging<span class="badge hide" id="imgBadge">0</span></button>
+  </div>
+
+  <section class="panel" id="p-mon"><div class="card" style="padding:8px">
+   <div class="monframe"><iframe id="monFrame" title="Live bedside monitor" allow="autoplay; fullscreen"></iframe></div>
+   <div class="row-sm"><span class="hint" style="margin:0">Live — vitals, alarms and ventilator settings update as the patient changes. Tap the monitor once to turn on sound.</span><a class="btn sm" id="monPop" target="_blank" rel="noopener">Full screen</a></div>
+  </div></section>
+
+  <section class="panel" id="p-sum"></section>
+
+  <section class="panel" id="p-ord">
+   <div class="ordgrid">
+    <div class="card">
+     <div class="subtabs" role="tablist" aria-label="Order categories">
+      <button class="subtab" role="tab" data-s="lab">Labs</button>
+      <button class="subtab" role="tab" data-s="med">Medications</button>
+      <button class="subtab" role="tab" data-s="img">Imaging</button>
+      <button class="subtab" role="tab" data-s="oth">Procedures &amp; other</button>
+      <button class="subtab" role="tab" data-s="set">Order sets</button>
+     </div>
+     <input class="filter" id="filter" placeholder="Filter this list" aria-label="Filter orders">
+     <div id="browse"></div>
     </div>
-    <div class="hint">Tap a suggestion to add it, or type in plain words and press Sign — several orders in one line work. On iPad, use the keyboard's mic to dictate.</div>
-    <div class="cart" id="cart"></div>
-    <div class="signbar"><span class="tot" id="cartTot"></span><button class="btn" id="clearBtn" type="button">Clear</button><button class="btn pri" id="signBtn" type="button">Sign orders</button></div>
+    <div class="sticky">
+     <div class="card">
+      <h2>Order cart</h2>
+      <div class="cart" id="cart"><div class="empty">Tick orders on the left, or type below.</div></div>
+      <div class="search" style="margin-top:10px">
+       <textarea id="q" placeholder="Or type orders in plain words — e.g. ABG, chest x-ray, start norepinephrine" aria-label="Type orders"></textarea>
+       <div class="sugg hide" id="sugg" role="listbox"></div>
+      </div>
+      <div class="hint">Several orders in one line work. On iPad, use the keyboard's mic to dictate. Anything unusual goes to the instructor.</div>
+      <div class="signbar"><span class="tot" id="cartTot"></span><button class="btn" id="clearBtn" type="button">Clear</button><button class="btn pri" id="signBtn" type="button">Sign orders</button></div>
+     </div>
+     <div class="card"><h2>My orders</h2><div class="olist" id="olist"><div class="empty">None yet.</div></div><div class="note" id="priceNote"></div></div>
+    </div>
    </div>
-   <div class="card"><h2>Order sets</h2><div id="sets"></div></div>
-   <div class="card"><h2>My orders</h2><div class="olist" id="olist"><div class="empty">None yet.</div></div><div class="note" id="priceNote"></div></div>
-  </aside>
+  </section>
+
+  <section class="panel" id="p-res"></section>
+  <section class="panel" id="p-img"></section>
  </div>
 </div>
 <script>
@@ -135,7 +176,12 @@ const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&
 const money=n=>'$'+Math.round(n||0).toLocaleString();
 const LS={get(k,d){try{const v=localStorage.getItem('bsim.'+k);return v==null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem('bsim.'+k,JSON.stringify(v))}catch(e){}}};
 function toast(m){const t=document.createElement('div');t.className='toast';t.textContent=m;document.body.appendChild(t);setTimeout(()=>t.remove(),2600)}
-let CODE='',CAT=null,byId={},data=null,cart=[],seen=new Set(LS.get('seen',[])),newCount=0,tab='sum',firstLoad=true;
+const GROUP={Labs:'lab','Blood gas':'lab',Microbiology:'lab',Medications:'med',Imaging:'img',Cardiac:'img',Procedures:'oth',Respiratory:'oth',Nursing:'oth',Consults:'oth'};
+const isImaging=o=>GROUP[o.cat]==='img';
+const showable=o=>o.result&&(GROUP[o.cat]==='lab'||isImaging(o)||o.result.src!=='default');
+const tatTxt=m=>m==null?'':m<1?'immediate':m<60?`~${m} min`:m<1440?`~${Math.round(m/60)} h`:'~1 day';
+let CODE='',CAT=null,byId={},data=null,cart=[],tab=LS.get('ctab','mon'),sub=LS.get('csub','lab'),firstLoad=true;
+let seen=new Set(LS.get('seen',[])),fresh={res:new Set(),img:new Set()};
 
 // ---------- join ----------
 const qp=new URLSearchParams(location.search);
@@ -145,63 +191,87 @@ if(qp.get('room'))start($('#code').value.toUpperCase().replace(/[^A-Z0-9]/g,''))
 
 async function start(code){CODE=code;$('#joinView').classList.add('hide');$('#chartView').classList.remove('hide');$('#roomLbl').textContent=code;
  history.replaceState(null,'','/chart?room='+code);
- try{CAT=await (await fetch('/api/content/catalog')).json();CAT.items.forEach(i=>byId[i.id]=i);$('#priceNote').textContent=CAT.priceNote||'';renderSets()}catch(e){toast('Could not load the order catalog')}
- await load();connect();setInterval(load,4000);setInterval(tickEta,1000)}
+ try{CAT=await (await fetch('/api/content/catalog')).json();CAT.items.forEach(i=>byId[i.id]=i);$('#priceNote').textContent=CAT.priceNote||''}catch(e){toast('Could not load the order catalog')}
+ showTab(tab);showSub(sub);await load();connect();setInterval(load,4000);setInterval(tickEta,1000)}
 
 // ---------- live ----------
 let ws=null,retry=0;
 function connect(){const proto=location.protocol==='https:'?'wss':'ws';ws=new WebSocket(`${proto}://${location.host}/ws/${CODE}?role=chart`);
  ws.onopen=()=>{retry=0;$('#live').classList.add('on')};
- ws.onmessage=e=>{let m;try{m=JSON.parse(e.data)}catch(_){return}if(m.t==='chart')load();if(m.t==='doc'&&m.path==='sims/'+CODE)load()};
+ ws.onmessage=e=>{let m;try{m=JSON.parse(e.data)}catch(_){return}if(m.t==='chart'||(m.t==='doc'&&m.path==='sims/'+CODE))load()};
  ws.onclose=()=>{$('#live').classList.remove('on');setTimeout(connect,Math.min(8000,500*2**retry++))}}
 let loading=false;
-async function load(){if(loading)return;loading=true;try{const r=await fetch(`/api/room/${CODE}/chart`);if(r.ok){const d=await r.json();const changed=JSON.stringify(d)!==JSON.stringify(data);data=d;if(changed)render()}}catch(e){}finally{loading=false}}
+async function load(){if(loading)return;loading=true;try{const r=await fetch(`/api/room/${CODE}/chart`);if(r.ok){const d=await r.json();if(JSON.stringify(d)!==JSON.stringify(data)){data=d;render()}}}catch(e){}finally{loading=false}}
+
+// ---------- tabs ----------
+function showTab(t){tab=t;LS.set('ctab',t);document.querySelectorAll('.tab').forEach(b=>b.setAttribute('aria-selected',b.dataset.t===t));
+ document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('on',p.id==='p-'+t));
+ if(t==='mon'){const f=$('#monFrame'),u='/sim?room='+CODE+'&role=monitor';if(!f.src)f.src=u;$('#monPop').href=u}
+ if(t==='res'||t==='img'){markSeen(t)}}
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>showTab(b.dataset.t));
+function showSub(s){sub=s;LS.set('csub',s);document.querySelectorAll('.subtab').forEach(b=>b.setAttribute('aria-selected',b.dataset.s===s));$('#filter').value='';$('#filter').classList.toggle('hide',s==='set');renderBrowse()}
+document.querySelectorAll('.subtab').forEach(b=>b.onclick=()=>showSub(b.dataset.s));
 
 // ---------- render ----------
 function render(){const d=data;$('#title').textContent=d.title||'Patient chart';
  const p=(d.chart&&d.chart.patient)||{};
  $('#meta').innerHTML=d.chart?[p.age?`<span><b>${esc(p.age)}${esc(p.sex||'')}</b></span>`:'',p.height_cm?`<span>${esc(p.height_cm)} cm · ${esc(p.weight_kg)} kg</span>`:'',p.code?`<span>${esc(p.code)}</span>`:'',`<span class="allergy">Allergies: ${esc(p.allergies||d.chart.allergies||'—')}</span>`].join(''):'<span>Waiting for the instructor to load a case…</span>';
  $('#cost').textContent=money(d.cost);
- // summary
  const c=d.chart;
- $('#t-sum').innerHTML=c?[
+ $('#p-sum').innerHTML=c?[
   sec('Problem list',c.problems&&`<ul>${c.problems.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`),
   sec('History of present illness',c.hpi&&`<p>${esc(c.hpi)}</p>`),
   sec('Past history',c.pmh&&`<p>${esc(c.pmh)}</p>`),
   sec('Medications',c.meds&&`<ul>${c.meds.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`),
   sec('Social',c.social&&`<p>${esc(c.social)}</p>`),
   sec('Exam',c.exam&&`<p>${esc(c.exam)}</p>`)].join(''):'<div class="card"><p class="empty">No chart yet. The instructor will load the case — this page updates by itself.</p></div>';
- // results
- const res=d.orders.filter(o=>o.result).slice().reverse();
- let fresh=0;
- $('#t-res').innerHTML=res.length?res.map(o=>{const isNew=!seen.has(o.id);if(isNew&&!firstLoad)fresh++;return resultCard(o,isNew&&!firstLoad)}).join(''):'<div class="card"><p class="empty">No results yet. Place orders on the right.</p></div>';
- if(fresh){newCount+=fresh;toast(fresh===1?'New result':`${fresh} new results`)}
- res.forEach(o=>{if(firstLoad||tab==='res')seen.add(o.id)});LS.set('seen',[...seen].slice(-500));
- if(tab==='res'){newCount=0}
- $('#newBadge').textContent=newCount;$('#newBadge').classList.toggle('hide',!newCount);
- // orders
+ const res=d.orders.filter(showable).slice().reverse();
+ const labs=res.filter(o=>!isImaging(o)),imgs=res.filter(isImaging);
+ let nNew=0;
+ for(const o of res){if(seen.has(o.id))continue;if(firstLoad){seen.add(o.id);continue}const g=isImaging(o)?'img':'res';if(!fresh[g].has(o.id)){fresh[g].add(o.id);nNew++}}
+ if(nNew)toast(nNew===1?'New result':`${nNew} new results`);
+ $('#p-res').innerHTML=labs.length?labs.map(o=>resultCard(o,!seen.has(o.id))).join(''):'<div class="card"><p class="empty">No lab or other results yet. Order from the Orders tab.</p></div>';
+ $('#p-img').innerHTML=imgs.length?imgs.map(o=>resultCard(o,!seen.has(o.id),true)).join(''):'<div class="card"><p class="empty">No imaging, ECG or echo results yet. Order from Orders → Imaging.</p></div>';
+ if(tab==='res'||tab==='img')markSeen(tab);
+ badges();
  const ol=d.orders.filter(o=>o.source!=='initial').slice().reverse();
  $('#olist').innerHTML=ol.length?ol.map(o=>`<div class="o"><span class="n">${esc(o.name)}</span>${statusChip(o)}<span class="price">${o.price?money(o.price):''}</span></div>`).join(''):'<div class="empty">None yet.</div>';
- firstLoad=false}
+ renderBrowse(true);firstLoad=false;LS.set('seen',[...seen].slice(-500))}
+function markSeen(t){if(!data)return;data.orders.filter(o=>showable(o)&&(t==='img')===isImaging(o)).forEach(o=>seen.add(o.id));fresh[t].clear();LS.set('seen',[...seen].slice(-500));badges();setTimeout(()=>document.querySelectorAll('#p-'+t+' .res.new').forEach(e=>e.classList.remove('new')),1700)}
+function badges(){for(const [k,id] of [['res','#resBadge'],['img','#imgBadge']]){$(id).textContent=fresh[k].size;$(id).classList.toggle('hide',!fresh[k].size)}$('#cartBadge').textContent=cart.length;$('#cartBadge').classList.toggle('hide',!cart.length)}
 const sec=(h,body)=>body?`<div class="card"><h2>${h}</h2>${body}</div>`:'';
 function statusChip(o){if(o.status==='pending')return `<span class="chip pending" data-eta="${Date.now()+(o.eta||0)*1000}">Pending · ${fmtEta(o.eta)}</span>`;
  if(o.status==='queued')return '<span class="chip queued">Sent to instructor</span>';if(o.status==='done')return '<span class="chip done">Done</span>';return '<span class="chip resulted">Resulted</span>'}
 const fmtEta=s=>s>=3600?'>1 h':s>=60?Math.ceil(s/60)+' min':Math.max(0,s)+' s';
 function tickEta(){document.querySelectorAll('[data-eta]').forEach(el=>{const s=Math.round((+el.dataset.eta-Date.now())/1000);el.textContent='Pending · '+(s>0?fmtEta(s):'any moment')})}
-function resultCard(o,isNew){const r=o.result;const t=new Date(o.placed*1000).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+function resultCard(o,isNew,big){const r=o.result;const t=new Date(o.placed*1000).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
  let body;if(r.kind==='labs')body=`<table class="lab">${(r.rows||[]).map(x=>`<tr><td>${esc(x[0])}</td><td class="${x[3]==='H'?'H':x[3]==='L'?'L':''}">${esc(x[1])}${x[3]?' '+esc(x[3]):''}</td><td>${esc(x[2]||'')}</td></tr>`).join('')}</table>`;
  else body=`<pre>${esc(r.text||'')}</pre>`;
- if(r.image)body+=`<img src="${esc(r.image)}" alt="${esc(r.title||o.name)}">`;
- return `<div class="card res${isNew?' new':''}"><h3><span>${esc(r.title||o.name)}</span><small>${o.source==='initial'?'on arrival':t}</small></h3>${body}</div>`}
+ if(r.image)body=`<img src="${esc(r.image)}" alt="${esc(r.title||o.name)}">`+body;
+ return `<div class="card res${isNew?' new':''}${big?' imgres':''}"><h3><span>${esc(r.title||o.name)}</span><small>${o.source==='initial'?'on arrival':t}</small></h3>${body}</div>`}
 
-// tabs
-document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{tab=b.dataset.t;document.querySelectorAll('.tab').forEach(x=>x.setAttribute('aria-selected',x===b));$('#t-sum').classList.toggle('hide',tab!=='sum');$('#t-res').classList.toggle('hide',tab!=='res');$('#t-mon').classList.toggle('hide',tab!=='mon');$('.wrap').classList.toggle('monmode',tab==='mon');
- if(tab==='mon'){const f=$('#monFrame'),u='/sim?room='+CODE+'&role=monitor';if(!f.src)f.src=u;$('#monPop').href=u}if(tab==='res'){newCount=0;(data?data.orders:[]).forEach(o=>o.result&&seen.add(o.id));LS.set('seen',[...seen].slice(-500));$('#newBadge').classList.add('hide');document.querySelectorAll('.res.new').forEach(e=>e.classList.remove('new'))}});
+// ---------- browse + cart ----------
+function orderedIds(){return new Set((data?data.orders:[]).filter(o=>o.source!=='initial'&&o.status!=='cancelled').map(o=>o.item))}
+function renderBrowse(keepScroll){if(!CAT)return;const el=$('#browse');const y=window.scrollY;
+ if(sub==='set'){el.innerHTML=CAT.sets.map(s=>`<details class="set"><summary>${esc(s.name)}</summary><div class="items">${s.items.map(id=>{const it=byId[id];return it?`<label><input type="checkbox" value="${id}" checked>${esc(it.name)}<span class="price">${it.price?money(it.price):''}</span></label>`:''}).join('')}<button type="button" class="btn sm" data-add="${s.id}" style="margin-top:6px">Add checked to cart</button></div></details>`).join('');return}
+ const q=$('#filter').value.trim().toLowerCase();const done=orderedIds();
+ const items=CAT.items.filter(it=>GROUP[it.cat]===sub&&(!q||it.name.toLowerCase().includes(q)||(it.syn||[]).some(s=>s.includes(q))));
+ const groups={};items.forEach(it=>(groups[it.cat]=groups[it.cat]||[]).push(it));
+ el.innerHTML=Object.keys(groups).length?Object.entries(groups).map(([g,its])=>`<div class="grp"><h3>${esc(g)}</h3>${its.sort((a,b)=>a.name.localeCompare(b.name)).map(it=>`<div class="item${done.has(it.id)?' ordered':''}"><input type="checkbox" id="ck_${it.id}" data-id="${it.id}" ${cart.includes(it.id)?'checked':''}><label for="ck_${it.id}">${esc(it.name)}<small>${[tatTxt(it.tat),done.has(it.id)?'already ordered':''].filter(Boolean).join(' · ')}</small></label><span class="price">${it.price?money(it.price):''}</span></div>`).join('')}</div>`).join(''):'<p class="empty">Nothing matches. Type it in the box on the right — unusual orders go to the instructor.</p>';
+ if(keepScroll)window.scrollTo(0,y)}
+$('#filter').addEventListener('input',()=>renderBrowse());
+$('#browse').addEventListener('change',e=>{const i=e.target.closest('input[data-id]');if(!i)return;const id=i.dataset.id;if(i.checked){if(!cart.includes(id))cart.push(id)}else cart=cart.filter(x=>x!==id);renderCart()});
+$('#browse').addEventListener('click',e=>{const b=e.target.closest('[data-add]');if(!b)return;b.closest('.items').querySelectorAll('input:checked').forEach(i=>{if(!cart.includes(i.value))cart.push(i.value)});b.closest('details').open=false;renderCart();toast('Added to cart — review and sign')});
+function renderCart(){$('#cart').innerHTML=cart.length?cart.map(id=>{const it=byId[id];return `<div class="row"><span>${esc(it.name)}</span><span class="price">${it.price?money(it.price):''}<button type="button" data-rm="${id}" aria-label="Remove ${esc(it.name)}">×</button></span></div>`}).join(''):'<div class="empty">Tick orders on the left, or type below.</div>';
+ const t=cart.reduce((a,id)=>a+(byId[id].price||0),0);$('#cartTot').textContent=cart.length?`${cart.length} selected · ${money(t)}`:'';badges();
+ document.querySelectorAll('#browse input[data-id]').forEach(i=>i.checked=cart.includes(i.dataset.id))}
+$('#cart').addEventListener('click',e=>{const b=e.target.closest('[data-rm]');if(b){cart=cart.filter(x=>x!==b.dataset.rm);renderCart()}});
+$('#clearBtn').onclick=()=>{cart=[];$('#q').value='';renderCart();suggest()};
 
-// ---------- ordering ----------
-function score(it,q){const n=it.name.toLowerCase();if(n===q)return 100;if(n.startsWith(q))return 80;if((it.syn||[]).some(s=>s===q))return 90;if((it.syn||[]).some(s=>s.startsWith(q)))return 70;if(n.includes(q))return 50;if((it.syn||[]).some(s=>s.includes(q)))return 40;return 0}
+// typed orders with suggestions (all categories)
+function score(it,q){const n=it.name.toLowerCase();if(n===q)return 100;if((it.syn||[]).some(s=>s===q))return 90;if(n.startsWith(q))return 80;if((it.syn||[]).some(s=>s.startsWith(q)))return 70;if(n.includes(q))return 50;if((it.syn||[]).some(s=>s.includes(q)))return 40;return 0}
 let sel=-1,list=[];
-function suggest(){const raw=$('#q').value;const last=raw.split(/[,;\n]/).pop().trim().toLowerCase();
+function suggest(){const last=$('#q').value.split(/[,;\n]/).pop().trim().toLowerCase();
  if(!CAT||last.length<2){$('#sugg').classList.add('hide');list=[];return}
  list=CAT.items.map(it=>[score(it,last),it]).filter(x=>x[0]>0).sort((a,b)=>b[0]-a[0]).slice(0,7).map(x=>x[1]);sel=-1;
  $('#sugg').innerHTML=list.map((it,i)=>`<button type="button" role="option" data-i="${i}"><span>${esc(it.name)} <small>${esc(it.cat)}</small></span><span class="price">${it.price?money(it.price):''}</span></button>`).join('');
@@ -210,19 +280,12 @@ $('#q').addEventListener('input',suggest);
 $('#q').addEventListener('keydown',e=>{if(!list.length)return;if(e.key==='ArrowDown'){sel=Math.min(list.length-1,sel+1);e.preventDefault()}else if(e.key==='ArrowUp'){sel=Math.max(0,sel-1);e.preventDefault()}else if(e.key==='Enter'&&sel>=0){e.preventDefault();pick(list[sel]);return}else return;
  $('#sugg').querySelectorAll('button').forEach((b,i)=>b.setAttribute('aria-selected',i===sel))});
 $('#sugg').addEventListener('click',e=>{const b=e.target.closest('[data-i]');if(b)pick(list[+b.dataset.i])});
-function pick(it){addCart(it.id);const parts=$('#q').value.split(/([,;\n])/);parts.pop();$('#q').value=parts.join('').replace(/[,;\n]\s*$/,'');$('#sugg').classList.add('hide');list=[];$('#q').focus()}
-function addCart(id){if(!cart.includes(id))cart.push(id);renderCart()}
-function renderCart(){$('#cart').innerHTML=cart.map(id=>{const it=byId[id];return `<div class="row"><span>${esc(it.name)}</span><span class="price">${it.price?money(it.price):''}<button type="button" data-rm="${id}" aria-label="Remove ${esc(it.name)}">×</button></span></div>`}).join('');
- const t=cart.reduce((a,id)=>a+(byId[id].price||0),0);$('#cartTot').textContent=cart.length?`${cart.length} selected · ${money(t)}`:''}
-$('#cart').addEventListener('click',e=>{const b=e.target.closest('[data-rm]');if(b){cart=cart.filter(x=>x!==b.dataset.rm);renderCart()}});
-$('#clearBtn').onclick=()=>{cart=[];$('#q').value='';renderCart();suggest()};
+function pick(it){if(!cart.includes(it.id))cart.push(it.id);renderCart();const parts=$('#q').value.split(/([,;\n])/);parts.pop();$('#q').value=parts.join('').replace(/[,;\n]\s*$/,'');$('#sugg').classList.add('hide');list=[];$('#q').focus()}
 $('#signBtn').onclick=async()=>{const text=$('#q').value.trim();if(!cart.length&&!text){toast('Nothing to sign');return}
  $('#signBtn').disabled=true;
  try{const r=await fetch(`/api/room/${CODE}/order`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({items:cart,text})});const j=await r.json();
   if(!r.ok){toast(j.error||'Order not sent');return}
   const q=j.placed.filter(o=>o.status==='queued').length;toast(`${j.placed.length} order${j.placed.length===1?'':'s'} signed${q?` · ${q} sent to the instructor`:''}`);
   cart=[];$('#q').value='';renderCart();suggest();load()}catch(e){toast('No connection — order not sent')}finally{$('#signBtn').disabled=false}};
-function renderSets(){$('#sets').innerHTML=CAT.sets.map(s=>`<details class="set"><summary>${esc(s.name)}</summary><div class="items">${s.items.map(id=>{const it=byId[id];return it?`<label><input type="checkbox" value="${id}" checked>${esc(it.name)}<span class="price">${it.price?money(it.price):''}</span></label>`:''}).join('')}<button type="button" class="btn sm" data-add="${s.id}" style="margin-top:6px">Add checked to orders</button></div></details>`).join('')}
-$('#sets').addEventListener('click',e=>{const b=e.target.closest('[data-add]');if(!b)return;b.closest('.items').querySelectorAll('input:checked').forEach(i=>addCart(i.value));b.closest('details').open=false;toast('Added — review and sign')});
 </script>
 </body></html>

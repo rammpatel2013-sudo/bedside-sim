@@ -156,9 +156,11 @@ def result_for(case_obj, iid, stage_id):
             res = r["by_stage"].get(stage_id) or r.get("default")
         elif r:
             res = r
+    src = "case"
     if res is None:
         res = {"kind": it["kind"], ("rows" if it["kind"] == "labs" else "text"): it["default"]}
-    out = {"title": res.get("title") or it["name"], "kind": res.get("kind", it["kind"])}
+        src = "default"
+    out = {"title": res.get("title") or it["name"], "kind": res.get("kind", it["kind"]), "src": src}
     if out["kind"] == "labs":
         out["rows"] = res.get("rows") or it["default"]
     else:

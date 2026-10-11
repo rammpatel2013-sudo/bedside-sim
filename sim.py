@@ -329,11 +329,11 @@ def api_order_action(code, oid):
         if action == "release":
             o["due"] = time.time() - 1
             if o["status"] == "queued":
-                o["result"] = {"title": o["name"], "kind": "text", "text": "Done."}
+                o["result"] = {"title": o["name"], "kind": "text", "text": "Done.", "src": "default"}
                 o["status"] = "pending"
         elif action == "result":
             txt = str(body.get("text") or "").strip()[:4000]
-            o["result"] = {"title": str(body.get("title") or o["name"])[:120], "kind": "text", "text": txt or "Normal."}
+            o["result"] = {"title": str(body.get("title") or o["name"])[:120], "kind": "text", "text": txt or "Normal.", "src": "instructor"}
             o["status"], o["due"] = "pending", time.time() - 1
         elif action == "cancel":
             o["status"] = "cancelled"
