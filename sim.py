@@ -370,6 +370,12 @@ def sim_page():
     return send_from_directory(os.path.join(current_app.root_path, "static"), "sim.html")
 
 
+@bp.route("/api/version")
+def version():
+    return jsonify({"version": os.environ.get("HALO_VERSION", "local")[:7],
+                    "built": os.environ.get("HALO_BUILD_DATE", "unknown")})
+
+
 @bp.route("/api/whoami")
 def whoami():
     return jsonify({"instructor": is_instructor()})

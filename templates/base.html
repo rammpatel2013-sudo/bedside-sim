@@ -48,5 +48,6 @@
 <main>
 {% block content %}{% endblock %}
 </main>
+<footer style="max-width:960px;margin:0 auto;padding:8px 32px 24px;color:var(--muted);font-size:12px;">Version {{ app_version }}{% if app_built %} · built {{ app_built }}{% endif %}</footer>
 </body>
 </html>

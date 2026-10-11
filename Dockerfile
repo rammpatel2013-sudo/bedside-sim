@@ -11,6 +11,9 @@ COPY templates/ templates/
 COPY static/ static/
 
 # SQLite file + uploaded media live here — mount this as a volume so data survives rebuilds
+ARG GIT_SHA=local
+ARG BUILD_DATE=unknown
+ENV HALO_VERSION=$GIT_SHA HALO_BUILD_DATE=$BUILD_DATE
 ENV HALO_DB_PATH=/app/data/halo.db
 RUN mkdir -p /app/data
 

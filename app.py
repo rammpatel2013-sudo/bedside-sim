@@ -35,6 +35,12 @@ def _secret_key():
 
 
 app.secret_key = _secret_key()
+
+
+@app.context_processor
+def _version():
+    return {"app_version": os.environ.get("HALO_VERSION", "local")[:7],
+            "app_built": os.environ.get("HALO_BUILD_DATE", "")[:10]}
 app.config.update(
     SESSION_COOKIE_HTTPONLY=True,
     SESSION_COOKIE_SAMESITE="Lax",
