@@ -22,6 +22,7 @@ button,input,textarea{font:inherit;color:inherit}button{cursor:pointer}
 .btn{border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:9px 14px;min-height:42px}
 .btn.pri{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:600}
 .btn.sm{min-height:34px;padding:5px 10px;font-size:.88rem}
+a.btn{text-decoration:none;white-space:nowrap;display:inline-flex;align-items:center;color:inherit}
 .btn:disabled{opacity:.5;cursor:default}
 .banner{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}
 .banner h1{font:600 1.35rem/1.1 var(--num);margin:0}
@@ -82,6 +83,10 @@ details.set input{width:18px;height:18px}
 .chip.pending{color:var(--warn)}.chip.done,.chip.resulted{color:var(--ok)}.chip.queued{color:var(--accent)}
 .toast{position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:8px;font-size:.9rem;z-index:50;max-width:90vw}
 .note{font-size:.8rem;color:var(--mute);margin-top:8px}
+.wrap.monmode{grid-template-columns:1fr}.wrap.monmode .ordcol{display:none}
+.monframe{position:relative;width:100%;aspect-ratio:16/10;max-height:calc(100vh - 190px);background:#000;border-radius:6px;overflow:hidden}
+.monframe iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.row-sm{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:8px}
 </style></head><body>
 <div id="joinView" class="join"><form id="joinForm">
  <h1>Patient chart</h1><p>Enter the room code your instructor gave you.</p>
@@ -99,9 +104,14 @@ details.set input{width:18px;height:18px}
    <div class="tabs" role="tablist">
     <button class="tab" role="tab" aria-selected="true" data-t="sum">Summary</button>
     <button class="tab" role="tab" aria-selected="false" data-t="res">Results<span class="badge hide" id="newBadge">0</span></button>
+    <button class="tab" role="tab" aria-selected="false" data-t="mon">Monitor</button>
    </div>
    <section id="t-sum"></section>
    <section id="t-res" class="hide"></section>
+   <section id="t-mon" class="hide"><div class="card" style="padding:8px">
+    <div class="monframe"><iframe id="monFrame" title="Live bedside monitor" allow="autoplay; fullscreen"></iframe></div>
+    <div class="row-sm"><span class="hint" style="margin:0">Live — vitals, alarms and ventilator settings update as the patient changes. Tap the monitor once to turn on sound. Order from the Summary or Results tab, or the monitor's Orders button.</span><a class="btn sm" id="monPop" target="_blank" rel="noopener">Full screen</a></div>
+   </div></section>
   </main>
   <aside class="ordcol">
    <div class="card">
@@ -185,7 +195,8 @@ function resultCard(o,isNew){const r=o.result;const t=new Date(o.placed*1000).to
  return `<div class="card res${isNew?' new':''}"><h3><span>${esc(r.title||o.name)}</span><small>${o.source==='initial'?'on arrival':t}</small></h3>${body}</div>`}
 
 // tabs
-document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{tab=b.dataset.t;document.querySelectorAll('.tab').forEach(x=>x.setAttribute('aria-selected',x===b));$('#t-sum').classList.toggle('hide',tab!=='sum');$('#t-res').classList.toggle('hide',tab!=='res');if(tab==='res'){newCount=0;(data?data.orders:[]).forEach(o=>o.result&&seen.add(o.id));LS.set('seen',[...seen].slice(-500));$('#newBadge').classList.add('hide');document.querySelectorAll('.res.new').forEach(e=>e.classList.remove('new'))}});
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{tab=b.dataset.t;document.querySelectorAll('.tab').forEach(x=>x.setAttribute('aria-selected',x===b));$('#t-sum').classList.toggle('hide',tab!=='sum');$('#t-res').classList.toggle('hide',tab!=='res');$('#t-mon').classList.toggle('hide',tab!=='mon');$('.wrap').classList.toggle('monmode',tab==='mon');
+ if(tab==='mon'){const f=$('#monFrame'),u='/sim?room='+CODE+'&role=monitor';if(!f.src)f.src=u;$('#monPop').href=u}if(tab==='res'){newCount=0;(data?data.orders:[]).forEach(o=>o.result&&seen.add(o.id));LS.set('seen',[...seen].slice(-500));$('#newBadge').classList.add('hide');document.querySelectorAll('.res.new').forEach(e=>e.classList.remove('new'))}});
 
 // ---------- ordering ----------
 function score(it,q){const n=it.name.toLowerCase();if(n===q)return 100;if(n.startsWith(q))return 80;if((it.syn||[]).some(s=>s===q))return 90;if((it.syn||[]).some(s=>s.startsWith(q)))return 70;if(n.includes(q))return 50;if((it.syn||[]).some(s=>s.includes(q)))return 40;return 0}

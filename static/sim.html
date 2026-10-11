@@ -503,7 +503,7 @@ function Monitor(code){
  const beep=()=>{if(!S.beep)return;const sp=S.spo2On&&hasPulse()?cur.spo2:96;tone(880*Math.pow(2,(clamp(sp,50,100)-100)/12),.07,0,.12)};
  const alarmSound=p=>{if(p==='high'){[0,.18,.36,.9,1.08].forEach(a=>tone(988,.14,a,.22,'triangle'))}else{[0,.22,.44].forEach(a=>tone(660,.18,a,.18,'triangle'))}};
 
- $('#go').onclick=()=>{initAudio();started=true;$('#start').remove();const el=document.documentElement;try{(el.requestFullscreen||el.webkitRequestFullscreen||(()=>{})).call(el)}catch(e){}};
+ $('#go').onclick=()=>{initAudio();started=true;$('#start').remove();if(window.self===window.top){const el=document.documentElement;try{(el.requestFullscreen||el.webkitRequestFullscreen||(()=>{})).call(el)}catch(e){}}};
  $('#sil').onclick=()=>{silenceUntil=performance.now()+120000;$('#sil').classList.add('on')};
 
  // ----- state intake -----
@@ -612,7 +612,7 @@ function Monitor(code){
   if(pul){const s=Math.round(cur.sbp+rnd(1.5)),d=Math.round(cur.dbp+rnd(1));$('#v_abp').textContent=s+'/'+d;$('#v_map').textContent='('+Math.round((s+2*d)/3)+')'}else{$('#v_abp').textContent=S.cpr?'--/--':'--/--';$('#v_map').textContent='(--)'}
   $('#v_et').textContent=Math.round(cur.etco2);$('#v_rr').textContent='RR '+Math.round(S.ventOn?S.vent.rr:cur.rr);
   $('#v_temp').textContent=(cur.temp||0).toFixed(1);
-  if(S.ventOn){const r=vc;$('#vgrid').innerHTML=`<div class="vmode">${esc(S.vent.mode==='VC'?'AC/VC':S.vent.mode==='PC'?'AC/PC':'PRVC')} · FiO₂ ${Math.round(S.vent.fio2*100)}%</div>
+  if(S.ventOn){const r=vc;$('#vgrid').innerHTML=`<div class="vmode">${esc(S.vent.mode==='VC'?'AC/VC':S.vent.mode==='PC'?'AC/PC':'PRVC')} · ${S.vent.mode==='PC'?'Pinsp '+S.vent.pinsp:'VT '+S.vent.vt} · FiO₂ ${Math.round(S.vent.fio2*100)}%</div>
    <div><span>Ppeak</span><b>${Math.round(r.ppeak)}</b></div><div><span>Pplat</span><b>${Math.round(r.pplat)}</b></div>
    <div><span>PEEP set/tot</span><b>${S.vent.peep}/${Math.round(r.totPeep)}</b></div><div><span>VTe mL</span><b>${Math.round(r.vt*1000+rnd(6))}</b></div>
    <div><span>RR set</span><b>${S.vent.rr}</b></div><div><span>MV L/min</span><b>${r.ve.toFixed(1)}</b></div>`}
@@ -1017,4 +1017,6 @@ function Lobby(){
  $('#asIns').onclick=()=>go('instructor');$('#asMon').onclick=()=>go('monitor');$('#asChart').onclick=()=>{const c=($('#code').value||'ICU1').toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,10)||'ICU1';LS.set('room',c);location.href='/chart?room='+c};
 }
 Lobby();
+(()=>{const qp=new URLSearchParams(location.search);const r=(qp.get('room')||'').toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,10);
+ if(r&&qp.get('role')==='monitor'){$('#code').value=r;$('#asMon').click()}})();
 </script></body></html>
