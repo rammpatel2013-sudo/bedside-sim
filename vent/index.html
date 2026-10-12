@@ -1,0 +1,403 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Vent Lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* Layout: learning panel left; on the right one dark ventilator console modeled on an ICU vent:
+   status bar / [waveforms | live loops | numerics] / [dynamic lung | breath timing + readiness | gas] / settings / quick keys.
+   Tokens follow bedside-sim's sim.html; the console stays dark in both themes, like a real ventilator display. */
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+--bg:#e9eef1;--panel:#ffffff;--ink:#14212b;--mute:#5b6b77;--line:#cdd6dc;--accent:#0b6e8a;--accent-ink:#fff;--soft:#dbe8ee;
+--good:#1f7a4d;--warn:#b87800;--bad:#c22f2f;--good-soft:#e2f2e9;--bad-soft:#f8e3e3;--warn-soft:#f7edd4;
+--num:'Barlow Condensed',system-ui,sans-serif;--ui:'IBM Plex Sans',system-ui,-apple-system,sans-serif;
+--scr:#070b0e;--scr-panel:#0e161b;--scr-raise:#15212880;--scr-grid:#1a262d;--scr-axis:#4f6572;--scr-text:#a8bcc8;--scr-dim:#6d8290;--scr-hi:#eef6fa;--scr-acc:#46c3e6;
+--c-paw:#f2c14e;--c-flow:#5ee08f;--c-vol:#58c4f5;--c-pes:#c4a1ff;--c-ptp:#ff9f6e;--c-pmus:#ff6f9e;--c-co2:#e6e05a;--c-ref:#7d93a1;--c-snap:#b9a6ff;
+--s-good:#4cc38a;--s-warn:#e0a935;--s-bad:#ff6b6b}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f161b;--panel:#172129;--ink:#e3ebf0;--mute:#93a4b0;--line:#2b3943;--accent:#3fb1cf;--accent-ink:#06222b;--soft:#1d3440;--good:#4cc38a;--warn:#e0a935;--bad:#ff6b6b;--good-soft:#173528;--bad-soft:#3a1d1f;--warn-soft:#3a2f14;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0f161b;--panel:#172129;--ink:#e3ebf0;--mute:#93a4b0;--line:#2b3943;--accent:#3fb1cf;--accent-ink:#06222b;--soft:#1d3440;--good:#4cc38a;--warn:#e0a935;--bad:#ff6b6b;--good-soft:#173528;--bad-soft:#3a1d1f;--warn-soft:#3a2f14;color-scheme:dark}
+*,*::before,*::after{box-sizing:inherit}
+html{height:100%}
+body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);font:15px/1.45 var(--ui);-webkit-text-size-adjust:100%}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+h1,h2,h3{text-wrap:balance}
+.muted{color:var(--mute)}.small{font-size:.85rem}
+
+/* ---------- top bar ---------- */
+.top{display:flex;align-items:center;gap:12px;padding:8px 16px;background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap;position:sticky;top:env(safe-area-inset-top,0px);z-index:20}
+.brand{display:flex;align-items:baseline;gap:8px;margin-right:6px}
+.brand b{font:700 1.6rem/1 var(--num);letter-spacing:.01em}
+.brand span{font:600 .72rem var(--ui);letter-spacing:.12em;text-transform:uppercase;color:var(--mute)}
+.views{display:flex;gap:2px;overflow-x:auto;flex:1;min-width:0}
+.views button{border:0;background:none;padding:8px 12px;color:var(--mute);border-bottom:3px solid transparent;white-space:nowrap}
+.views button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent);font-weight:600}
+.sidetog{border:1px solid var(--line);background:var(--panel);border-radius:8px;padding:5px 10px;font-size:.85rem}
+@media (max-width:1100px){.sidetog{display:none}}
+
+/* ---------- layout ---------- */
+.layout{display:grid;grid-template-columns:minmax(300px,350px) minmax(0,1fr);gap:16px;padding:16px;align-items:start}
+body.noside .layout{grid-template-columns:minmax(0,1fr)}
+body.noside .side{display:none}
+@media (max-width:1100px){.layout{grid-template-columns:minmax(0,1fr)}}
+.side{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;min-width:0;position:sticky;top:calc(env(safe-area-inset-top,0px) + 62px);max-height:calc(100vh - 80px);overflow:auto}
+@media (max-width:1100px){.side{position:static;max-height:none}}
+.vent{display:flex;flex-direction:column;gap:12px;min-width:0}
+
+/* ---------- side panel content ---------- */
+.side h2{font:600 1.5rem/1.1 var(--num);margin:0 0 4px;letter-spacing:.01em}
+.side h3{font:600 1.05rem var(--num);letter-spacing:.04em;text-transform:uppercase;color:var(--mute);margin:16px 0 6px}
+.eyebrow{font:600 .72rem var(--ui);letter-spacing:.1em;text-transform:uppercase;color:var(--accent)}
+.q p{margin:0 0 10px;max-width:62ch}
+.look{margin:0 0 10px;padding-left:18px;color:var(--mute);font-size:.9rem}
+.look li{margin:2px 0}
+.lesson{border-top:1px solid var(--line)}
+.lesson:first-of-type{border-top:0}
+.lesson summary{list-style:none;cursor:pointer;padding:10px 0;display:flex;gap:10px;align-items:baseline}
+.lesson summary::-webkit-details-marker{display:none}
+.lesson summary .ln{font:700 1.25rem/1 var(--num);color:var(--accent);min-width:1.4ch}
+.lesson summary .lt{font-weight:600;flex:1}
+.lesson summary .lp{font:600 .9rem var(--num);color:var(--mute)}
+.cases{display:flex;flex-direction:column;gap:2px;padding:0 0 10px 28px}
+.case-btn{display:flex;gap:8px;align-items:center;text-align:left;border:0;background:none;padding:6px 8px;border-radius:6px}
+.case-btn:hover{background:var(--soft)}
+.case-btn .ck{width:18px;height:18px;border-radius:50%;border:1.5px solid var(--line);flex:none;display:grid;place-items:center;font-size:.7rem}
+.case-btn .ck.pass{background:var(--good);border-color:var(--good);color:#fff}
+.case-btn .ck.tried{border-color:var(--warn)}
+.case-btn .ty{font:600 .72rem var(--ui);letter-spacing:.06em;text-transform:uppercase;color:var(--mute);margin-left:auto}
+.btn{border:1px solid var(--line);background:var(--panel);border-radius:8px;padding:8px 14px;font-weight:500}
+.btn:hover{border-color:var(--accent)}
+.btn.pri{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:600}
+.btn.sm{padding:5px 10px;font-size:.88rem}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.backlink{border:0;background:none;color:var(--accent);padding:0;margin-bottom:10px;font-weight:500}
+.targets{list-style:none;margin:0 0 12px;padding:0;display:flex;flex-direction:column;gap:6px}
+.targets li{display:flex;gap:8px;align-items:flex-start;font-size:.92rem}
+.targets li i{font-style:normal;flex:none;width:20px;height:20px;border-radius:50%;display:grid;place-items:center;font-size:.75rem;border:1.5px solid var(--line);margin-top:1px}
+.targets li.ok i{background:var(--good);border-color:var(--good);color:#fff}
+.targets li.no i{background:var(--bad);border-color:var(--bad);color:#fff}
+.targets li b{font-family:var(--num);font-size:1.05rem;margin-left:auto;white-space:nowrap;font-variant-numeric:tabular-nums}
+.verdict{border-radius:10px;padding:12px 14px;margin:12px 0}
+.verdict.pass{background:var(--good-soft);border:1px solid var(--good)}
+.verdict.fail{background:var(--bad-soft);border:1px solid var(--bad)}
+.verdict b{font:600 1.25rem var(--num);display:block}
+.choices{display:flex;flex-direction:column;gap:8px;margin:8px 0 12px}
+.choice{text-align:left;border:1px solid var(--line);background:var(--bg);border-radius:10px;padding:10px 12px}
+.choice:hover:not(:disabled){border-color:var(--accent)}
+.choice:disabled{cursor:default}
+.choice.right{border-color:var(--good);background:var(--good-soft)}
+.choice.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.choice small{display:block;color:var(--mute);margin-top:4px}
+.explain{border-top:1px solid var(--line);margin-top:14px;padding-top:12px}
+.explain p{margin:0 0 10px;max-width:62ch}
+.points{margin:0;padding-left:18px}
+.points li{margin:4px 0}
+.numin{display:flex;gap:8px;align-items:center;margin:8px 0}
+.numin input{width:8em;font:600 1.3rem var(--num);padding:6px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg)}
+.tablepop{border:1px solid var(--line);border-radius:10px;padding:10px;margin:10px 0;overflow-x:auto}
+.tablepop table{border-collapse:collapse;font:500 .95rem var(--num);font-variant-numeric:tabular-nums}
+.tablepop th,.tablepop td{padding:3px 7px;border-bottom:1px solid var(--line);text-align:center}
+.tablepop th{color:var(--mute);font-weight:600;text-align:left}
+.cardlist{display:flex;flex-direction:column;gap:8px}
+.card{border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--bg);text-align:left}
+.card b{display:block;font:600 1.15rem var(--num)}
+.card span{color:var(--mute);font-size:.88rem}
+button.card:hover{border-color:var(--accent)}
+.grid2b{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.field{display:flex;flex-direction:column;gap:4px;margin-bottom:10px}
+.field label{font-size:.85rem;color:var(--mute)}
+.field input,.field textarea,.field select{padding:7px 9px;border:1px solid var(--line);border-radius:8px;background:var(--bg);width:100%}
+.field textarea{min-height:64px;resize:vertical}
+.goalrow{display:grid;grid-template-columns:minmax(0,1fr) 64px 72px 30px;gap:4px;margin-bottom:4px}
+.goalrow select,.goalrow input{padding:5px 6px;border:1px solid var(--line);border-radius:6px;background:var(--bg);min-width:0}
+.goalrow button{border:1px solid var(--line);background:var(--bg);border-radius:6px}
+.tut-step{font:600 .85rem var(--num);color:var(--mute);letter-spacing:.06em}
+.waiting{border:1px dashed var(--accent);border-radius:8px;padding:8px 10px;color:var(--accent);margin:8px 0;font-size:.9rem}
+.waiting.done{border-style:solid;border-color:var(--good);color:var(--good)}
+.note{font-size:.82rem;color:var(--mute);margin-top:14px}
+
+/* ---------- ventilator console ---------- */
+.vscreen{background:var(--scr);border:1px solid #000;border-radius:14px;color:var(--scr-text);overflow:hidden;container-type:inline-size}
+.vstatus{display:flex;gap:10px;align-items:center;padding:8px 12px;border-bottom:1px solid var(--scr-grid);flex-wrap:wrap}
+.vmode{font:700 1.3rem/1.2 var(--num);color:#fff;letter-spacing:.05em;background:#1b2c36;padding:2px 10px;border-radius:6px;white-space:nowrap}
+.vpt{font-size:.8rem;color:var(--scr-dim);white-space:nowrap}
+.alarmbar{display:flex;gap:6px;flex-wrap:wrap;align-items:center;flex:1;min-width:0;min-height:28px}
+.al{font:600 .92rem var(--num);letter-spacing:.06em;padding:3px 9px;border-radius:5px}
+.al.high{background:#d33a3a;color:#fff}
+.al.med{background:#e0a935;color:#1b1300}
+.al.none{color:var(--scr-dim);font:400 .82rem var(--ui);padding-left:0}
+.vphase{font:500 .8rem var(--ui);color:var(--scr-dim);white-space:nowrap;min-width:9.5em;text-align:right}
+
+.vbody{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(210px,.78fr) 286px}
+.vbody{align-items:start}
+@container (max-width:1020px){.vbody{grid-template-columns:minmax(0,1fr) 286px}.vwaves{grid-column:1/-1}.vloops{flex-direction:row}.vloops .loopbox{flex:1}.vloops .loopbox+.loopbox{border-top:0;border-left:1px solid var(--scr-grid)}}
+@container (max-width:640px){.vbody{grid-template-columns:minmax(0,1fr)}.vloops{flex-direction:row}}
+.vwaves{min-width:0;border-right:1px solid var(--scr-grid)}
+@container (max-width:1020px){.vwaves{border-right:0;border-bottom:1px solid var(--scr-grid)}}
+.wavebar{display:flex;gap:6px;align-items:center;padding:6px 10px;border-bottom:1px solid var(--scr-grid);flex-wrap:wrap}
+.wavebar .lbl{font:500 .78rem var(--ui);color:var(--scr-dim)}
+.wavebar .sp{flex:1}
+.sbtn{border:1px solid var(--scr-grid);background:var(--scr-panel);color:var(--scr-text);border-radius:6px;padding:3px 9px;font:500 .82rem var(--ui)}
+.sbtn[aria-pressed="true"]{background:#e8f4fa;color:#05131a;border-color:#e8f4fa}
+.sbtn:hover{border-color:var(--scr-axis)}
+.sbtn:disabled{opacity:.4;cursor:not-allowed}
+.sseg{display:flex;border:1px solid var(--scr-grid);border-radius:6px;overflow:hidden}
+.sseg button{border:0;background:var(--scr-panel);color:var(--scr-text);padding:3px 8px;font:500 .8rem var(--ui)}
+.sseg button[aria-pressed="true"]{background:#e8f4fa;color:#05131a}
+.wavegrid{display:grid;grid-template-columns:minmax(0,1fr)}
+.wavegrid.cmp{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+@container (max-width:640px){.wavegrid.cmp{grid-template-columns:minmax(0,1fr)}}
+.wcol{min-width:0;position:relative}
+.wcol+.wcol{border-left:1px solid var(--scr-grid)}
+.wcolhead{display:flex;justify-content:space-between;gap:6px;padding:4px 10px 0;font:600 .78rem var(--ui);letter-spacing:.04em;text-transform:uppercase}
+.wcolhead .snapc{color:var(--c-snap)}.wcolhead .livec{color:var(--scr-hi)}
+.wcolhead span{white-space:nowrap}
+.wcolhead small{font:400 .75rem var(--ui);text-transform:none;letter-spacing:0;color:var(--scr-dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+canvas.wv{display:block;width:100%;height:360px;touch-action:none}
+canvas.wv.tall{height:470px}
+@container (max-width:640px){canvas.wv{height:280px}canvas.wv.tall{height:360px}}
+
+.vloops{display:flex;flex-direction:column;min-width:0;border-right:1px solid var(--scr-grid)}
+@container (max-width:1020px){.vloops{border-right:1px solid var(--scr-grid)}}
+@container (max-width:640px){.vloops{border-right:0;border-bottom:1px solid var(--scr-grid)}}
+.loopbox{display:flex;flex-direction:column;min-width:0}
+.loopbox+.loopbox{border-top:1px solid var(--scr-grid)}
+.loophead{display:flex;justify-content:space-between;align-items:center;gap:6px;padding:6px 10px 0;font:600 .78rem var(--ui);letter-spacing:.04em;text-transform:uppercase;color:var(--scr-text)}
+.loopbox canvas{display:block;width:100%;height:178px}
+.vscreen.tallv .loopbox canvas{height:232px}
+@container (max-width:640px){.loopbox canvas{height:200px}.vscreen.tallv .loopbox canvas{height:200px}}
+
+.vnum{min-width:0;display:flex;flex-direction:column}
+.ntabs{display:flex;border-bottom:1px solid var(--scr-grid)}
+.ntabs button{flex:1;border:0;background:none;color:var(--scr-dim);padding:7px 4px;font:600 .78rem var(--ui);letter-spacing:.04em;text-transform:uppercase;border-bottom:2px solid transparent}
+.ntabs button[aria-selected="true"]{color:var(--scr-hi);border-bottom-color:var(--scr-acc)}
+.ngrid{display:grid;grid-template-columns:1fr 1fr;align-content:start;overflow:auto;max-height:376px}
+.vscreen.tallv .ngrid{max-height:486px}
+@container (max-width:1020px){.ngrid{max-height:420px}}
+@container (max-width:640px){.ngrid{grid-template-columns:repeat(3,1fr);max-height:none}}
+.mt{padding:6px 10px;border-bottom:1px solid var(--scr-grid);border-right:1px solid var(--scr-grid);min-width:0}
+.mt .k{display:flex;justify-content:space-between;gap:4px;font:500 .7rem var(--ui);color:var(--scr-dim);letter-spacing:.02em;white-space:nowrap;overflow:hidden}
+.mt .k em{font-style:normal;color:var(--scr-acc);font-weight:600}
+.mt .v{font:600 1.5rem/1.05 var(--num);color:var(--scr-hi);font-variant-numeric:tabular-nums;white-space:nowrap}
+.mt .v small{font:500 .66rem var(--ui);color:var(--scr-dim);margin-left:3px}
+.mt.paw .v{color:var(--c-paw)}.mt.vol .v{color:var(--c-vol)}.mt.flw .v{color:var(--c-flow)}.mt.pes .v{color:var(--c-ptp)}.mt.gas .v{color:var(--c-co2)}
+.mt.stale .v{opacity:.45}
+.mt .cm{font:500 .7rem var(--ui);color:var(--scr-dim);white-space:nowrap;font-variant-numeric:tabular-nums}
+.mt .cm .snapv{color:var(--c-snap)}
+.mt .cm .up{color:#ffb27a}.mt .cm .dn{color:#7fd3ff}
+.mt.flash{animation:flash 1.2s}
+@keyframes flash{0%{background:#28414e}100%{background:transparent}}
+@media (prefers-reduced-motion:reduce){.mt.flash{animation:none}}
+
+.vlower{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.2fr) minmax(0,1fr);border-top:1px solid var(--scr-grid)}
+@container (max-width:900px){.vlower{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.vgas{grid-column:1/-1;border-top:1px solid var(--scr-grid)}}
+@container (max-width:560px){.vlower{grid-template-columns:minmax(0,1fr)}.vlower>*{border-top:1px solid var(--scr-grid)}}
+.vlower>div{min-width:0;padding:8px 10px}
+.vlower>div+div{border-left:1px solid var(--scr-grid)}
+@container (max-width:900px){.vlower>div+div{border-left:0}.vlung{border-right:1px solid var(--scr-grid)}}
+@container (max-width:560px){.vlung{border-right:0}}
+.vlhead{font:600 .78rem var(--ui);letter-spacing:.04em;text-transform:uppercase;color:var(--scr-text);display:flex;justify-content:space-between;gap:6px}
+.vlhead span{text-transform:none;letter-spacing:0;font-weight:400;color:var(--scr-dim)}
+#lungCv{display:block;width:100%;height:200px}
+#timingCv{display:block;width:100%;height:58px;margin:4px 0 8px}
+.ready{border:1px solid var(--scr-grid);border-radius:8px;padding:6px 8px}
+.ready.all{border-color:var(--s-good);box-shadow:inset 0 0 0 1px var(--s-good)}
+.ready ul{list-style:none;margin:4px 0 0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:3px 10px}
+.ready li{display:flex;gap:6px;align-items:baseline;font-size:.78rem;color:var(--scr-text);min-width:0}
+.ready li i{font-style:normal;width:9px;height:9px;border-radius:50%;flex:none;background:#3a4b55}
+.ready li.ok i{background:var(--s-good)}
+.ready li b{font:600 .95rem var(--num);color:var(--scr-hi);margin-left:auto;font-variant-numeric:tabular-nums}
+.ready .rv{font:600 .82rem var(--ui);color:var(--scr-dim)}
+.ready.all .rv{color:var(--s-good)}
+.gasg{display:grid;grid-template-columns:repeat(3,1fr);gap:4px 10px;margin-top:4px}
+.gasg div span{display:block;font-size:.7rem;color:var(--scr-dim)}
+.gasg div b{font:600 1.3rem var(--num);color:var(--scr-hi);font-variant-numeric:tabular-nums}
+.gasg div b.lo{color:var(--s-bad)}.gasg div b.hi{color:var(--s-warn)}
+
+.vset{border-top:1px solid var(--scr-grid);padding:10px 12px}
+.vsettop{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between;margin-bottom:8px}
+.modes{display:flex;gap:8px;flex-wrap:wrap}
+.mseg{display:flex;border:1px solid var(--scr-axis);border-radius:8px;overflow:hidden}
+.mseg button{border:0;background:var(--scr-panel);color:var(--scr-text);padding:6px 12px;font:600 1.05rem var(--num);letter-spacing:.05em;border-right:1px solid var(--scr-grid)}
+.mseg button:last-child{border-right:0}
+.mseg button[aria-pressed="true"]{background:var(--scr-acc);color:#04161d}
+.mseg button:disabled{opacity:.35;cursor:not-allowed}
+.vscreen .knobs{display:grid;grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:6px}
+.vscreen .knob{border:1px solid var(--scr-grid);border-radius:9px;padding:5px 7px;background:var(--scr-panel);min-width:0}
+.vscreen .knob.changed{border-color:var(--scr-acc);box-shadow:inset 0 0 0 1px var(--scr-acc)}
+.vscreen .knob.locked{opacity:.5}
+.vscreen .knob .kl{color:var(--scr-dim)}
+.vscreen .kv input{color:var(--scr-hi)}
+.vscreen .kv button{background:#18242b;border-color:#2a3a44;color:var(--scr-hi)}
+.vscreen .seg{border-color:var(--scr-grid)}
+.vscreen .seg button{background:#18242b;color:var(--scr-text)}
+.vscreen .seg button[aria-pressed="true"]{background:var(--scr-acc);color:#04161d}
+.vscreen .subhead{color:var(--scr-dim)}
+.vkeys{display:flex;gap:6px;flex-wrap:wrap;padding:8px 12px;border-top:1px solid var(--scr-grid);align-items:center}
+.qk{border:1px solid #2a3a44;background:#121c22;color:var(--scr-hi);border-radius:8px;padding:6px 12px;font:500 .88rem var(--ui)}
+.qk:hover{border-color:var(--scr-acc)}
+.qk.queued{border-color:var(--scr-acc);color:var(--scr-acc)}
+.qk:disabled{opacity:.4;cursor:not-allowed}
+.vkeys .sp{flex:1}
+.vkeys .res{font:500 .82rem var(--ui);color:var(--scr-dim)}
+.vkeys .res b{font:600 1.05rem var(--num);color:var(--scr-hi)}
+
+/* knobs shared (light panels) */
+.knobs{display:grid;grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:8px}
+.knob{border:1px solid var(--line);border-radius:10px;padding:6px 8px;background:var(--bg);min-width:0}
+.knob.changed{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.knob.locked{opacity:.55}
+.knob .kl{display:flex;justify-content:space-between;font:500 .74rem var(--ui);color:var(--mute);gap:4px}
+.knob .kl span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.kv{display:flex;align-items:center;gap:4px}
+.kv input{width:100%;min-width:3.2ch;border:0;background:none;font:600 1.35rem/1.1 var(--num);text-align:center;font-variant-numeric:tabular-nums;padding:2px 0}
+.kv button{flex:none;width:26px;height:28px;border-radius:7px;border:1px solid var(--line);background:var(--panel);font-weight:600;line-height:1;padding:0}
+.kv button:disabled,.kv input:disabled{cursor:not-allowed}
+.seg{display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;margin-top:4px}
+.seg button{flex:1;border:0;background:var(--panel);padding:4px 6px;font-size:.82rem}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);font-weight:600}
+.subhead{font:600 .76rem var(--ui);letter-spacing:.08em;text-transform:uppercase;color:var(--mute);margin:12px 0 6px}
+details.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:0 12px}
+details.panel>summary{cursor:pointer;padding:12px 0;font:600 1.1rem var(--num);letter-spacing:.03em;list-style:none;display:flex;justify-content:space-between;gap:8px}
+details.panel>summary::-webkit-details-marker{display:none}
+details.panel>summary::after{content:'+';color:var(--mute)}
+details.panel[open]>summary::after{content:'−'}
+details.panel>div{padding-bottom:12px}
+.toggles{display:flex;flex-wrap:wrap;gap:6px 16px;margin:6px 0}
+.tog{display:flex;gap:6px;align-items:center;font-size:.92rem}
+.lockednote{font-size:.85rem;color:var(--mute);margin:0 0 8px}
+.foot{padding:4px 16px 24px;color:var(--mute);font-size:.8rem;max-width:90ch}
+
+/* ---------- tutorial highlight ---------- */
+.tut-target{outline:3px solid var(--scr-acc)!important;outline-offset:2px;border-radius:10px}
+@media (prefers-reduced-motion:no-preference){.tut-target{animation:pulse 1.6s infinite}}
+@keyframes pulse{0%,100%{outline-color:var(--scr-acc)}50%{outline-color:transparent}}
+.mk{position:absolute;z-index:6;width:26px;height:26px;border-radius:50%;background:var(--accent);color:var(--accent-ink);font:700 .95rem var(--num);border:2px solid var(--panel);display:grid;place-items:center;box-shadow:0 1px 4px rgba(0,0,0,.35)}
+.mk[aria-current="true"]{background:var(--warn);color:#1b1300}
+
+/* ---------- comparison dialog ---------- */
+.dlg{position:fixed;inset:0;background:rgba(5,10,14,.6);z-index:50;display:grid;place-items:center;padding:16px}
+.dlg[hidden]{display:none!important}
+.dlgbox{background:var(--panel);border-radius:14px;max-width:1200px;width:100%;max-height:calc(100vh - 32px);overflow:auto;padding:16px}
+.dlghead{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+.dlghead h2{font:600 1.5rem var(--num);margin:0}
+.cmpgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:10px}
+.cmpcol h3{font:600 1rem var(--num);letter-spacing:.06em;text-transform:uppercase;margin:0 0 6px;color:var(--mute)}
+.cmpcol canvas{display:block;width:100%;height:300px;background:var(--scr);border-radius:10px}
+.cmptable{width:100%;border-collapse:collapse;margin-top:12px;font-variant-numeric:tabular-nums}
+.cmptable th,.cmptable td{padding:5px 8px;border-bottom:1px solid var(--line);text-align:right}
+.cmptable th:first-child,.cmptable td:first-child{text-align:left}
+.cmptable thead th{font:600 .8rem var(--ui);color:var(--mute);text-transform:uppercase;letter-spacing:.06em}
+.cmptable td{font:500 1.05rem var(--num)}
+.tblwrap{overflow-x:auto}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:8px 14px;border-radius:8px;z-index:60;font-size:.9rem;max-width:calc(100% - 32px)}
+.copybox{width:100%;margin-top:6px;padding:6px 8px;border:1px solid var(--line);border-radius:6px;background:var(--bg);font-size:.8rem}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="brand"><b>Vent Lab</b><span>HALO</span></div>
+  <nav class="views" role="tablist" aria-label="Vent Lab sections">
+    <button role="tab" data-view="curriculum" aria-selected="true">Curriculum</button>
+    <button role="tab" data-view="tutorials" aria-selected="false">Tutorials</button>
+    <button role="tab" data-view="free" aria-selected="false">Free play</button>
+    <button role="tab" data-view="builder" aria-selected="false">Scenario builder</button>
+  </nav>
+  <button class="sidetog" id="sideToggle" aria-pressed="false">Hide lesson panel</button>
+</header>
+
+<main class="layout">
+  <aside class="side" id="side" aria-live="polite"></aside>
+
+  <section class="vent" aria-label="Ventilator">
+    <div class="vscreen" id="vscreen">
+      <div class="vstatus">
+        <span class="vmode" id="modeTag">A/CMV-VC</span>
+        <span class="vpt" id="ptTag"></span>
+        <div class="alarmbar" id="alarmBar" role="status"></div>
+        <span class="vphase" id="phaseTag"></span>
+      </div>
+
+      <div class="vbody">
+        <div class="vwaves">
+          <div class="wavebar">
+            <span class="lbl">Aux</span>
+            <div class="sseg" id="auxSel" role="group" aria-label="Auxiliary waveform"><button data-aux="none" aria-pressed="true">Off</button><button data-aux="pes" aria-pressed="false">Pes</button><button data-aux="co2" aria-pressed="false">CO₂</button></div>
+            <button class="sbtn" id="pmusBtn" aria-pressed="false" title="Overlay the patient's muscle effort (Pmus)">Effort</button>
+            <button class="sbtn" id="sweepBtn" title="Change the time window">12 s</button>
+            <span class="sp"></span>
+            <button class="sbtn" id="snapBtn" title="Keep the current screen as a reference">Snapshot</button>
+            <button class="sbtn" id="cmpToggle" aria-pressed="false" disabled title="Show the snapshot and the live screen side by side">Compare</button>
+            <button class="sbtn" id="freezeBtn" aria-pressed="false">Freeze</button>
+          </div>
+          <div class="wavegrid" id="waveGrid">
+            <div class="wcol" id="snapCol" hidden><div class="wcolhead"><span class="snapc" id="snapLabel">Snapshot</span><small id="snapInfo"></small></div><canvas class="wv" id="waveSnap" role="img" aria-label="Snapshot waveforms"></canvas></div>
+            <div class="wcol" id="wave"><div class="wcolhead" id="liveHead" hidden><span class="livec">Live</span><small id="liveInfo"></small></div><canvas class="wv" id="waveCv" role="img" aria-label="Live pressure, flow and volume waveforms"></canvas></div>
+          </div>
+        </div>
+        <div class="vloops" id="loops">
+          <div class="loopbox"><div class="loophead"><span>P–V loop</span><span class="row" style="gap:4px"><button class="sbtn" id="pinLoop">Pin</button><button class="sbtn" id="clearLoop" hidden>Clear</button></span></div><canvas id="pvLoop" role="img" aria-label="Pressure-volume loop, traced live"></canvas></div>
+          <div class="loopbox"><div class="loophead"><span>F–V loop</span></div><canvas id="fvLoop" role="img" aria-label="Flow-volume loop, traced live"></canvas></div>
+        </div>
+        <div class="vnum" id="mon">
+          <div class="ntabs" role="tablist" aria-label="Monitored parameters">
+            <button role="tab" data-nt="main" aria-selected="true">Main</button><button role="tab" data-nt="mech" aria-selected="false">Mechanics</button><button role="tab" data-nt="spont" aria-selected="false">Spont</button><button role="tab" data-nt="gas" aria-selected="false">Gas</button>
+          </div>
+          <div class="ngrid" id="numGrid"></div>
+        </div>
+      </div>
+
+      <div class="vlower">
+        <div class="vlung" id="lungBox"><div class="vlhead">Dynamic lung <span id="lungNote"></span></div><canvas id="lungCv" role="img" aria-label="Lung graphic that breathes with the patient"></canvas></div>
+        <div id="timingBox"><div class="vlhead">Breath timing <span id="timingNote"></span></div><canvas id="timingCv" role="img" aria-label="Inspiratory and expiratory time of the current breath"></canvas><div class="ready" id="readiness"></div></div>
+        <div class="vgas" id="abg"></div>
+      </div>
+
+      <div class="vset" id="controls">
+        <div class="vsettop">
+          <div class="modes" id="modeTabs"></div>
+        </div>
+        <div class="knobs" id="knobs"></div>
+        <div id="knobs2"></div>
+      </div>
+
+      <div class="vkeys" id="holdBtns">
+        <button class="qk" id="iholdBtn">Inspiratory hold</button>
+        <button class="qk" id="eholdBtn">Expiratory hold</button>
+        <button class="qk" id="manualBtn">Manual breath</button>
+        <button class="qk" id="p01Btn">P0.1</button>
+        <button class="qk" id="nifBtn">NIF</button>
+        <span class="sp"></span>
+        <span class="res" id="manRes"></span>
+      </div>
+    </div>
+
+    <details class="panel" id="patientPanel">
+      <summary>Patient &amp; scenario</summary>
+      <div id="patientBody"></div>
+    </details>
+
+    <details class="panel" id="alarmPanel">
+      <summary>Alarm limits</summary>
+      <div><div class="knobs" id="alarmKnobs"></div></div>
+    </details>
+  </section>
+</main>
+<p class="foot">Vent Lab is an educational simulator built on a single-compartment model of the respiratory system. The console layout and parameter set follow modern ICU ventilators (Nihon Kohden NKV-550 numerics, a Hamilton-style dynamic lung); it is not a copy of any manufacturer's software. Numbers are teaching approximations, not predictions for a real patient. Do not use it to guide patient care.</p>
+
+<div class="dlg" id="cmpDlg" hidden role="dialog" aria-modal="true" aria-labelledby="cmpTitle">
+  <div class="dlgbox">
+    <div class="dlghead"><h2 id="cmpTitle">Before and after</h2><button class="btn sm" id="cmpClose">Close</button></div>
+    <div class="cmpgrid" id="cmpGrid"></div>
+    <div class="tblwrap"><table class="cmptable" id="cmpTable"></table></div>
+  </div>
+</div>
+
+<script src="engine.js"></script>
+<script src="curriculum.js"></script>
+<script src="app.js"></script>
+</body></html>
