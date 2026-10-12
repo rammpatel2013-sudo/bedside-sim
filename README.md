@@ -47,6 +47,14 @@ Set `HALO_SECURE_COOKIES=1` once it runs behind HTTPS.
 - Physics runs in the learner's browser (single-compartment equation of motion with flow limitation, recruitment, Pes/Ptp and steady-state gas exchange). Files: `static/vent/` — `engine.js`, `curriculum.js`, `app.js`, `index.html`.
 - Tests: `node tests/vent_engine.test.js` (physiology vs hand calculations) and `node tests/vent_curriculum.test.js` (every case's starting state fails and its model answer passes).
 
+### Vent Lab on GitHub Pages (public link, no server)
+
+- Live at **https://rammpatel2013-sudo.github.io/bedside-sim/vent/** (landing page at `/bedside-sim/`). Anyone can open it — no Tailscale, no account.
+- Every push to `main` that touches `static/vent/`, `site/` or `tests/` runs the simulator tests, then publishes to the `gh-pages` branch (`.github/workflows/pages.yml`). A failing test blocks the publish.
+- One-time setting (only if the site does not appear): GitHub → repo **Settings → Pages → Build and deployment → Source: Deploy from a branch → Branch: `gh-pages` / root → Save**.
+- Deep links work: `…/vent/?case=<case-id>`, `…/vent/?view=tutorials&tut=tour`, and scenario-builder share links (`…/vent/?s=…`).
+- Only Vent Lab lives here. The two-screen bedside sim, student chart and tracker need the Flask server (live rooms, uploads, sign-in, database) and stay on the NAS.
+
 ### Student chart (orders, results, cost)
 
 - Learners open `http://<nas-ip>:5050/chart?room=<CODE>` (or tap **Student chart** on `/sim`) on their own device. No account.

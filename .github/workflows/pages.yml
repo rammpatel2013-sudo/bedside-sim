@@ -1,0 +1,45 @@
+name: Publish Vent Lab to GitHub Pages
+
+# Every push to main that touches Vent Lab or the landing page runs the simulator tests,
+# then publishes site/ + static/vent/ to the gh-pages branch, which GitHub Pages serves at
+# https://<owner>.github.io/<repo>/  (Vent Lab at /vent/). No server, no cost.
+on:
+  push:
+    branches: [main]
+    paths: ['static/vent/**', 'site/**', 'tests/**', '.github/workflows/pages.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Test the simulator (physiology + every case)
+        run: |
+          node tests/vent_engine.test.js
+          node tests/vent_curriculum.test.js
+      - name: Assemble the site
+        run: |
+          mkdir -p _site/vent
+          cp site/index.html _site/
+          cp static/vent/*.html static/vent/*.js _site/vent/
+          touch _site/.nojekyll
+      - name: Publish to gh-pages
+        run: |
+          cd _site
+          git init -q -b gh-pages
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -q -m "Publish ${GITHUB_SHA::7}"
+          git push -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" gh-pages
