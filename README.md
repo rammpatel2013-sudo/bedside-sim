@@ -39,10 +39,11 @@ Set `HALO_SECURE_COOKIES=1` once it runs behind HTTPS.
 ### Vent Lab (ventilator simulator)
 
 - Open `http://<nas-ip>:5050/vent/` (or tap **Vent Lab** on `/sim`). No account, no room code.
-- **Curriculum**: 36 cases in 10 lessons (trigger/target/cycle, modes, holds and mechanics, CO₂ and oxygen, auto-PEEP, ARDS, dyssynchrony, the crashing patient, liberation). Interactive cases are graded on what the learner's settings do to the patient (plateau, auto-PEEP, missed triggers, pH, SpO₂…), so any sound fix passes. Before/after/model-answer waveforms after each check.
-- **Tutorials**: screen tour with numbered markers, normal VC breath, normal PC/PSV/PRVC waveforms, hold maneuvers, loops, esophageal pressure.
+- **Curriculum**: 40 cases in 10 lessons (trigger/target/cycle, modes, holds and mechanics, CO₂ and oxygen, auto-PEEP, ARDS, dyssynchrony, the crashing patient, liberation). Interactive cases are graded on what the learner's settings do to the patient (plateau, auto-PEEP, missed triggers, pH, SpO₂…), so any sound fix passes. Before/after/model-answer waveforms after each check.
+- **Tutorials**: screen tour with numbered markers, normal VC breath, normal PC/PSV/PRVC waveforms, hold maneuvers, loops, weaning measurements (P0.1, NIF, RSBI), esophageal pressure.
 - **Free play**: five patients (normal, COPD/asthma, ARDS, obesity, awake on PSV) and one-tap events (pneumothorax, plug, bronchospasm, mainstem, cuff leak, disconnect, wake-up, cardiac oscillations).
 - **Scenario builder**: set up the vent and patient, add a question and optional targets, save. "Copy link" gives learners a URL that opens it as a gradable case. Export/import as JSON.
+- **Console** modeled on an ICU ventilator (NKV-550 parameter set, Hamilton-style dynamic lung): waveforms, live-tracing P–V/F–V loops and numerics side by side; Snapshot/Compare puts a reference and the live screen side by side with Δ on every number (cases auto-compare against the case start). Modes: A/CMV and SIMV (VC/PC/PRVC), SPONT (PS/CPAP/VS), APRV. Numerics include estimated (no-hold) plateau, driving pressure, auto-PEEP, C, R, Re, TCe, C20/C, mechanical power, leak, RSBI(/kg), P0.1, NIF, Pmus, WOB, capnography. Quick keys: holds, manual breath, P0.1, NIF.
 - Physics runs in the learner's browser (single-compartment equation of motion with flow limitation, recruitment, Pes/Ptp and steady-state gas exchange). Files: `static/vent/` — `engine.js`, `curriculum.js`, `app.js`, `index.html`.
 - Tests: `node tests/vent_engine.test.js` (physiology vs hand calculations) and `node tests/vent_curriculum.test.js` (every case's starting state fails and its model answer passes).
 

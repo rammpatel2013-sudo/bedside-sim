@@ -90,5 +90,72 @@ check('ARDS PEEP 14 SpO2 > PEEP 5', mid.metrics.spo2 > lo.metrics.spo2 + 3, lo.m
 r = E.simulate({ mode: 'VC', vt: 400, rr: 12, peep: 5, ti: 0.6, trig: 'flow', trig_f: 2 }, { c: 50, r: 10, effort: { on: true, pmax: 10, rate: 18, ti: 1.6 } });
 check('Long effort + short Ti → double triggers', r.metrics.double_min > 3, r.metrics.double_min.toFixed(1) + '/min');
 
+// ---------------- NKV-style additions
+// 13. Breath-by-breath estimates (no hold) match the truth in a passive patient
+r = E.simulate({ mode: 'VC', vt: 500, rr: 15, peep: 5, ti: 1.0, flow: 'square' }, passive);
+near('C est (VC)', r.metrics.c_est, 50, 2.5);
+near('R est (VC)', r.metrics.r_est, 10, 1);
+near('Pplat est (VC)', r.metrics.pplat_est, 15, 0.6);
+near('Driving P est (VC)', r.metrics.pdriving_est, 10, 0.6);
+near('PEEPi est (VC)', r.metrics.peepi_est, 0, 0.5);
+near('Exp. time constant', r.metrics.tce, 0.5, 0.08);
+near('C20/C linear lung', r.metrics.c20c, 1.0, 0.05);
+r = E.simulate({ mode: 'PC', pinsp: 15, rr: 15, peep: 5, ti: 1.0, rise: 0.1 }, passive);
+near('C est (PC)', r.metrics.c_est, 50, 4);
+r = E.simulate({ mode: 'VC', vt: 500, rr: 22, peep: 5, ti: 1.0 }, copd);
+check('PEEPi est sees auto-PEEP', r.metrics.peepi_est > 3, r.metrics.peepi_est && r.metrics.peepi_est.toFixed(1));
+r = E.simulate({ mode: 'VC', vt: 550, rr: 15, peep: 10, ti: 1.0 }, { c: 35, r: 10, od_ml: 600, effort: { on: false } });
+check('C20/C < 0.8 with overdistension', r.metrics.c20c < 0.8, r.metrics.c20c && r.metrics.c20c.toFixed(2));
+
+// 14. SIMV: mandatory at the set rate, extra efforts get pressure support
+const breather = { c: 55, r: 9, effort: { on: true, pmax: 5, rate: 20, ti: 0.9 } };
+r = E.simulate({ mode: 'VC', vtype: 'SIMV', vt: 450, rr: 8, peep: 5, ti: 0.9, psupport: 6 }, breather, { warmup: 40, seconds: 60 });
+near('SIMV total RR = effort rate', r.metrics.rr_actual, 20, 1);
+near('SIMV spontaneous RR ≈ 20 − 8', r.metrics.rr_spont, 12, 1.5);
+check('SIMV spontaneous breaths get PS 6, mandatory get VC', (() => { const b = r.breaths; const sp = b.filter(x => x.spont), md = b.filter(x => !x.spont); return sp.length && md.length && sp.every(x => x.mode === 'PSV' && x.pinsp === 6) && md.every(x => x.mode === 'VC'); })());
+near('SIMV mandatory rate = set rate', r.breaths.filter(x => !x.spont).length, 8, 1);
+r = E.simulate({ mode: 'VC', vtype: 'SIMV', vt: 450, rr: 10, peep: 5, ti: 0.9 }, passive);
+near('SIMV in a passive patient = set rate', r.metrics.rr_actual, 10, 0.5);
+
+// 15. Volume support converges; CPAP label
+r = E.simulate({ mode: 'VS', vt: 450, peep: 5 }, breather, { warmup: 50 });
+near('VS VT ≈ target', r.metrics.vt_patient, 450, 40);
+check('CPAP label at PS 0', E.modeLabel(E.normSettings({ mode: 'PSV', psupport: 0 })) === 'SPONT-CPAP');
+
+// 16. APRV: time-cycled at P-high/P-low, mean pressures, spontaneous breathing on top
+r = E.simulate({ mode: 'APRV', phigh: 26, plow: 0, thigh: 4.5, tlow: 0.5 }, { c: 40, r: 10, effort: { on: true, pmax: 4, rate: 20, ti: 0.8 } });
+near('APRV release rate', r.metrics.rr_actual, 12, 0.5);
+check('APRV P-high mean ≈ 26', Math.abs(r.metrics.ph_mean - 26) < 2, r.metrics.ph_mean.toFixed(1));
+check('APRV P-low mean small', r.metrics.pl_mean < 6, r.metrics.pl_mean.toFixed(1));
+check('APRV short release traps volume (auto-PEEP > 3)', r.metrics.auto_peep > 3, r.metrics.auto_peep.toFixed(1));
+
+// 17. P0.1 and NIF maneuvers
+sim = E.createSim({ mode: 'PSV', psupport: 8, peep: 5 }, awake); sim.advance(20);
+let got = {}; sim.onHold(h => { got[h.kind] = h; });
+sim.queueManeuver('p01'); sim.advance(6);
+near('P0.1 maneuver = Pmus at 100 ms', got.p01 && got.p01.p, E.p01Of(E.normPatient(awake).effort), 0.3);
+sim.queueManeuver('nif'); sim.advance(12);
+near('NIF maneuver ≈ −patient NIF', got.nif && got.nif.p, -45, 4);
+sim = E.createSim({ mode: 'VC', vt: 450, rr: 14, peep: 5 }, passive); sim.advance(15); got = {}; sim.onHold(h => { got[h.kind] = h; });
+sim.queueManeuver('nif'); sim.advance(12);
+check('NIF in a paralyzed patient reads ~0', got.nif && Math.abs(got.nif.p) < 0.5 && got.nif.none, got.nif && got.nif.p.toFixed(2));
+
+// 18. Manual breath, expiratory hold in PSV, capnogram shape
+sim = E.createSim({ mode: 'VC', vt: 450, rr: 6, peep: 5, ti: 1.0 }, passive); sim.advance(12);
+const nb = sim.breaths.length; sim.manualBreath(); sim.advance(1.5);
+check('Manual breath delivered now', sim.breaths.length === nb + 1 || sim.phase === 'insp' || sim.breaths.length > nb);
+sim = E.createSim({ mode: 'PSV', psupport: 8, peep: 5 }, awake); sim.advance(15); got = {}; sim.onHold(h => { got[h.kind] = h; });
+sim.queueHold('exp'); sim.advance(8);
+check('Expiratory hold works in PSV', got.exp && got.exp.p > 3, got.exp && got.exp.p.toFixed(1));
+sim = E.createSim({ mode: 'VC', vt: 500, rr: 12, peep: 5, ti: 1.0 }, passive); sim.advance(10);
+let co2ins = 0, co2late = 0;
+sim.advance(10, s => { if (s.phase === 'insp') co2ins = Math.max(co2ins, s.co2); if (s.phase === 'exp' && s.vol < 80) co2late = Math.max(co2late, s.co2); });
+check('Capnogram: zero in inspiration, plateau late in expiration', co2ins === 0 && co2late > 0.85, co2late.toFixed(2));
+
+// 19. Rest of the monitored set exists and is plausible
+r = E.simulate({ mode: 'PSV', psupport: 8, peep: 5 }, { ...awake, leak: 5 });
+for (const k of ['rr_spont', 'mv_spont', 'ti_spont', 'duty', 'pmus', 'wob_pt', 'p01', 'nif', 'rsbi', 'rsbi_kg', 'leak_peep', 'vleak', 'mech_power', 'vco2', 'etco2', 'spo2'])
+  check(`metric ${k} present`, r.metrics[k] != null && isFinite(r.metrics[k]), r.metrics[k] != null ? (+r.metrics[k]).toFixed(2) : 'null');
+
 console.log(`\n${n - fails}/${n} passed`);
 process.exit(fails ? 1 : 0);

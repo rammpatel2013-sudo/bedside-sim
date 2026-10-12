@@ -18,7 +18,8 @@
 
   // ------------------------------------------------------------------ defaults
   const DEFAULT_SETTINGS = {
-    mode: 'VC',            // VC | PC | PSV | PRVC
+    mode: 'VC',            // VC | PC | PRVC (mandatory) · PSV | VS (spontaneous) · APRV
+    vtype: 'AC',           // AC (A/CMV) | SIMV — how patient triggers are answered in VC/PC/PRVC
     vt: 450,               // mL — VC tidal volume, PRVC target
     rr: 16,                // set (minimum mandatory) rate
     peep: 5,
@@ -26,7 +27,8 @@
     pause: 0,              // % of Ti held with zero flow (VC)
     flow: 'square',        // square | decel (VC)
     pinsp: 12,             // cmH2O above PEEP (PC)
-    psupport: 10,          // cmH2O above PEEP (PSV)
+    psupport: 10,          // cmH2O above PEEP (PSV, and spontaneous breaths in SIMV)
+    phigh: 25, plow: 5, thigh: 4.0, tlow: 0.6,   // APRV
     rise: 0.15,            // s — pressure rise time (PC/PSV/PRVC)
     cycle: 25,             // % of peak flow (PSV expiratory trigger)
     trig: 'flow',          // flow | pressure
@@ -53,6 +55,8 @@
     recruit: { on: false, popt: 14, width: 6, shunt_min: 0.08 },  // PEEP-dependent compliance & shunt
     effort: { on: false, pmax: 6, rate: 16, ti: 0.9, push: 0 },     // push = active expiratory effort (cmH2O)
     leak: 0,               // L/min at 10 cmH2O
+    nif: 45,               // cmH2O — maximal inspiratory pressure the patient can generate (NIF maneuver)
+    pi: 3.5,               // perfusion index for the pulse oximeter
     disconnect: false, secretions: false, cardiac: false, hr: 88
   };
 
@@ -97,6 +101,31 @@
     return out;
   }
   const normSettings = s => deepMerge(DEFAULT_SETTINGS, s || {});
+  const isSpontMode = S => S.mode === 'PSV' || S.mode === 'VS';
+  const peepOf = S => (S.mode === 'APRV' ? S.plow : S.peep);
+  function modeLabel(S) {
+    if (S.mode === 'APRV') return 'APRV';
+    if (S.mode === 'PSV') return S.psupport > 0 ? 'SPONT-PS' : 'SPONT-CPAP';
+    if (S.mode === 'VS') return 'SPONT-VS';
+    return S.vtype === 'SIMV' ? `SIMV-${S.mode}-PS` : `A/CMV-${S.mode}`;
+  }
+  // least squares: rows of regressors x[], targets y[] -> coefficients (null if singular)
+  function lsq(X, y) {
+    const n = X[0].length, A = [], b = new Array(n).fill(0);
+    for (let a = 0; a < n; a++) A.push(new Array(n).fill(0));
+    for (let i = 0; i < X.length; i++) { const x = X[i]; for (let a = 0; a < n; a++) { b[a] += x[a] * y[i]; for (let c = 0; c < n; c++) A[a][c] += x[a] * x[c]; } }
+    for (let a = 0; a < n; a++) A[a][a] += 1e-9 + A[a][a] * 1e-9;
+    const M = A.map((r, i) => r.concat([b[i]]));
+    for (let c = 0; c < n; c++) {
+      let p = c; for (let r = c + 1; r < n; r++) if (Math.abs(M[r][c]) > Math.abs(M[p][c])) p = r;
+      if (Math.abs(M[p][c]) < 1e-12) return null;
+      const tmp = M[c]; M[c] = M[p]; M[p] = tmp;
+      for (let r = 0; r < n; r++) { if (r === c) continue; const f = M[r][c] / M[c][c]; for (let k = c; k <= n; k++) M[r][k] -= f * M[c][k]; }
+    }
+    return M.map((r, i) => r[n] / r[i]);
+  }
+  // muscle pressure 0.1 s after effort onset (what an occlusion at onset reads as P0.1)
+  const p01Of = e => (e && e.on && e.pmax > 0 ? e.pmax * Math.sin(Math.PI / 2 * Math.min(1, 0.1 / (0.5 * Math.max(0.2, e.ti)))) : 0);
   const normPatient = p => deepMerge(DEFAULT_PATIENT, p || {});
 
   function pbw(p) {
@@ -162,7 +191,7 @@
     const holdListeners = [];
 
     let t = 0;
-    let rec = recruitState(P, S.peep);
+    let rec = recruitState(P, peepOf(S));
     let cf = rec.cf;
     const C = () => (P.c / 1000) * cf;                                   // L/cmH2O
     const splitNow = () => splitCompliance(P.c * cf, P.ccw);
@@ -172,7 +201,7 @@
     const odTerm = v => (v > odV() ? (P.od_k || 40) * Math.pow(v - odV(), 2) : 0);
     const Pel = v => v / C() + odTerm(v);
 
-    let V = S.peep * C();                    // start at the set-PEEP equilibrium
+    let V = peepOf(S) * C();                 // start at the set-PEEP equilibrium
     let phase = 'exp';
     let br = null;                           // current breath record
     let breathIdx = -1;
@@ -181,6 +210,11 @@
     let inspEnd = -1e9;
     let backupActive = false;
     let prvcP = null;                        // PRVC adaptive Pinsp
+    let vsP = null;                          // volume-support adaptive pressure
+    let manualQ = false, maneuverQ = null, maneuverQT = 0, occl = null;
+    let lastCo2 = 0, lastVt = 0.45;
+    let simvCyc = 0, simvDone = false;        // SIMV: fixed cycles, one mandatory breath per cycle
+    const anat = () => 2.2 * pbw(P) / 1000;  // L anatomic dead space
     let holdQueue = null, holdEnd = 0;
     let ppeakLimitHit = false;
     let lastSample = null;
@@ -197,6 +231,9 @@
       while (tt >= effStart) {               // start a new neural breath
         effIdx++;
         curEffort = { idx: effIdx, start: effStart, ti: e.ti, breaths: [], onsetPhase: phase };
+        if (maneuverQ === 'p01' && phase === 'exp' && !P.disconnect) {   // occlude the airway for the first 100 ms of this effort
+          maneuverQ = null; phase = 'occl'; occl = { kind: 'p01', t0: effStart, end: effStart + 0.1, p0: Pel(V), pmin: Pel(V) };
+        }
         efforts.push(curEffort);
         if (efforts.length > 400) efforts.shift();
         effStart += per;
@@ -231,52 +268,76 @@
     function startBreath(type) {
       if (br) finalizeBreath();
       if (pending) { S = pending; pending = null; }
+      const peep = peepOf(S);
       // recruitment drifts toward the state set by the last breath's true total PEEP
-      const ptotTrue = br ? br.endExpPel : S.peep;
+      const ptotTrue = br ? br.endExpPel : peep;
       rec = recruitState(P, ptotTrue);
       cf = cf + (rec.cf - cf) * 0.35;
       breathIdx++;
-      const mode = type === 'B' ? 'PC' : S.mode;
-      let ptarget = null;
-      if (mode === 'PC') ptarget = type === 'B' ? S.backup.pinsp : S.pinsp;
-      if (mode === 'PSV') ptarget = S.psupport;
-      if (mode === 'PRVC') {
-        if (prvcP == null) prvcP = 10;
-        ptarget = prvcP;
+      // what kind of breath this trigger gets
+      let kind, ptarget = null, ti = S.ti, cycle = 'time', spont = false, rrFor = S.rr;
+      if (type === 'B') { kind = 'PC'; ptarget = S.backup.pinsp; ti = S.backup.ti; rrFor = S.backup.rr; }
+      else if (S.mode === 'APRV') { kind = 'APRV'; ptarget = Math.max(0, S.phigh - S.plow); ti = S.thigh; rrFor = 60 / Math.max(0.2, S.thigh + S.tlow); }
+      else if (S.mode === 'PSV') { kind = 'PSV'; ptarget = S.psupport; cycle = 'flow'; spont = true; }
+      else if (S.mode === 'VS') { kind = 'VS'; if (vsP == null) vsP = 10; ptarget = vsP; cycle = 'flow'; spont = true; }
+      else if (type === 'S') { kind = 'PSV'; ptarget = S.psupport; cycle = 'flow'; spont = true; }
+      else {
+        kind = S.mode;
+        if (kind === 'PC') ptarget = S.pinsp;
+        if (kind === 'PRVC') { if (prvcP == null) prvcP = 10; ptarget = prvcP; }
       }
-      const ti = type === 'B' ? S.backup.ti : S.ti;
       br = {
-        idx: breathIdx, start: t, type, mode, ti, ptarget, set: S,
-        pause: mode === 'VC' ? clamp(S.pause || 0, 0, 60) / 100 : 0,
+        idx: breathIdx, start: t, type, mode: kind, cycle, spont, ti, ptarget, set: S, peep,
+        pause: kind === 'VC' ? clamp(S.pause || 0, 0, 60) / 100 : 0,
         flowPattern: S.flow, vtSet: S.vt / 1000,
-        qpk: 0, vtiDel: 0, vtiPt: 0, vte: 0, ppeak: -1e9, psum: 0, n: 0, pminIns: 1e9,
-        inspEndT: null, endInspPel: null, pplat: null, ptot: null, holdType: null,
+        qpk: 0, vtiDel: 0, vtiPt: 0, vte: 0, vex: 0, ppeak: -1e9, psum: 0, n: 0, pminIns: 1e9,
+        inspEndT: null, endInspPel: null, pplat: null, ptot: null, holdType: null, qEndIns: null,
         endExpFlow: null, endExpPel: null, highP: false, pts: [], ptsK: 0,
-        artifactTrigger: false
+        artifactTrigger: false, pmusMax: 0, wob: 0, hiSum: 0, hiN: 0, loSum: 0, loN: 0,
+        fitX: [], fitY: [], insX: [], insY: [], fitK: 0, vmax: 0
       };
       if (curEffort && t - curEffort.start <= Math.max(0.2, P.effort.ti) + 0.25) curEffort.breaths.push(breathIdx);
       lastBreathStart = t;
       phase = 'insp';
       vdisp = 0;
       ppeakLimitHit = false;
-      const rr = type === 'B' ? S.backup.rr : S.rr;
-      nextMandatory = t + 60 / Math.max(1, rr);
+      if (type !== 'S') nextMandatory = t + 60 / Math.max(1, rrFor);   // SIMV spontaneous breaths keep the mandatory clock
     }
 
     function endInspiration() {
       br.inspEndT = t;
       br.endInspPel = Pel(V);
+      br.qEndIns = lastSample ? lastSample.flow : null;
       if (holdQueue === 'insp' && !P.disconnect) {
         holdQueue = null; phase = 'ihold'; holdEnd = t + 0.8; br.holdType = 'insp';
       } else { phase = 'exp'; inspEnd = t; }
-      if (S.mode === 'PRVC' && br.mode === 'PRVC') {
-        // adapt next breath's pressure toward the target volume (max ±3 cmH2O per breath)
+      // adaptive pressure modes move toward the target volume (max ±3 cmH2O per breath)
+      if (br.mode === 'PRVC' || br.mode === 'VS') {
         const vt = br.vtiPt;
         const cEst = vt > 0.02 ? vt / Math.max(1, br.ptarget) : C();
         const err = br.vtSet - vt;
-        const pmax = Math.max(6, S.alarms.paw_hi - 5 - S.peep);
-        prvcP = clamp(br.ptarget + clamp(err / cEst, -3, 3), 5, pmax);
+        const pmax = Math.max(6, S.alarms.paw_hi - 5 - peepOf(S));
+        const next = clamp(br.ptarget + clamp(err / cEst, -3, 3), br.mode === 'VS' ? 2 : 5, pmax);
+        if (br.mode === 'PRVC') prvcP = next; else vsP = next;
       }
+    }
+
+    // breath-by-breath least-squares estimates (what the ventilator reports as "EST" without a hold)
+    function estimates(b) {
+      const out = {};
+      if (b.fitX.length >= 25) {
+        const th = lsq(b.fitX, b.fitY);   // Paw = E·V + Ri·Qinsp + Re·Qexp + P0
+        if (th && th[0] > 2 && th[0] < 1000) {
+          const vt = b.vmax;
+          out.cEst = 1000 / th[0]; out.rEst = th[1] > 0 ? th[1] : null; out.reEst = th[2] > 0 ? th[2] : null;
+          out.peepiEst = Math.max(0, th[3] - b.peep); out.pplatEst = th[3] + th[0] * vt; out.pdrivingEst = th[0] * vt;
+        }
+      }
+      if (b.mode === 'VC' && b.insX.length >= 25) {
+        const th = lsq(b.insX, b.insY);   // Paw = E1·V + E2·V² + R·Q + P0 (inspiration only)
+        if (th && th[0] > 2) { const vt = b.vmax; out.c20c = (th[0] + th[1] * vt) / (th[0] + 1.8 * th[1] * vt); }
+      }
+      return out;
     }
 
     function finalizeBreath() {
@@ -288,18 +349,22 @@
       b.tiActual = (b.inspEndT - b.start);
       b.te = Math.max(0.01, b.ttot - b.tiActual);
       const effOn = P.effort && P.effort.on;
+      const est = estimates(b);
       const sum = {
-        idx: b.idx, t0: b.start, type: b.type, mode: b.mode,
+        idx: b.idx, t0: b.start, type: b.type, mode: b.mode, spont: b.spont,
         ppeak: b.ppeak, pmean: b.n ? b.psum / b.n : 0,
         vti: b.vtiDel * 1000, vtiPt: b.vtiPt * 1000, vte: b.vte * 1000,
         ti: b.tiActual, te: b.te, ttot: b.ttot, ie: b.te / Math.max(0.01, b.tiActual),
-        pinsp: b.ptarget, pplat: b.pplat, ptot: b.ptot,
-        pplatTrue: b.endInspPel, ptotTrue: b.endExpPel, autoPeepTrue: b.endExpPel - b.set.peep,
-        endExpFlow: b.endExpFlow, peep: b.set.peep, highP: b.highP,
-        scoop: b.pminIns < 1e8 ? b.set.peep - b.pminIns : null,
-        overshoot: b.ptarget != null ? b.ppeak - (b.set.peep + b.ptarget) : null,
-        falseTrigger: b.type === 'P' && (!effOn || !nearEffort(b.start)),
+        pinsp: b.ptarget, pplat: b.pplat, ptot: b.ptot, qEndIns: b.qEndIns,
+        pplatTrue: b.endInspPel, ptotTrue: b.endExpPel, autoPeepTrue: b.endExpPel - b.peep,
+        endExpFlow: b.endExpFlow, peep: b.peep, highP: b.highP,
+        scoop: b.pminIns < 1e8 ? b.peep - b.pminIns : null,
+        overshoot: b.ptarget != null && b.mode !== 'APRV' ? b.ppeak - (b.peep + b.ptarget) : null,
+        falseTrigger: (b.type === 'P' || b.type === 'S') && (!effOn || !nearEffort(b.start)),
         artifactTrigger: b.artifactTrigger,
+        pmusMax: b.pmusMax, wob: b.wob,
+        phMean: b.hiN ? b.hiSum / b.hiN : null, plMean: b.loN ? b.loSum / b.loN : null,
+        ...est,
         pts: b.pts, cf, rec
       };
       for (const fn of listeners) fn(sum);
@@ -318,38 +383,60 @@
 
     const breaths = [];
     let lastBreath = null;
+    const emitHold = h => { for (const fn of holdListeners) fn(h); };
 
     function step() {
       t += dt;
       const pmus = effortAt(t);
-      const c = C(), peep = S.peep;
+      const c = C(), peep = peepOf(S);
       const kL = leakK();
+      const spontMode = isSpontMode(S);
       let paw, qp, qmeas;
+
+      // ---- SIMV cycle clock (runs whatever the breath phase)
+      const simv = S.vtype === 'SIMV' && !spontMode && S.mode !== 'APRV';
+      if (simv) {
+        const per = 60 / Math.max(1, S.rr);
+        if (t >= simvCyc + per) { simvCyc += per * Math.max(1, Math.floor((t - simvCyc) / per)); simvDone = false; }
+      }
+
+      // ---- maneuvers that wait for the right moment
+      if (maneuverQ === 'p01' && t - maneuverQT > 12) { maneuverQ = null; emitHold({ kind: 'p01', p: 0, none: true, t }); }
 
       // ---- triggering / breath scheduling during expiration
       if (phase === 'exp' || phase === 'ehold') {
         if (phase === 'ehold' && t >= holdEnd) {
-          br.ptot = Pel(V) - pmus; phase = 'exp';
-          for (const fn of holdListeners) fn({ kind: 'exp', p: br.ptot, t });
-          startBreath(S.mode === 'PSV' ? 'B' : 'M');
+          br.ptot = Pel(V) - pmus; phase = 'exp'; inspEnd = t - 0.3;
+          emitHold({ kind: 'exp', p: br.ptot, t });
+          if (!spontMode && !simv) startBreath('M');
         } else if (phase === 'exp') {
           const sinceIns = t - inspEnd;
           let fire = null;
-          if (!P.disconnect && lastSample && sinceIns > 0.2) {
+          if (!P.disconnect && lastSample && sinceIns > 0.2 && S.mode !== 'APRV') {
             if (S.trig === 'flow' && lastSample.flow >= S.trig_f) fire = 'P';
             if (S.trig === 'pressure' && lastSample.paw <= peep + S.trig_p) fire = 'P';
           }
-          if (fire) {
+          if (maneuverQ === 'nif' && sinceIns > 0.6 && !P.disconnect) {
+            maneuverQ = null; phase = 'occl'; occl = { kind: 'nif', t0: t, end: t + 8, p0: Pel(V), pmin: Pel(V) };
+          } else if (manualQ && sinceIns > 0.3) {
+            manualQ = false; startBreath(spontMode ? 'B' : 'M');
+          } else if (fire) {
             const art = lastSample && lastSample.artTrig;
-            if (S.mode === 'PSV') backupActive = false;
-            startBreath('P');
+            if (spontMode) { backupActive = false; startBreath('P'); }
+            else if (simv) { startBreath(simvDone ? 'S' : 'P'); simvDone = true; }
+            else startBreath('P');
             br.artifactTrigger = !!art;
-          } else if (S.mode !== 'PSV' && t >= nextMandatory) {
+          } else if (simv) {
+            if (holdQueue === 'exp' && !P.disconnect && sinceIns > 0.8) { holdQueue = null; phase = 'ehold'; holdEnd = t + 1.5; br.holdType = 'exp'; }
+            // no effort in the cycle's mandatory window: deliver the mandatory breath on time
+            else if (!simvDone && t >= simvCyc + 0.6 * (60 / Math.max(1, S.rr)) && sinceIns > 0.2) { simvDone = true; startBreath('M'); }
+          } else if (!spontMode && t >= nextMandatory) {
             if (holdQueue === 'exp' && !P.disconnect) {
               holdQueue = null; phase = 'ehold'; holdEnd = t + 1.5; br.holdType = 'exp';
             } else startBreath('M');
-          } else if (S.mode === 'PSV') {
-            if (!backupActive && t - lastBreathStart >= S.alarms.apnea) { backupActive = true; startBreath('B'); }
+          } else if (spontMode) {
+            if (holdQueue === 'exp' && !P.disconnect && sinceIns > 0.8) { holdQueue = null; phase = 'ehold'; holdEnd = t + 1.5; br.holdType = 'exp'; }
+            else if (!backupActive && t - lastBreathStart >= S.alarms.apnea) { backupActive = true; startBreath('B'); }
             else if (backupActive && t >= nextMandatory) startBreath('B');
           }
         }
@@ -357,6 +444,7 @@
 
       const R = Rin(), Re = Rex();
       const tau = br ? t - br.start : 0;
+      let fitPhase = null;
 
       if (P.disconnect) {
         // circuit open at the patient: airway at atmosphere; ventilator blows into the room
@@ -371,8 +459,9 @@
         } else if (phase === 'insp') phase = 'exp';
         paw = 0.4 + 0.6 * qv;
         qmeas = qv;
-        if (phase === 'ihold' || phase === 'pause') phase = 'exp';
+        if (phase === 'ihold' || phase === 'pause' || phase === 'occl') phase = 'exp';
       } else if (phase === 'insp') {
+        fitPhase = 'i';
         const m = br.mode;
         if (m === 'VC') {
           const tflow = Math.max(0.15, br.ti * (1 - br.pause));
@@ -386,7 +475,7 @@
           qmeas = qset;
           if (tau >= tflow) { if (br.pause > 0) phase = 'pause'; else endInspiration(); }
         } else {
-          // pressure-targeted: PC / PSV / PRVC / backup
+          // pressure-targeted: PC / PSV / PRVC / VS / APRV high / backup
           const rise = Math.max(0.01, S.rise || 0.01);
           const frac = clamp(tau / rise, 0, 1);
           let ptgt = peep + br.ptarget * (1 - Math.pow(1 - frac, 2));
@@ -396,32 +485,49 @@
           const od = odTerm(V);
           V = (V + dt * (paw - od + pmus) / R) / (1 + dt / (R * c));
           qp = (paw - Pel(V) + pmus) / R;
+          if (m === 'APRV' && qp < 0) {                 // exhaling at P-high goes out through the active valve
+            V = (V + dt * (paw - od + pmus) / Re) / (1 + dt / (Re * c)) ; qp = (paw - Pel(V) + pmus) / Re;
+          }
           qmeas = qp + kL * paw;
           if (qp > br.qpk) br.qpk = qp;
-          if (m === 'PSV') {
+          if (br.cycle === 'flow') {
             if (tau > 0.12 && br.qpk > 0.05 && qp <= (S.cycle / 100) * br.qpk) endInspiration();
             else if (tau > 0.12 && paw > peep + br.ptarget + 3) endInspiration();
             else if (tau >= 3.0) endInspiration();
           } else if (tau >= br.ti) endInspiration();
         }
-      } else if (phase === 'pause' || phase === 'ihold' || phase === 'ehold') {
+      } else if (phase === 'pause' || phase === 'ihold' || phase === 'ehold' || phase === 'occl') {
+        if (phase === 'pause') fitPhase = 'i';
         qp = 0;
-        paw = Pel(V) - pmus;
+        let pm = pmus;
+        if (phase === 'occl' && occl && occl.kind === 'nif') pm = P.effort.on && P.effort.pmax > 0 ? (pmus / P.effort.pmax) * P.nif : 0;
+        paw = Pel(V) - pm;
         qmeas = kL * paw;
         if (phase === 'pause' && tau >= br.ti) endInspiration();
         if (phase === 'ihold' && t >= holdEnd) {
           br.pplat = paw; phase = 'exp'; inspEnd = t;
-          for (const fn of holdListeners) fn({ kind: 'insp', p: paw, vt: br.vtiPt * 1000, ppeak: br.ppeak, t });
+          emitHold({ kind: 'insp', p: paw, vt: br.vtiPt * 1000, ppeak: br.ppeak, qEndIns: br.qEndIns, t });
+        }
+        if (phase === 'occl') {
+          if (paw < occl.pmin) occl.pmin = paw;
+          if (t >= occl.end) {
+            const k = occl.kind;
+            phase = 'exp'; inspEnd = t - 0.25;
+            if (k === 'p01') emitHold({ kind: 'p01', p: Math.max(0, occl.p0 - paw), t });
+            else { emitHold({ kind: 'nif', p: Math.min(0, occl.pmin - occl.p0), none: !(P.effort.on && P.effort.pmax > 0), t }); if (!spontMode && !simv) startBreath('M'); }
+            occl = null;
+          }
         }
       } else {
-        // expiration — valve holds PEEP
+        // expiration — valve holds PEEP (APRV: P-low)
+        fitPhase = 'e';
         const pal = Pel(V) - pmus;
         // expiratory flow limitation ("waterfall"): small airways close at pcrit, so the
         // alveolus empties toward max(PEEP, pcrit), not toward PEEP
         const dn = Math.max(peep, P.pcrit || 0);
         const od = odTerm(V);
         paw = peep;
-        if (pal < peep && S.trig === 'pressure') {
+        if (pal < peep && S.trig === 'pressure' && S.mode !== 'APRV') {
           // circuit closed (no bias flow): patient effort decompresses the circuit
           qp = 0; paw = pal;
         } else if (pal > dn) {
@@ -448,6 +554,7 @@
       const pes = P.pes0 + pplLike;
 
       // ---- breath accounting
+      let co2 = lastCo2;
       if (br) {
         const inIns = phase === 'insp' || phase === 'pause' || phase === 'ihold';
         if (inIns) {
@@ -455,20 +562,37 @@
           br.vtiPt += Math.max(0, qp) * dt;
           if (phase === 'insp' && pawM > br.ppeak) br.ppeak = pawM;
           if (phase === 'insp' && t - br.start > 0.1 && paw < br.pminIns) br.pminIns = paw;
+          br.hiSum += pawM; br.hiN++;
+          co2 = 0;
         } else if (!P.disconnect) {
           br.vte += Math.max(0, -qp) * dt;
-        }
+          if (phase === 'exp') {
+            br.vex += Math.max(0, -qp) * dt; br.loSum += pawM; br.loN++;
+            const x = br.vex / anat(), vtRef = Math.max(anat() * 1.6, lastVt);
+            co2 = x < 0.5 ? 0 : x < 1.3 ? 0.85 * (x - 0.5) / 0.8 : 0.85 + 0.15 * clamp((br.vex - 1.3 * anat()) / (vtRef - 1.3 * anat()), 0, 1);
+          }
+        } else co2 = 0;
+        if (pmus > br.pmusMax) br.pmusMax = pmus;
+        if (qp > 0 && pmus > 0) br.wob += pmus * qp * dt;
+        if (vdisp / 1000 > br.vmax && inIns) br.vmax = vdisp / 1000;
         br.psum += pawM; br.n++;
         if ((br.mode === 'VC' || br.mode === 'PRVC') && phase === 'insp' && pawM >= S.alarms.paw_hi && !ppeakLimitHit) {
           ppeakLimitHit = true; br.highP = true; endInspiration();
         }
         if (++br.ptsK % 3 === 0 && br.pts.length < 1500) br.pts.push([pawM, flowM, vdisp]);
+        if (fitPhase && !P.disconnect && (++br.fitK % 2 === 0) && br.fitX.length < 2000) {
+          const q = flowM / 60, v = vdisp / 1000;
+          br.fitX.push([v, fitPhase === 'i' ? q : 0, fitPhase === 'e' ? q : 0, 1]); br.fitY.push(pawM);
+          if (fitPhase === 'i' && t - br.start > 0.1 && br.insX.length < 1000) { br.insX.push([v, v * v, q, 1]); br.insY.push(pawM); }
+        }
       }
+      if (br && phase === 'exp' && lastSample && lastSample.phase !== 'exp') lastVt = Math.max(0.05, br.vtiPt);
+      lastCo2 = co2;
 
       const artTrig = (S.trig === 'flow' && qmeas * 60 < S.trig_f && flowM >= S.trig_f) ||
                       (S.trig === 'pressure' && paw > peep + S.trig_p && pawM <= peep + S.trig_p);
       lastSample = {
-        t, paw: pawM, flow: flowM, vol: vdisp, pes, ptp: pawM - pes, pmus,
+        t, paw: pawM, flow: flowM, vol: vdisp, pes, ptp: pawM - pes, pmus, co2,
         palv: Pel(V) - pmus, phase, breath: br ? br.idx : -1, artTrig
       };
       return lastSample;
@@ -498,6 +622,9 @@
       get efforts() { return efforts; },
       get holdQueued() { return holdQueue; },
       get prvcPinsp() { return prvcP; },
+      get vsPinsp() { return vsP; },
+      get maneuverQueued() { return maneuverQ; },
+      get occlusion() { return occl; },
       get recruit() { return { cf, ...rec }; },
       setSettings(s) { pending = normSettings(s); if (!br) { S = pending; pending = null; } },
       setSettingsNow(s) { S = normSettings(s); pending = null; },
@@ -510,6 +637,8 @@
       },
       queueHold(kind) { holdQueue = kind === 'exp' ? 'exp' : 'insp'; },
       cancelHold() { holdQueue = null; },
+      manualBreath() { manualQ = true; },
+      queueManeuver(kind) { maneuverQ = kind === 'nif' ? 'nif' : 'p01'; maneuverQT = t; },
       onBreath(fn) { listeners.push(fn); },
       onHold(fn) { holdListeners.push(fn); },
       advance,
@@ -533,7 +662,8 @@
     const missed = effOn ? effs.filter(e => e.breaths.length === 0 && (e.onsetPhase === 'exp' || e.onsetPhase === 'ehold')).length : 0;
     const dbl = effOn ? effs.filter(e => e.breaths.length >= 2).length : 0;
     const falseTrig = bs.filter(b => b.falseTrigger).length;
-    const rec = recruitState(P, ptot != null ? ptot : S.peep);
+    const peepS = peepOf(S);
+    const rec = recruitState(P, ptot != null ? ptot : peepS);
     const g = gasExchange({
       vt: vtPt || 0, rr: rrActual, vd: P.vd + rec.vdExtra, fio2: S.fio2, hco3: P.hco3, vco2: P.vco2,
       shunt: rec.shunt, hb: P.hb, vo2: P.vo2, co: P.co, pbw: pbw(P)
@@ -543,7 +673,7 @@
       breaths: bs.length, rr_actual: rrActual,
       vte, vti, vt_patient: vtPt, vt_per_kg: vtPt != null ? vtPt / w : null, pbw: w,
       ppeak: avg(b => b.ppeak), ppeak_max: max(b => b.ppeak), pmean: avg(b => b.pmean),
-      pplat, peep_tot: ptot, auto_peep: ptot != null ? ptot - S.peep : null,
+      pplat, peep_tot: ptot, auto_peep: ptot != null ? ptot - peepS : null,
       driving_p: pplat != null && ptot != null ? pplat - ptot : null,
       cstat: pplat != null && ptot != null && pplat - ptot > 0.5 ? vtPt / (pplat - ptot) : null,
       mv: vte != null ? (vte * rrActual) / 1000 : null,
@@ -554,11 +684,35 @@
       scoop: avg(b => b.scoop), overshoot: avg(b => b.overshoot),
       false_trig_min: falseTrig / span, missed_min: missed / span, double_min: dbl / span,
       high_p_breaths: bs.filter(b => b.highP).length,
-      patient_trig_frac: bs.length ? bs.filter(b => b.type === 'P').length / bs.length : 0,
-      fio2: S.fio2, peep: S.peep, mode: S.mode,
+      patient_trig_frac: bs.length ? bs.filter(b => b.type === 'P' || b.type === 'S').length / bs.length : 0,
+      fio2: S.fio2, peep: peepS, mode: S.mode, mode_label: modeLabel(S),
       rsbi: vtPt ? rrActual / (vtPt / 1000) : null,
       ...g
     };
+    // spontaneous breathing, estimated mechanics and the rest of the monitored set
+    const sp = bs.filter(b => b.spont);
+    m.rr_spont = S.mode === 'APRV' ? (effOn ? P.effort.rate : 0) : (covered > 0 ? (sp.length / covered) * 60 : 0);
+    m.mv_spont = covered > 0 ? (sp.reduce((a, b) => a + b.vte, 0) / covered) * 60 / 1000 : 0;
+    m.ti_spont = avg(b => b.ti, sp);
+    m.duty = avg(b => b.ti / b.ttot);
+    m.c_est = avg(b => b.cEst); m.r_est = avg(b => b.rEst); m.re_est = avg(b => b.reEst);
+    m.peepi_est = avg(b => b.peepiEst); m.pplat_est = avg(b => b.pplatEst); m.pdriving_est = avg(b => b.pdrivingEst);
+    m.c20c = avg(b => b.c20c);
+    m.tce = m.re_est != null && m.c_est != null ? (m.re_est * m.c_est) / 1000 : null;
+    const dp = m.pdriving_est != null ? m.pdriving_est : m.driving_p;
+    m.mech_power = vtPt != null && m.ppeak != null && dp != null ? 0.098 * rrActual * (vtPt / 1000) * (m.ppeak - 0.5 * dp) : null;
+    m.pmus = effOn ? avg(b => b.pmusMax) : 0;
+    m.wob_pt = effOn && covered > 0 ? 0.098 * (bs.reduce((a, b) => a + b.wob, 0) / covered) * 60 : 0;
+    m.p01 = p01Of(P.effort);
+    m.nif = effOn && P.effort.pmax > 0 ? -P.nif : 0;
+    m.leak_peep = P.leak > 0 ? (P.leak / 10) * peepS : 0;
+    m.vleak = vti != null && vte != null ? Math.max(0, vti - vte) : null;
+    m.rsbi_kg = m.rsbi != null && m.vt_per_kg ? rrActual / m.vt_per_kg : null;
+    m.ph_mean = S.mode === 'APRV' ? avg(b => b.phMean) : null;
+    m.pl_mean = S.mode === 'APRV' ? avg(b => b.plMean) : null;
+    m.th_tl = S.mode === 'APRV' ? S.thigh / Math.max(0.05, S.tlow) : null;
+    m.vco2 = P.vco2; m.pr = P.hr; m.pi = P.pi;
+    m.pinsp_adaptive = S.mode === 'PRVC' ? sim.prvcPinsp : S.mode === 'VS' ? sim.vsPinsp : null;
     return m;
   }
 
@@ -573,7 +727,7 @@
     let k = 0;
     const t0 = sim.t;
     sim.advance(secs, s => {
-      if (k++ % every === 0 || s.mark) samples.push({ t: s.t - t0, paw: s.paw, flow: s.flow, vol: s.vol, pes: s.pes, pmus: s.pmus, mark: s.mark || null, phase: s.phase });
+      if (k++ % every === 0 || s.mark) samples.push({ t: s.t - t0, paw: s.paw, flow: s.flow, vol: s.vol, pes: s.pes, ptp: s.ptp, pmus: s.pmus, co2: s.co2, breath: s.breath, mark: s.mark || null, phase: s.phase });
     });
     const metrics = computeMetrics(sim, t0, sim.t);
     return { samples, metrics, breaths: sim.breaths.filter(b => b.t0 >= t0), sim };
@@ -598,7 +752,7 @@
 
   return {
     DEFAULT_SETTINGS, DEFAULT_PATIENT, PRESETS,
-    normSettings, normPatient, deepMerge, pbw, splitCompliance, recruitState, gasExchange,
+    normSettings, normPatient, deepMerge, pbw, splitCompliance, recruitState, gasExchange, isSpontMode, peepOf, modeLabel, lsq, p01Of,
     createSim, simulate, computeMetrics, alarmsFor, clamp
   };
 }));

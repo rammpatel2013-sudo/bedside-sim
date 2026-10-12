@@ -250,6 +250,22 @@
       points: ['PSV: patient-triggered, pressure-targeted, flow-cycled.', 'Titrate support to tidal volume and rate, and watch for signs of distress.', 'There is no backup rate unless the apnea alarm switches one on.']
     },
 
+    {
+      id: 'm-simv', lesson: 2, type: 'mcq', title: 'SIMV: two kinds of breath',
+      start: { preset: 'normal', settings: { mode: 'VC', vtype: 'SIMV', vt: 450, rr: 8, peep: 5, ti: 0.9, psupport: 0, fio2: 0.4 }, patient: { ...MALE, c: 55, r: 9, effort: { on: true, pmax: 4, rate: 22, ti: 0.9 } } },
+      lock: ['mode'],
+      question: 'SIMV-VC with a set rate of 8 and pressure support 0. The patient breathes about 22 times a minute. Look at the breaths marked "S" between the full-size volume-control breaths.\n\nWhat explains the small "S" breaths?',
+      choices: [
+        { text: 'Between mandatory breaths the patient breathes on their own, helped only by the pressure support — here none', correct: true, why: 'SIMV gives one synchronized mandatory breath per cycle; every other effort gets only pressure support.' },
+        { text: 'The ventilator is failing to deliver the set volume', why: 'The mandatory breaths are full size; only the spontaneous ones are small.' },
+        { text: 'Auto-PEEP is shrinking every other breath', why: 'The pattern follows the SIMV cycle, not gas trapping.' },
+        { text: 'The flow trigger is too sensitive', why: 'A sensitive trigger adds breaths; it does not make them small.' }
+      ],
+      then: { settings: { psupport: 8 } },
+      explain: 'In SIMV each cycle (60 ÷ set rate) has one mandatory breath, synchronized to the first effort in the cycle\'s window. Other efforts are spontaneous breaths: in SIMV-VC-PS they get the set pressure support. With PS 0 those breaths can be tiny and the work of breathing high, which is why pure SIMV fell out of favour for weaning. After you answer, pressure support goes to 8: watch the "S" breaths grow.',
+      points: ['SIMV = set-rate mandatory breaths + supported spontaneous breaths.', 'Spontaneous breaths depend on the patient\'s effort plus the PS level.', 'Low PS in SIMV can mean high work of breathing between mandatory breaths.']
+    },
+
     // ---------------------------------------------------------------- Lesson 3
     {
       id: 'k-cstat', lesson: 3, type: 'numeric', title: 'Measure static compliance',
@@ -292,6 +308,22 @@
       ],
       explain: 'When the plateau rises with the peak, the problem is the stiffness of the lungs or the chest wall. Examine for asymmetry, check tube depth on the chest film, and use ultrasound for lung sliding and effusion. A plateau above 30 cmH₂O is also a lung-injury risk in its own right.',
       points: ['Plateau tracks the lungs and chest wall.', 'Keep plateau ≤ 30 cmH₂O.', 'Sudden plateau rise with hypotension is a tension pneumothorax until proven otherwise.']
+    },
+
+    {
+      id: 'k-est', lesson: 3, type: 'mcq', title: 'Estimated mechanics and patient effort',
+      start: { preset: 'normal', settings: { mode: 'VC', vt: 450, rr: 14, peep: 5, ti: 0.9 }, patient: { ...MALE, c: 50, r: 10, effort: { on: true, pmax: 9, rate: 20, ti: 1.0 } } },
+      view: { pmus: true },
+      question: 'The ventilator estimates compliance, resistance and plateau every breath without a hold (the "EST" values on the Mechanics tab). This patient is pulling hard on each breath (pink trace). True compliance is 50 mL/cmH₂O, yet C (EST) shows a dash: the fit was rejected as impossible.\n\nWhy can the ventilator not estimate compliance here?',
+      choices: [
+        { text: 'The estimates assume a passive patient; muscle effort distorts the pressure the fit relies on', correct: true, why: 'Effort lowers airway pressure during inspiration, so the fit gives impossible or misleading numbers.' },
+        { text: 'The compliance really changed', why: 'The patient\'s lungs are unchanged; only the measurement is disturbed.' },
+        { text: 'Estimates need square flow', why: 'They work with any flow pattern in a passive patient.' },
+        { text: 'The ventilator needs calibration', why: 'Calibration does not fix the effect of muscle pressure.' }
+      ],
+      then: { patient: { effort: { on: false } } },
+      explain: 'Breath-by-breath estimates fit the equation of motion (pressure = volume ÷ compliance + flow × resistance + baseline) to each breath. That only holds when the ventilator does all the work. Patient effort adds an unmeasured pressure, so estimates drift or become nonsense. After you answer, the patient is paralyzed — watch C (EST) settle near 50.',
+      points: ['EST mechanics are reliable only in passive patients.', 'With effort, trust holds (in a relaxed moment) or esophageal pressure instead.', 'Large swings in EST values breath to breath suggest effort or leaks.']
     },
 
     // ---------------------------------------------------------------- Lesson 4
@@ -404,6 +436,21 @@
       solution: { settings: { fio2: 0.6, peep: 10 } },
       explain: 'The PEEP–FiO₂ tables from the ARDS Network trials pair each FiO₂ with a PEEP range, so oxygenation is supported with both levers together. Move one row at a time and wait for the SpO₂ to settle. Target SpO₂ 88–95% (PaO₂ 55–80 mmHg).',
       points: ['Move up or down the table one step at a time.', 'Target SpO₂ 88–95%; more oxygen than that brings no benefit.', 'The table is a starting point; recruitability and hemodynamics individualize it.']
+    },
+
+    {
+      id: 'a-aprv', lesson: 6, type: 'mcq', title: 'APRV and the release time',
+      start: { preset: 'ards', settings: { mode: 'APRV', phigh: 26, plow: 0, thigh: 4.5, tlow: 0.5, fio2: 0.6 }, patient: { ...MALE, c: 32, r: 11, recruit: { on: false }, effort: { on: true, pmax: 4, rate: 18, ti: 0.8 } } },
+      lock: ['mode'],
+      question: 'APRV: P-high 26 for 4.5 s, then a brief release to P-low 0 for T-low 0.5 s. Expiratory flow is cut off before it reaches zero. Do an expiratory hold if you like.\n\nWhat does the short T-low do?',
+      choices: [
+        { text: 'It traps gas and keeps end-expiratory pressure well above P-low — an intended auto-PEEP', correct: true, why: 'Ending the release early stops alveoli from emptying, holding the lung open.' },
+        { text: 'It guarantees full exhalation to P-low', why: 'A 0.5 s release is shorter than the time constant allows.' },
+        { text: 'It sets the tidal volume directly', why: 'Release volume depends on P-high − end-expiratory pressure, compliance and T-low together.' },
+        { text: 'It has no effect if P-low is 0', why: 'T-low is the main control of end-expiratory lung volume in APRV.' }
+      ],
+      explain: 'APRV holds a high pressure most of the time and releases briefly. T-low is usually set so expiratory flow is cut off at about 50–75% of its peak, which deliberately traps gas: total PEEP sits well above P-low. Spontaneous breaths happen on top of P-high without triggering. Lengthening T-low lowers trapped pressure and raises release volume and CO₂ clearance.',
+      points: ['APRV: long P-high, short release; spontaneous breathing throughout.', 'T-low is tuned to the expiratory flow curve, not to a fixed number.', 'Measure total PEEP with an expiratory hold; P-low is not the end-expiratory pressure.']
     },
 
     // ---------------------------------------------------------------- Lesson 7
@@ -529,6 +576,14 @@
       points: ['Daily screen: improving cause, FiO₂ ≤ 0.5, PEEP ≤ 8, hemodynamically stable, awake.', 'SBT: PSV 5–8 / PEEP ≤ 5, or T-piece, 30–120 min.', 'Pair with a daily sedation interruption.']
     },
     {
+      id: 'l-p01', lesson: 9, type: 'numeric', title: 'Measure respiratory drive (P0.1)',
+      start: { preset: 'spont', settings: { mode: 'PSV', psupport: 8, peep: 5, fio2: 0.4 }, patient: { ...MALE, c: 50, r: 10, effort: { on: true, pmax: 9, rate: 24, ti: 0.8 } } },
+      question: 'This patient is on pressure support and looks comfortable at a glance.\n\nPress "P0.1" and read the result. What is the P0.1 in cmH₂O?',
+      truth: m => m.p01, tol: 0.4, unit: 'cmH₂O', dp: 1,
+      explain: 'P0.1 is the drop in airway pressure in the first 100 ms of an occluded effort. The patient cannot sense the occlusion that quickly, so it reflects central respiratory drive, not effort or comfort. Values above about 3.5–4 cmH₂O suggest high drive: risk of a failed weaning trial, and of strong efforts injuring the lung. Below about 1 suggests over-assistance or sedation.',
+      points: ['P0.1 measures drive in 100 ms, before the patient reacts.', 'Normal ~1–3.5 cmH₂O; > 3.5–4 high drive; < 1 low drive.', 'Look for the cause of high drive: acidosis, pain, anxiety, fever, too little support.']
+    },
+    {
       id: 'l-rsbi', lesson: 9, type: 'numeric', title: 'Rapid shallow breathing',
       start: { preset: 'spont', settings: { mode: 'PSV', psupport: 5, peep: 5, fio2: 0.4 }, patient: { ...MALE, c: 50, r: 10, effort: { on: true, pmax: 3.5, rate: 32, ti: 0.6 } } },
       question: 'Two minutes into the SBT. Read the total rate and the tidal volume.\n\nWhat is the rapid shallow breathing index (RR ÷ VT in litres)?',
@@ -547,17 +602,20 @@
       setup: { preset: 'normal', settings: { mode: 'VC', vt: 450, rr: 14, peep: 5, ti: 0.9 }, patient: { effort: { on: true, pmax: 3, rate: 16, ti: 0.9 } } },
       markers: true,
       steps: [
-        { target: '#wave', title: 'Waveforms', text: 'Three live traces against time: airway pressure (cmH₂O), flow (L/min, inspiration up, expiration down) and volume (mL). The gap moving across the screen is "now".' },
-        { target: '#wave', title: 'Breath markers', text: 'A "P" over a breath means the patient triggered it. A "B" means a backup breath during apnea in pressure support. Unmarked breaths were triggered by the set rate.' },
-        { target: '#freezeBtn', title: 'Freeze and measure', text: 'Freeze stops the screen. Then move your pointer (or finger) across the traces to read exact values at any moment.' },
-        { target: '#mon', title: 'Monitor', text: 'Measured values for each breath: peak and mean pressure, PEEP, tidal volumes in (VTi) and out (VTe), minute volume, total rate, I:E and inspiratory time. Plateau and total PEEP appear after a hold.' },
-        { target: '#abg', title: 'Gas exchange', text: 'Estimated steady-state blood gas, SpO₂ and end-tidal CO₂ for the current breathing pattern, oxygen and lung state.' },
-        { target: '#modeTabs', title: 'Modes', text: 'Volume control, pressure control, pressure support and PRVC (adaptive pressure). Changing the mode changes which settings appear below.' },
-        { target: '#knobs', title: 'Settings', text: 'Use − and + or tap a value to type it. New settings start on the next breath, as on a real ventilator.' },
-        { target: '#holdBtns', title: 'Holds', text: 'Inspiratory hold measures plateau pressure. Expiratory hold measures total PEEP and reveals auto-PEEP. Both happen on the next breath.' },
-        { target: '#loops', title: 'Loops', text: 'Pressure–volume and flow–volume loops of the last breath. Pin one as a reference to compare before and after a change.' },
+        { target: '#wave', title: 'Waveforms', text: 'Three live traces against time: airway pressure (cmH₂O), flow (L/min, inspiration up, expiration down) and volume (mL). The gap moving across the screen is "now". The dashed line on the pressure trace is set PEEP.' },
+        { target: '#wave', title: 'Breath markers', text: 'A "P" over a breath means the patient triggered it. "S" is a spontaneous, pressure-supported breath in SIMV. "B" is a backup breath during apnea. Unmarked breaths were triggered by the set rate.' },
+        { target: '#auxSel', title: 'Auxiliary channel', text: 'Add a fourth trace: esophageal and transpulmonary pressure (Pes) or the capnogram (CO₂). "Effort" overlays the patient\'s own muscle pressure in pink.' },
+        { target: '#loops', title: 'Live loops', text: 'Pressure–volume and flow–volume loops are traced live, breath by breath, from the same data as the waveforms. The white dot is "now"; inspiration is drawn in colour and expiration in white. The faint loop is the previous breath.' },
+        { target: '#mon', title: 'Numerics', text: 'Four tabs hold the full monitored set of a modern ICU ventilator. "EST" values are estimated every breath without a hold; "hold" values need an inspiratory or expiratory hold; "maneuver" values need P0.1 or NIF.' },
+        { target: '#freezeBtn', title: 'Freeze and measure', text: 'Freeze stops the screen. Move your pointer (or finger) across the waveforms: the cursor reads every trace and the loops jump to that exact point of that breath.' },
+        { target: '#snapBtn', title: 'Snapshot and compare', text: 'Snapshot keeps the current screen. The snapshot and the live screen then sit side by side on the same scales, the snapshot loop is overlaid in violet, and every number shows its change (Δ).' },
+        { target: '#lungBox', title: 'Dynamic lung', text: 'The lungs inflate with the volume trace. Their colour follows compliance (green normal, amber stiff, red very stiff); the airways thin and change colour as resistance rises; the pink diaphragm moves with patient effort.' },
+        { target: '#timingBox', title: 'Breath timing and readiness', text: 'The bar shows inspiratory and expiratory time of the current breath with a moving marker. Below it, six liberation criteria turn green one by one; when all are met the panel suggests a spontaneous breathing trial.' },
+        { target: '#modeTabs', title: 'Modes', text: 'Pick the mode family first — A/CMV, SIMV, SPONT or APRV — then the breath type (VC, PC, PRVC; or PS/CPAP and VS). Only the settings for that mode appear.' },
+        { target: '#knobs', title: 'Settings', text: 'Use − and + or tap a value to type it. New settings start on the next breath, as on a real ventilator. A highlighted tile is one you changed.' },
+        { target: '#holdBtns', title: 'Quick keys', text: 'Inspiratory and expiratory holds, a manual breath, and two maneuvers for weaning: P0.1 (airway occlusion pressure in the first 100 ms of an effort — respiratory drive) and NIF (maximal inspiratory pressure — muscle strength).' },
         { target: '#patientPanel', title: 'Patient', text: 'Lung mechanics, effort and problems such as leaks, secretions and disconnection. In cases these are fixed by the scenario.' },
-        { target: '#alarmBar', title: 'Alarms', text: 'Active alarms appear here. Limits are under "Alarm limits".' }
+        { target: '#alarmBar', title: 'Alarms', text: 'Active alarms appear in the status bar. Limits are under "Alarm limits".' }
       ]
     },
     {
@@ -580,7 +638,7 @@
         { target: '#wave', title: 'Pressure control', text: 'Pressure rises to PEEP + Pinsp (here 17) and holds flat for the set Ti. Flow is highest at the start and decays as the lung fills. Volume rises quickly, then flattens. Normal: flow reaches or nears zero before the breath ends.' },
         { target: '#knobs', title: 'Rise time', text: 'Rise time sets how fast pressure reaches its target. A faster rise gives a higher peak flow — useful for patients who want flow, but it can overshoot.' },
         { target: '#modeTabs', title: 'Switch to PRVC', text: 'Choose PRVC. The ventilator now adjusts Pinsp breath by breath to deliver the target volume. Watch "Pinsp in use" settle over several breaths.', wait: { ev: 'mode', v: 'PRVC' } },
-        { target: '#modeTabs', title: 'Pressure support', text: 'Pressure support needs a breathing patient. Switch to PSV and turn on patient effort in the Patient panel. Each breath is patient-triggered, pressure-targeted and ends when flow falls to the cycle percentage of its peak.', wait: { ev: 'mode', v: 'PSV' } },
+        { target: '#modeTabs', title: 'Pressure support', text: 'Pressure support needs a breathing patient. Choose SPONT (then PS) and turn on patient effort in the Patient panel. Each breath is patient-triggered, pressure-targeted and ends when flow falls to the expiratory-trigger percentage of its peak. At PS 0 the mode becomes CPAP.', wait: { ev: 'mode', v: 'PSV' } },
         { target: '#patientPanel', title: 'Typical PSV settings', text: 'Normal starting PSV: support 5–10 cmH₂O over PEEP 5, cycle 25%, aiming for VT 6–8 mL/kg PBW and rate under about 30. Without effort, the apnea alarm switches to backup breaths after 20 s.' }
       ]
     },
@@ -600,17 +658,28 @@
       setup: { preset: 'normal', settings: { mode: 'VC', vt: 450, rr: 14, peep: 5, ti: 0.9 }, patient: { c: 50, r: 10, effort: { on: false } } },
       steps: [
         { target: '#loops', title: 'Pressure–volume loop', text: 'Inspiration runs up the right side, expiration down the left. The slope is dynamic compliance; the loop\'s width is mostly resistance.' },
-        { target: '#pinLoop', title: 'Pin a reference', text: 'Press "Pin as reference" to keep this loop in grey for comparison.', wait: { ev: 'pin' } },
+        { target: '#pinLoop', title: 'Pin a reference', text: 'Press "Pin" to keep this loop in grey for comparison. Then watch the live loop trace itself breath by breath — the white dot moves with the sweep on the waveforms.', wait: { ev: 'pin' } },
         { target: '#patientPanel', title: 'Make it obstructed', text: 'In the Patient panel raise resistance to 30. The pressure–volume loop widens, and the flow–volume loop\'s expiratory limb scoops inward — the signature of airflow obstruction.' },
         { target: '#patientPanel', title: 'Overdistension', text: 'Set resistance back to 10, lower compliance to 30 and set "Overdistension above" to 400 mL. The top of the pressure–volume loop flattens into a beak: pressure rises with little extra volume. Smaller VT or less PEEP removes the beak.' }
+      ]
+    },
+    {
+      id: 'weaning', title: 'Weaning measurements', blurb: 'P0.1, NIF, RSBI and the readiness panel on a breathing patient.',
+      setup: { preset: 'spont', settings: { mode: 'PSV', psupport: 8, peep: 5, fio2: 0.35 }, patient: { effort: { on: true, pmax: 6, rate: 20, ti: 0.9 } } },
+      steps: [
+        { target: '#timingBox', title: 'Readiness at a glance', text: 'Six criteria: FiO₂ ≤ 0.5, PEEP ≤ 8, RSBI < 105, minute ventilation < 10 L/min, support ≤ 10 and spontaneous breathing. Green dots are met.' },
+        { target: '#holdBtns', title: 'P0.1 — respiratory drive', text: 'Press "P0.1". At the start of the next effort the ventilator closes the airway for 100 ms and reads the pressure drop. Normal is about 1–3.5 cmH₂O; higher means high drive and risk of a failed wean or patient self-inflicted lung injury.', wait: { ev: 'p01' } },
+        { target: '#holdBtns', title: 'NIF — muscle strength', text: 'Press "NIF". The airway is occluded for several seconds while the patient pulls as hard as possible. More negative than −20 to −30 cmH₂O suggests adequate strength.', wait: { ev: 'nif' } },
+        { target: '#mon', title: 'RSBI', text: 'Open the Spont tab. RSBI = total rate ÷ tidal volume in litres; under 105 predicts success. Spont rate, spontaneous minute volume, Ti/Ttot, Pmus and the patient\'s work of breathing are here too.' },
+        { target: '#patientPanel', title: 'Make the patient tire', text: 'In the Patient panel lower Effort to 3 and raise Effort rate to 32. Watch RSBI climb, tidal volume fall and the readiness panel lose its green — rapid shallow breathing.' }
       ]
     },
     {
       id: 'pes', title: 'Esophageal pressure', blurb: 'Separate the lung from the chest wall with an esophageal balloon.',
       setup: { preset: 'obese', settings: { mode: 'VC', vt: 450, rr: 16, peep: 5, ti: 0.9, fio2: 0.5 }, patient: { effort: { on: false } }, view: { pes: true } },
       steps: [
-        { target: '#wave', title: 'Two pressures', text: 'The extra panel shows esophageal pressure (Pes, an estimate of pleural pressure) and transpulmonary pressure (Ptp = airway − esophageal), the pressure that actually distends the lung.' },
-        { target: '#mon', title: 'Stiff chest wall', text: 'This patient has obesity: the chest wall is stiff and Pes is high (about 13 cmH₂O). At PEEP 5, Ptp at end-expiration is negative — the lung is being squeezed shut every exhalation.' },
+        { target: '#wave', title: 'Two pressures', text: 'The Pes channel shows esophageal pressure (Pes, an estimate of pleural pressure) and transpulmonary pressure (Ptp = airway − esophageal), the pressure that actually distends the lung.' },
+        { target: '#mon', title: 'Stiff chest wall', text: 'Open the Spont tab for Ptp exp. This patient has obesity: the chest wall is stiff and Pes is high (about 13 cmH₂O). At PEEP 5, Ptp at end-expiration is negative — the lung is being squeezed shut every exhalation.' },
         { target: '#knobs', title: 'PEEP to a positive Ptp', text: 'Raise PEEP in steps of 2 until end-expiratory Ptp is about 0 to +2. Watch compliance and SpO₂ improve as collapsed lung opens.' },
         { target: '#mon', title: 'Why plateau misleads here', text: 'Plateau pressure may now look high, but much of it is spent stretching the chest wall, not the lung. End-inspiratory Ptp (lung stress) is the safer number to limit, usually below about 20 cmH₂O.' }
       ]
