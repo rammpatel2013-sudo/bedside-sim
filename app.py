@@ -387,19 +387,25 @@ def session_detail(session_id):
 
 # ---------------------------------------------------------------- Learn
 # Interactive physiology / ultrasound chapters. Static pages in static/learn/, open to learners
-# without a sign-in (like /sim and /chart). /learn lists them; /learn/<slug> opens static/learn/<slug>.html.
+# without a sign-in (like /sim and /chart). /learn/ lists them; /learn/<slug>(.html) opens static/learn/<slug>.html.
+# The same files are published to GitHub Pages (gh-pages branch, learn/), so links between them are relative.
 LEARN_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "static", "learn")
 
 
 @app.route("/learn")
+def learn_root():
+    return redirect("/learn/")  # pages link to each other relatively ("heart-lung.html"), so keep the slash
+
+
 @app.route("/learn/")
 def learn_index():
     return send_from_directory(LEARN_DIR, "index.html")
 
 
-@app.route("/learn/<slug>")
-def learn_chapter(slug):
-    if not re.fullmatch(r"[a-z0-9-]+", slug) or slug == "index" or not os.path.isfile(os.path.join(LEARN_DIR, slug + ".html")):
+@app.route("/learn/<page>")
+def learn_page(page):
+    slug = page[:-5] if page.endswith(".html") else page
+    if not re.fullmatch(r"[a-z0-9-]+", slug) or not os.path.isfile(os.path.join(LEARN_DIR, slug + ".html")):
         abort(404)
     return send_from_directory(LEARN_DIR, slug + ".html")
 

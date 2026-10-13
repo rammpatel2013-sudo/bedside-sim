@@ -77,7 +77,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, a:focus-visible
 </style>
 </head>
 <body>
-<nav class="topbar"><a href="/learn"><b>Learn</b></a><span style="color:var(--ink-3)">Bedside card</span><a class="right" href="/learn/heart-lung">Chapter 01</a></nav>
+<nav class="topbar"><a href="./"><b>Learn</b></a><span style="color:var(--ink-3)">Bedside card</span><a class="right" href="heart-lung.html">Chapter 01</a></nav>
 <div class="wrap">
   <div>
     <div class="eyebrow">Bedside · goes with Chapter 01</div>
@@ -121,7 +121,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, a:focus-visible
   <section class="card" aria-labelledby="h-teach">
     <h2 id="h-teach">Teach it at the bedside</h2>
     <div class="teach" id="teach"></div>
-    <div><a class="btn" id="model" href="/learn/heart-lung">Open this ventilator in the model</a></div>
+    <div><a class="btn" id="model" href="heart-lung.html">Open this ventilator in the model</a></div>
     <p class="note">The model opens with this patient's tidal volume, PEEP, rate, heart rate and compliance. Slide the stressed volume to find a PPV like the monitor's, then run the bolus.</p>
   </section>
 
@@ -286,7 +286,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, a:focus-visible
     if (ans.passive === 'no') params.set('spont', '1');
     if (ans.rv === 'no') params.set('rv', '0.45');
     if (ans.abd === 'no') params.set('ccw', '45');
-    $('model').href = '/learn/heart-lung?' + params.toString();
+    $('model').href = 'heart-lung.html?' + params.toString();
   }
 
   function update() {
