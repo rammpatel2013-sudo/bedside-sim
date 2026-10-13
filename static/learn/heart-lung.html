@@ -1,0 +1,950 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Heart–Lung Interactions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600&family=Barlow:wght@400;500;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap">
+<style>
+/* Layout: a chart-recorder figure (monitor strip + Guyton/Starling plates) beside the controls, then the chapter text in one reading column. */
+:root {
+  --paper: #f5f7f8;      /* page */
+  --sheet: #ffffff;      /* recorder sheet / panels */
+  --ink: #13202a;        /* primary text */
+  --ink-2: #4a5965;      /* secondary text */
+  --ink-3: #7f8e99;      /* axes, RV bars, muted */
+  --rule: #d9e1e7;       /* borders */
+  --grid: #e8eef2;       /* recorder grid, minor */
+  --grid-2: #d3dde4;     /* recorder grid, major */
+  --paw: #2a78d6;        /* series 1: airway pressure */
+  --art: #eb6834;        /* series 2: arterial pressure / LV */
+  --ppl: #1baf7a;        /* series 3: pleural pressure */
+  --good: #23784f; --good-bg: #e3f2ea;
+  --warn: #9a5b00; --warn-bg: #fbefd9;
+  --bad: #b53333;  --bad-bg: #f9e3e1;
+  --f-text: "Source Serif 4", "Iowan Old Style", Georgia, serif;
+  --f-ui: "Barlow", "Segoe UI", system-ui, sans-serif;
+  --f-num: "Barlow Condensed", "Arial Narrow", "Roboto Condensed", sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #0e1418; --sheet: #151d23; --ink: #e5ebef; --ink-2: #a7b4be; --ink-3: #6e7d88;
+    --rule: #26323b; --grid: #1b252c; --grid-2: #26333c;
+    --paw: #3987e5; --art: #d95926; --ppl: #199e70;
+    --good: #6fcf9b; --good-bg: #173226; --warn: #f0b552; --warn-bg: #352812; --bad: #f08a84; --bad-bg: #3a1c1b;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #0e1418; --sheet: #151d23; --ink: #e5ebef; --ink-2: #a7b4be; --ink-3: #6e7d88;
+  --rule: #26323b; --grid: #1b252c; --grid-2: #26333c;
+  --paw: #3987e5; --art: #d95926; --ppl: #199e70;
+  --good: #6fcf9b; --good-bg: #173226; --warn: #f0b552; --warn-bg: #352812; --bad: #f08a84; --bad-bg: #3a1c1b;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--paper); color: var(--ink); font-family: var(--f-ui); font-size: 15px; line-height: 1.45; }
+.wrap { max-width: 1180px; margin: 0 auto; padding-inline: 16px; padding-block: 20px 56px; }
+header.ch { display: grid; gap: 6px; padding-block: 8px 18px; border-bottom: 1px solid var(--rule); margin-bottom: 18px; }
+.eyebrow { font-family: var(--f-num); font-weight: 600; letter-spacing: .08em; text-transform: uppercase; font-size: 13px; color: var(--ink-2); display: flex; gap: 10px; flex-wrap: wrap; }
+.eyebrow b { color: var(--ink); font-weight: 600; }
+h1 { font-family: var(--f-text); font-weight: 600; font-size: clamp(30px, 5vw, 44px); line-height: 1.08; margin: 0; text-wrap: balance; letter-spacing: -0.01em; }
+.deck { font-family: var(--f-text); font-size: 18px; color: var(--ink-2); margin: 0; max-width: 64ch; }
+
+.lab { display: grid; gap: 18px; grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 980px) { .lab { grid-template-columns: minmax(0, 1.55fr) minmax(320px, 1fr); align-items: start; } }
+.col { display: grid; gap: 14px; min-width: 0; }
+
+.presets { display: flex; flex-wrap: wrap; gap: 6px; }
+.presets button { font: 500 13px/1 var(--f-ui); padding: 8px 11px; border-radius: 999px; border: 1px solid var(--rule); background: var(--sheet); color: var(--ink); cursor: pointer; }
+.presets button[aria-pressed="true"] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.presets button:hover { border-color: var(--ink-3); }
+.note { font-size: 13px; color: var(--ink-2); margin: 0; min-height: 1.4em; }
+
+.plate { background: var(--sheet); border: 1px solid var(--rule); border-radius: 6px; padding: 10px 10px 8px; min-width: 0; }
+.plate-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 0 4px 6px; flex-wrap: wrap; }
+.plate-title { font-family: var(--f-num); font-weight: 600; font-size: 14px; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-2); }
+.legend { display: flex; gap: 12px; flex-wrap: wrap; font-size: 12.5px; color: var(--ink-2); }
+.legend i { display: inline-block; width: 14px; height: 2px; vertical-align: middle; margin-right: 5px; background: currentColor; }
+.legend i.dash { background: none; border-top: 2px dashed currentColor; height: 0; }
+.legend i.bar { width: 8px; height: 10px; border-radius: 2px 2px 0 0; }
+canvas { display: block; width: 100%; touch-action: pan-y; }
+.mini { font: 500 12.5px/1 var(--f-ui); padding: 6px 10px; border-radius: 4px; border: 1px solid var(--rule); background: transparent; color: var(--ink); cursor: pointer; }
+.mini:hover { border-color: var(--ink-3); }
+.tabs { display: flex; gap: 4px; }
+.tabs button { font: 600 13px/1 var(--f-num); letter-spacing: .06em; text-transform: uppercase; padding: 7px 10px; border: 1px solid var(--rule); background: transparent; color: var(--ink-2); border-radius: 4px; cursor: pointer; }
+.tabs button[aria-selected="true"] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.cap { font-size: 13px; color: var(--ink-2); margin: 6px 4px 0; max-width: 70ch; }
+
+/* readouts */
+.read { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 2fr); gap: 10px; }
+@media (max-width: 520px) { .read { grid-template-columns: minmax(0, 1fr); } }
+.hero { padding: 12px 14px; display: grid; gap: 6px; align-content: start; }
+.hero .k { font-family: var(--f-num); font-weight: 600; letter-spacing: .06em; text-transform: uppercase; font-size: 13px; color: var(--ink-2); }
+.hero .v { font-family: var(--f-num); font-weight: 600; font-size: 54px; line-height: .95; font-variant-numeric: tabular-nums; }
+.hero .v small { font-size: 24px; color: var(--ink-2); margin-left: 2px; }
+.band { position: relative; height: 22px; margin-top: 4px; }
+.band .seg { position: absolute; top: 6px; height: 8px; }
+.band .mark { position: absolute; top: 0; width: 2px; height: 20px; background: var(--ink); transform: translateX(-1px); transition: left .3s; }
+.band .tick { position: absolute; top: 16px; font: 500 10.5px/1 var(--f-num); color: var(--ink-3); transform: translateX(-50%); }
+.grid-num { display: grid; grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); background: var(--sheet); border: 1px solid var(--rule); border-radius: 6px; overflow: hidden; align-content: start; }
+.grid-num div { padding: 7px 9px; display: grid; gap: 1px; box-shadow: 1px 0 0 var(--rule), 0 1px 0 var(--rule); }
+.grid-num .k { font-size: 11.5px; color: var(--ink-2); letter-spacing: .02em; }
+.grid-num .v { font-family: var(--f-num); font-weight: 600; font-size: 21px; font-variant-numeric: tabular-nums; line-height: 1.1; }
+.grid-num .v small { font-size: 13px; font-weight: 500; color: var(--ink-2); margin-left: 2px; }
+
+.chip { display: inline-flex; align-items: center; gap: 5px; font: 600 12.5px/1 var(--f-ui); padding: 5px 8px; border-radius: 4px; white-space: nowrap; }
+.chip.good { color: var(--good); background: var(--good-bg); }
+.chip.warn { color: var(--warn); background: var(--warn-bg); }
+.chip.bad { color: var(--bad); background: var(--bad-bg); }
+.chip.off { color: var(--ink-2); background: var(--grid); }
+
+/* controls */
+details.group { background: var(--sheet); border: 1px solid var(--rule); border-radius: 6px; }
+details.group > summary { list-style: none; cursor: pointer; padding: 10px 12px; font-family: var(--f-num); font-weight: 600; font-size: 14px; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-2); display: flex; justify-content: space-between; }
+details.group > summary::-webkit-details-marker { display: none; }
+details.group > summary::after { content: "+"; font-family: var(--f-ui); }
+details.group[open] > summary::after { content: "−"; }
+.ctl { display: grid; gap: 12px; padding: 2px 12px 14px; }
+.row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px 10px; align-items: baseline; }
+.row label { font-size: 14px; }
+.row output { font-family: var(--f-num); font-weight: 600; font-size: 16px; font-variant-numeric: tabular-nums; text-align: right; }
+.row output small { color: var(--ink-2); font-weight: 500; font-size: 12.5px; }
+.row input[type=range] { grid-column: 1 / -1; width: 100%; accent-color: var(--ink); margin: 2px 0 0; }
+.toggles { display: flex; gap: 14px; flex-wrap: wrap; font-size: 14px; }
+.toggles label { display: inline-flex; gap: 6px; align-items: center; cursor: pointer; }
+.toggles input { accent-color: var(--ink); width: 16px; height: 16px; }
+
+/* tests */
+.tests { display: grid; gap: 8px; }
+.test { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 10px; align-items: center; padding: 10px 12px; background: var(--sheet); border: 1px solid var(--rule); border-radius: 6px; }
+.test h4 { margin: 0; font: 600 14.5px/1.25 var(--f-ui); }
+.test p { margin: 0; font-size: 12.5px; color: var(--ink-2); grid-column: 1 / -1; }
+.test .res { grid-column: 1 / -1; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; font-size: 13.5px; }
+.test .res b { font-family: var(--f-num); font-size: 19px; font-variant-numeric: tabular-nums; }
+.test.truth { border-style: dashed; }
+.stale { font-size: 12.5px; color: var(--ink-3); }
+
+ul.check { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+ul.check li { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 8px; align-items: start; font-size: 13.5px; }
+ul.check li .why { color: var(--ink-2); font-size: 12.5px; }
+.verdict { padding: 10px 12px; border-radius: 6px; font-size: 14px; }
+
+/* text */
+article { max-width: 68ch; margin: 34px auto 0; font-family: var(--f-text); font-size: 17.5px; line-height: 1.62; }
+article h2 { font-family: var(--f-text); font-weight: 600; font-size: 23px; line-height: 1.2; margin: 1.8em 0 .4em; text-wrap: balance; }
+article p { margin: 0 0 1em; }
+article ul { padding-left: 1.2em; margin: 0 0 1em; }
+article li { margin-bottom: .35em; }
+article .eq { font-family: var(--f-num); font-size: 19px; background: var(--sheet); border: 1px solid var(--rule); border-radius: 6px; padding: 10px 14px; overflow-x: auto; white-space: nowrap; }
+sup a { font-family: var(--f-ui); font-size: 12px; color: var(--ink-2); text-decoration: none; padding: 0 1px; }
+sup a:hover { color: var(--ink); text-decoration: underline; }
+.model-note { font-family: var(--f-ui); font-size: 14px; color: var(--ink-2); background: var(--sheet); border: 1px solid var(--rule); border-radius: 6px; padding: 12px 14px; line-height: 1.5; }
+ol.refs { font-family: var(--f-ui); font-size: 13.5px; line-height: 1.5; padding-left: 1.6em; color: var(--ink-2); }
+ol.refs li { margin-bottom: .5em; }
+ol.refs a { color: var(--ink); }
+a { color: var(--ink); text-underline-offset: 2px; }
+button:focus-visible, input:focus-visible, summary:focus-visible, a:focus-visible { outline: 2px solid var(--paw); outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) { .band .mark { transition: none; } }
+</style>
+
+<style>
+:root { padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+body { margin: 0; } img { max-width: 100%; } [hidden] { display: none !important; }
+.topbar { display: flex; gap: 10px; align-items: center; padding-inline: 16px; padding-block: 10px; border-bottom: 1px solid var(--rule); font-size: 14px; font-family: var(--f-ui); background: var(--paper); }
+.topbar b { font-family: var(--f-num); letter-spacing: .06em; text-transform: uppercase; font-weight: 600; }
+.topbar a { color: var(--ink); }
+.topbar .right { margin-left: auto; }
+</style>
+</head>
+<body>
+<nav class="topbar"><a href="/learn"><b>Learn</b></a><span style="color:var(--ink-3)">Chapter 01</span><a class="right" href="/learn/fluid-check">Bedside card</a><a href="/sim">Simulator</a></nav>
+<div class="wrap">
+  <header class="ch">
+    <div class="eyebrow"><b>Chapter 01</b><span>Part I · Heart–lung physiology</span><span>Following Pinsky</span></div>
+    <h1>Heart–lung interactions</h1>
+    <p class="deck">One positive-pressure breath changes pleural pressure, lung volume, venous return and both ventricles' afterload. The arterial line records the result as pulse pressure variation. Change the patient and the ventilator, then test the prediction against a fluid bolus.</p>
+  </header>
+
+  <div class="lab">
+    <div class="col">
+      <div class="presets" role="group" aria-label="Patient presets" id="presets"></div>
+      <p class="note" id="presetNote"></p>
+
+      <div class="plate">
+        <div class="plate-head">
+          <span class="plate-title" id="monTitle">Monitor · 10 s</span>
+          <div class="legend">
+            <span style="color:var(--paw)"><i></i><span style="color:var(--ink-2)">Airway pressure</span></span>
+            <span style="color:var(--ppl)"><i></i><span style="color:var(--ink-2)">Pleural pressure</span></span>
+            <span style="color:var(--art)"><i></i><span style="color:var(--ink-2)">Arterial pressure · LV stroke volume</span></span>
+            <span style="color:var(--ink-3)"><i class="bar"></i><span style="color:var(--ink-2)">RV stroke volume</span></span>
+          </div>
+          <button class="mini" id="pause" type="button">Pause</button>
+        </div>
+        <canvas id="mon" height="340" aria-label="Live traces of airway and pleural pressure, arterial pressure, and right and left ventricular stroke volume per beat"></canvas>
+      </div>
+
+      <div class="read">
+        <div class="plate hero">
+          <span class="k">Pulse pressure variation</span>
+          <span class="v" id="ppv">–</span>
+          <div class="band" id="band" aria-hidden="true"></div>
+          <span id="ppvChip"></span>
+        </div>
+        <div class="grid-num" id="nums"></div>
+      </div>
+
+      <div class="plate">
+        <div class="plate-head">
+          <div class="tabs" role="tablist">
+            <button role="tab" id="tabG" aria-selected="true" type="button">Venous return</button>
+            <button role="tab" id="tabS" aria-selected="false" type="button">Starling</button>
+          </div>
+          <div class="legend" id="gLegend"></div>
+        </div>
+        <canvas id="graph" height="300" aria-label="Guyton venous return and cardiac function curves at end-expiration and end-inspiration"></canvas>
+        <p class="cap" id="gCap"></p>
+      </div>
+    </div>
+
+    <div class="col">
+      <details class="group" open>
+        <summary>Circulation</summary>
+        <div class="ctl" id="ctlCirc"></div>
+      </details>
+      <details class="group" open>
+        <summary>Ventilator and lungs</summary>
+        <div class="ctl" id="ctlVent"></div>
+      </details>
+      <details class="group">
+        <summary>Rhythm and effort</summary>
+        <div class="ctl" id="ctlRhythm">
+          <div class="toggles">
+            <label><input type="checkbox" id="spont"> Spontaneous efforts</label>
+            <label><input type="checkbox" id="af"> Atrial fibrillation</label>
+          </div>
+        </div>
+      </details>
+
+      <div class="plate">
+        <div class="plate-head"><span class="plate-title">Can PPV be read here?</span></div>
+        <ul class="check" id="check"></ul>
+      </div>
+
+      <div class="plate" style="padding:12px">
+        <div class="plate-head" style="padding:0 0 8px"><span class="plate-title">Tests · predict, then run</span><span class="stale" id="stale"></span></div>
+        <div class="tests" id="tests"></div>
+      </div>
+    </div>
+  </div>
+
+  <article>
+    <h2>Two pressures from one breath</h2>
+    <p>A positive-pressure breath raises alveolar pressure, and the lungs and chest wall share it in proportion to their stiffness. The rise in pleural pressure equals the tidal volume divided by chest-wall compliance. The rise in transpulmonary pressure equals the tidal volume divided by lung compliance. A 560 mL breath against a chest wall of 100 mL/cmH₂O raises pleural pressure by about 5.6 cmH₂O. Stiff lungs take more of the pressure across the lung itself, and a stiff chest wall or a tense abdomen passes more of it to the heart. Pleural pressure acts on the heart and great veins; transpulmonary pressure sets lung volume, which loads the right ventricle.<sup><a href="#r1">1</a></sup></p>
+
+    <h2>Venous return and the right ventricle</h2>
+    <p>Blood returns to the right atrium down a pressure gradient: mean systemic filling pressure (Pmsf) minus right atrial pressure, divided by the resistance to venous return.<sup><a href="#r5">5</a></sup> Inspiration raises pleural and right atrial pressure, so the gradient and venous return fall. In the model a small share of the rise is passed upstream, as the descending diaphragm compresses the abdominal veins.</p>
+    <p>The Venous return plate shows this as two lines that meet. The cardiac function curve slides right as pleural pressure rises; where it crosses the venous return line sets that beat's output. When the heart works on the steep part of its curve, the breath moves output a lot. On the flat part, the same breath barely moves it. That difference is what pulse pressure variation detects.</p>
+
+    <h2>Lung volume and right ventricular afterload</h2>
+    <p>Lung inflation stretches the alveolar vessels, and pulmonary vascular resistance rises with lung volume. In ventilated patients the right ventricle's outflow impedance rises with each inspiration, driven by tidal volume more than by airway pressure.<sup><a href="#r6">6</a></sup> A normal right ventricle tolerates this. A failing one loses stroke volume on every breath whatever its preload, which gives a large PPV in a patient who will not respond to fluid.<sup><a href="#r12">12</a></sup> Choose Acute cor pulmonale and run the bolus to see it.</p>
+
+    <h2>The left ventricle</h2>
+    <p>Early in inspiration, lung inflation pushes blood from the pulmonary capillaries toward the left atrium, and the rise in pleural pressure lowers the transmural pressure the left ventricle ejects against.<sup><a href="#r1">1</a></sup> Both raise left ventricular output for a beat or two, the Δup of systolic pressure. A few beats later the smaller right ventricular output of inspiration reaches the left ventricle, and its stroke volume falls, usually during expiration: the Δdown. The stroke volume strip on the monitor shows the delay, with the RV bars leading the LV bars.</p>
+    <p>In hypovolemia Δdown dominates. A failing left ventricle responds to afterload rather than preload, so in LV failure Δup dominates and Δdown nearly disappears. This is the physiology behind the benefit of positive pressure in cardiogenic pulmonary edema.<sup><a href="#r1">1</a></sup></p>
+
+    <h2>Reading the arterial line</h2>
+    <p>Pulse pressure variation compares the largest and smallest pulse pressures within one breath, averaged over several breaths:</p>
+    <p class="eq">PPV = (PP<sub>max</sub> − PP<sub>min</sub>) ÷ [(PP<sub>max</sub> + PP<sub>min</sub>) ÷ 2] × 100</p>
+    <p>In septic, ventilated patients, a PPV of 13% separated those whose cardiac index rose by 15% or more with fluid from those whose did not.<sup><a href="#r7">7</a></sup> In a large cohort under general anesthesia, values from 9% to 13% formed a gray zone that held about a quarter of patients, where the test does not decide.<sup><a href="#r8">8</a></sup> Stroke volume variation from a pulse contour device carries the same information. PPV asks whether both ventricles are preload-responsive, and it answers only when the stimulus, the breath, is regular and large enough.</p>
+
+    <h2>When PPV misleads</h2>
+    <ul>
+      <li><b>Spontaneous efforts</b> make the pleural swing irregular. PPV can be high without preload dependence.<sup><a href="#r13">13</a>,<a href="#r14">14</a></sup></li>
+      <li><b>Arrhythmia</b> makes stroke volume vary with filling time, not with the breath.<sup><a href="#r13">13</a></sup></li>
+      <li><b>Tidal volume below 8 mL/kg PBW</b> gives too small a stimulus, so PPV underestimates responsiveness.<sup><a href="#r9">9</a></sup></li>
+      <li><b>Heart rate to respiratory rate ratio below 3.6</b> leaves too few beats per breath; the swing is averaged out in the pulmonary circulation.<sup><a href="#r10">10</a></sup></li>
+      <li><b>Respiratory system compliance of 30 mL/cmH₂O or less</b> lowers its accuracy; leg raising and end-expiratory occlusion held up better.<sup><a href="#r11">11</a></sup></li>
+      <li><b>Right ventricular dysfunction</b> lets afterload, not preload, make the swing.<sup><a href="#r12">12</a></sup></li>
+      <li><b>Raised intra-abdominal pressure</b> enlarges the pleural swing and inflates PPV; an <b>open chest</b> shrinks it.<sup><a href="#r13">13</a></sup></li>
+    </ul>
+
+    <h2>Tests that do not rely on PPV</h2>
+    <p><b>Passive leg raising</b> moves venous blood from the legs and abdomen into the chest and reverses itself when the legs come down. A rise in cardiac output of 10% or more predicts fluid responsiveness well; judged by pulse pressure alone, the test performs worse.<sup><a href="#r15">15</a></sup></p>
+    <p><b>The tidal volume challenge</b> raises tidal volume from 6 to 8 mL/kg PBW for one minute. In patients ventilated with low tidal volumes, an absolute rise in PPV of 3.5 points or in SVV of 2.5 points predicted responsiveness, while baseline PPV did not.<sup><a href="#r16">16</a></sup></p>
+    <p><b>End-expiratory occlusion</b> stops the ventilator at end-expiration for 15 seconds and removes the cyclic impediment to venous return. A rise in cardiac output of 5% or more predicts responsiveness.<sup><a href="#r17">17</a></sup> In this model the occlusion also removes the cyclic load on the right ventricle, so a failing right ventricle can give a positive occlusion test without preload reserve.</p>
+    <p>Run each test on the presets, then run the bolus. The bolus is the model's own answer; the tests are predictions of it.</p>
+
+    <h2>About the model</h2>
+    <div class="model-note">
+      A teaching model, set to agree with the sources in direction and rough size. It is not patient data and is not for clinical decisions. Each beat, venous return (Pmsf − right atrial pressure) ÷ resistance meets a right ventricular function curve of transmural pressure, whose plateau falls as transpulmonary pressure rises. The pulmonary circulation is one reservoir between the ventricles, which makes the left ventricle lag. The left ventricle follows a Starling curve of left atrial transmural pressure and gains output as pleural pressure lowers its afterload, more so when it is weak. Arteries are a two-element windkessel. Fixed values: 15% of the pleural rise passed upstream to Pmsf; pleural pressure −3 cmH₂O at end-expiration without PEEP; I:E 1:2; predicted body weight 70 kg; leg raise treated as a 300 mL transfer and the bolus as 500 mL, each turned into a Pmsf rise through a systemic compliance of 125 mL/mmHg. A responder is a stroke volume rise of 15% or more with the bolus. Numbers are graded after rounding to the shown decimal.
+    </div>
+
+    <h2 id="sources">Sources</h2>
+    <ol class="refs">
+      <li id="r1">Pinsky MR. Cardiopulmonary interactions: physiologic basis and clinical applications. <i>Ann Am Thorac Soc</i> 2018;15(Suppl 1):S45–S48. <a href="https://doi.org/10.1513/AnnalsATS.201704-339FR" target="_blank" rel="noopener">doi</a> · <a href="https://pubmed.ncbi.nlm.nih.gov/28820609/" target="_blank" rel="noopener">PubMed</a></li>
+      <li id="r2">Pinsky MR. Functional hemodynamic monitoring. <i>Crit Care Clin</i> 2015;31:89–111. <a href="https://doi.org/10.1016/j.ccc.2014.08.005" target="_blank" rel="noopener">doi</a> · <a href="https://pubmed.ncbi.nlm.nih.gov/25435480/" target="_blank" rel="noopener">PubMed</a></li>
+      <li id="r3">Pinsky MR, Payen D, eds. <i>Functional Hemodynamic Monitoring</i>. Springer, 2005. <a href="https://doi.org/10.1007/b138257" target="_blank" rel="noopener">doi</a></li>
+      <li id="r4">Pinsky MR, Teboul JL, Vincent JL, eds. <i>Hemodynamic Monitoring</i>. Lessons from the ICU. Springer, 2019. <a href="https://doi.org/10.1007/978-3-319-69269-2" target="_blank" rel="noopener">doi</a></li>
+      <li id="r5">Guyton AC, Lindsey AW, Abernathy B, Richardson T. Venous return at various right atrial pressures and the normal venous return curve. <i>Am J Physiol</i> 1957;189:609–15. <a href="https://doi.org/10.1152/ajplegacy.1957.189.3.609" target="_blank" rel="noopener">doi</a> · <a href="https://pubmed.ncbi.nlm.nih.gov/13458395/" target="_blank" rel="noopener">PubMed</a></li>
+      <li id="r6">Vieillard-Baron A, et al. Cyclic changes in right ventricular output impedance during mechanical ventilation. <i>J Appl Physiol</i> 1999;87:1644–50. <a href="https://doi.org/10.1152/jappl.1999.87.5.1644" target="_blank" rel="noopener">doi</a> · <a href="https://pubmed.ncbi.nlm.nih.gov/10562603/" target="_blank" rel="noopener">PubMed</a></li>
+      <li id="r7">Michard F, et al. Relation between respiratory changes in arterial pulse pressure and fluid responsiveness in septic patients with acute circulatory failure. <i>Am J Respir Crit Care Med</i> 2000;162:134–8. <a href="https://doi.org/10.1164/ajrccm.162.1.9903035" target="_blank" rel="noopener">doi</a> · <a href="https://pubmed.ncbi.nlm.nih.gov/10903232/" target="_blank" rel="noopener">PubMed</a></li>
+      <li id="r8">Cannesson M, et al. Assessing the diagnostic accuracy of pulse pressure variations for the prediction of fluid responsiveness: a "gray zone" approach. <i>Anesthesiology</i> 2011;115:231–41. <a href="https://doi.org/10.1097/ALN.0b013e318225b80a" target="_blank" rel="noopener">doi</a> · <a href="https://pubmed.ncbi.nlm.nih.gov/21705869/" target="_blank" rel="noopener">PubMed</a></li>
+      <li id="r9">De Backer D, et al. Pulse pressure variations to predict fluid responsiveness: influence of tidal volume. <i>Intensive Care Med</i> 2005;31:517–23. <a href="https://doi.org/10.1007/s00134-005-2586-4" target="_blank" rel="noopener">doi</a> · <a href="https://pubmed.ncbi.nlm.nih.gov/15754196/" target="_blank" rel="noopener">PubMed</a></li>
+      <li id="r10">De Backer D, et al. Influence of respiratory rate on stroke volume variation in mechanically ventilated patients. <i>Anesthesiology</i> 2009;110:1092–7. <a href="https://doi.org/10.1097/ALN.0b013e31819db2a1" target="_blank" rel="noopener">doi</a> · <a href="https://pubmed.ncbi.nlm.nih.gov/19352152/" target="_blank" rel="noopener">PubMed</a></li>
+      <li id="r11">Monnet X, et al. Passive leg-raising and end-expiratory occlusion tests perform better than pulse pressure variation in patients with low respiratory system compliance. <i>Crit Care Med</i> 2012;40:152–7. <a href="https://doi.org/10.1097/CCM.0b013e31822f08d7" target="_blank" rel="noopener">doi</a> · <a href="https://pubmed.ncbi.nlm.nih.gov/21926581/" target="_blank" rel="noopener">PubMed</a></li>
+      <li id="r12">Mahjoub Y, et al. Assessing fluid responsiveness in critically ill patients: false-positive pulse pressure variation is detected by Doppler echocardiographic evaluation of the right ventricle. <i>Crit Care Med</i> 2009;37:2570–5. <a href="https://doi.org/10.1097/CCM.0b013e3181a380a3" target="_blank" rel="noopener">doi</a> · <a href="https://pubmed.ncbi.nlm.nih.gov/19623051/" target="_blank" rel="noopener">PubMed</a></li>
+      <li id="r13">Monnet X, Marik PE, Teboul JL. Prediction of fluid responsiveness: an update. <i>Ann Intensive Care</i> 2016;6:111. <a href="https://doi.org/10.1186/s13613-016-0216-7" target="_blank" rel="noopener">doi</a> · <a href="https://pubmed.ncbi.nlm.nih.gov/27858374/" target="_blank" rel="noopener">PubMed</a></li>
+      <li id="r14">Teboul JL, Monnet X, Chemla D, Michard F. Arterial pulse pressure variation with mechanical ventilation. <i>Am J Respir Crit Care Med</i> 2019;199:22–31. <a href="https://doi.org/10.1164/rccm.201801-0088CI" target="_blank" rel="noopener">doi</a> · <a href="https://pubmed.ncbi.nlm.nih.gov/30138573/" target="_blank" rel="noopener">PubMed</a></li>
+      <li id="r15">Monnet X, Marik P, Teboul JL. Passive leg raising for predicting fluid responsiveness: a systematic review and meta-analysis. <i>Intensive Care Med</i> 2016;42:1935–47. <a href="https://doi.org/10.1007/s00134-015-4134-1" target="_blank" rel="noopener">doi</a> · <a href="https://pubmed.ncbi.nlm.nih.gov/26825952/" target="_blank" rel="noopener">PubMed</a></li>
+      <li id="r16">Myatra SN, et al. The changes in pulse pressure variation or stroke volume variation after a "tidal volume challenge" reliably predict fluid responsiveness during low tidal volume ventilation. <i>Crit Care Med</i> 2017;45:415–21. <a href="https://doi.org/10.1097/CCM.0000000000002183" target="_blank" rel="noopener">doi</a> · <a href="https://pubmed.ncbi.nlm.nih.gov/27922879/" target="_blank" rel="noopener">PubMed</a></li>
+      <li id="r17">Monnet X, et al. Predicting volume responsiveness by using the end-expiratory occlusion in mechanically ventilated intensive care unit patients. <i>Crit Care Med</i> 2009;37:951–6. <a href="https://doi.org/10.1097/CCM.0b013e3181968fe1" target="_blank" rel="noopener">doi</a> · <a href="https://pubmed.ncbi.nlm.nih.gov/19237902/" target="_blank" rel="noopener">PubMed</a></li>
+    </ol>
+  </article>
+</div>
+
+<script>
+// Heart–lung interaction model (teaching model; illustrative, not patient data).
+// Respiration: volume-controlled breath, constant inspiratory flow, passive exponential expiration.
+//   Ppl swing = V / Ccw ; transpulmonary swing = V / CL (same tidal volume, partitioned by compliance).
+// Circulation, per heartbeat:
+//   RV: Guyton venous return (Pmsf_eff − Pra)/Rvr meets an RV function curve of transmural
+//       pressure (Pra − Ppl), whose plateau falls as lung volume (transpulmonary pressure) raises RV afterload.
+//   Pulmonary blood: a reservoir filled by the RV and emptied by the LV (this makes the 2–3 beat lag).
+//   LV: Starling curve of LA transmural pressure; a rise in Ppl lowers LV afterload (bigger in a weak LV);
+//       lung inflation squeezes pulmonary blood toward the LA.
+//   Arteries: 2-element windkessel; the measured pressure also carries the Ppl swing (intrathoracic aorta).
+const CM = 1.36; // cmH2O per mmHg
+
+const DEF = {
+  pmsf: 12,     // mmHg  mean systemic filling pressure (stressed volume)
+  lv: 1.0,      // LV contractility factor
+  rv: 1.0,      // RV function factor (1 normal, lower = impaired: lower plateau, more afterload-sensitive)
+  vt: 8,        // mL/kg PBW
+  pbw: 70,      // kg
+  peep: 5,      // cmH2O
+  cl: 50,       // lung compliance mL/cmH2O
+  ccw: 100,     // chest-wall compliance mL/cmH2O
+  rr: 16,       // breaths/min
+  hr: 90,       // beats/min
+  svr: 1.0,     // arterial tone factor (multiplies SVR)
+  spont: false, // irregular spontaneous efforts
+  af: false,    // irregular rhythm
+};
+
+const K = {
+  rvr: 1.6,       // resistance to venous return, mmHg·min/L
+  kappa: 0.15,     // share of the pleural pressure rise passed upstream to Pmsf (abdominal compression)
+  coMax: 8,       // L/min plateau of a normal ventricle
+  kRV: 4,         // mmHg, curvature of the RV function curve
+  kLV: 5,         // mmHg, curvature of the LV function curve
+  rho0: 0.002,    // RV afterload sensitivity per cmH2O of transpulmonary pressure above 5, normal RV
+  gamma: 0.08,    // RV afterload rise per mmHg of LA pressure above 12 (post-capillary)
+  cp: 10,         // mL/mmHg pulmonary blood compliance (stressed)
+  sigma: 0.08,    // squeeze: share of the transpulmonary rise passed to LA transmural pressure
+  ca: 1.0,        // mL/mmHg arterial compliance
+  svr: 0.84,      // mmHg·s/mL (≈14 Wood units)
+  pven: 0,        // downstream pressure for the windkessel (absorbed into SVR)
+  tej: 0.28,      // s ejection time
+  rawExp: 12,     // cmH2O/L/s airway resistance
+  ppl0: -3,       // cmH2O, end-expiratory pleural pressure at ZEEP
+  ie: 1 / 3,      // inspiratory share of the cycle (I:E 1:2)
+  csys: 125,      // mL/mmHg, systemic compliance used to turn a volume into a Pmsf rise
+};
+
+function mulberry(seed) {
+  let a = seed >>> 0;
+  return () => { a |= 0; a = (a + 0x6d2b79f5) | 0; let t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+}
+
+function derived(p) {
+  const vtml = p.vt * p.pbw;
+  const crs = 1 / (1 / p.cl + 1 / p.ccw);
+  return { vtml, crs, dp: vtml / crs, dPpl: vtml / p.ccw, dPL: vtml / p.cl, tau: (K.rawExp / 1000) * crs };
+}
+
+// RV output (L/min) at given pleural (mmHg) and transpulmonary (cmH2O) pressure; returns {co, pra}.
+function rvAt(p, pplMm, plCm, pmsfAdd, pla) {
+  const pplZ = K.ppl0 / CM;
+  const pmsf = p.pmsf + (pmsfAdd || 0) + K.kappa * (pplMm - pplZ);
+  const rho = K.rho0 * (1 + 8 * (1 - p.rv));
+  const aRV = (0.35 + 0.65 * p.rv) / (1 + rho * Math.max(0, plCm - 5)) / (1 + K.gamma * Math.max(0, (pla || 0) - 12));
+  const heart = (pra) => { const tm = pra - pplMm; return tm <= 0 ? 0 : K.coMax * aRV * (1 - Math.exp(-tm / K.kRV)); };
+  const vr = (pra) => (pmsf - Math.max(pra, 0)) / K.rvr;
+  let lo = pplMm - 1, hi = pmsf; // heart − vr increases with pra
+  for (let i = 0; i < 50; i++) { const m = (lo + hi) / 2; if (heart(m) - vr(m) > 0) hi = m; else lo = m; }
+  const pra = (lo + hi) / 2;
+  return { co: Math.max(0, vr(pra)), pra, pmsf, aRV, heart, vr };
+}
+
+function lvCO(p, plaTm, pplMm) {
+  const pplZ = K.ppl0 / CM;
+  const lam = Math.max(0.003, 0.014 * (1 / p.lv - 0.75));
+  const aLV = p.lv * (1 + lam * (pplMm - pplZ));
+  return plaTm <= 0 ? 0 : K.coMax * aLV * (1 - Math.exp(-plaTm / K.kLV));
+}
+
+class Sim {
+  constructor(p, opts = {}) {
+    this.p = { ...p };
+    this.o = { apnea: false, holdUntil: -1, pmsfAdd: 0, ...opts };
+    this.rand = mulberry(opts.seed || 7);
+    this.t = 0;
+    this.vp = 160;          // pulmonary stressed volume, mL
+    this.part = 75;         // windkessel pressure, mmHg (transmural)
+    this.nextBeat = 0.2;
+    this.ej = null;         // current ejection {t0, sv}
+    this.breathT0 = 0;
+    this.effort = 0;        // this breath's spontaneous effort, cmH2O
+    this.vol = 0;
+    this.beats = [];        // {t, svRV, svLV, pra, plaTm, sbp, dbp, ppl}
+    this.lastBeatIdx = -1;
+    this.curMax = -1e9; this.curMin = 1e9;
+    this.newBreath();
+  }
+  newBreath() {
+    this.effort = this.p.spont ? 3 + this.rand() * 11 : 0;
+    this.effortShift = this.p.spont ? (this.rand() - 0.3) * 0.5 : 0;
+  }
+  resp() { // returns {v (L), flow (L/s), paw, palv, ppl (cmH2O), pl}
+    const p = this.p, d = derived(p);
+    const T = 60 / p.rr, ti = T * K.ie;
+    let tc = this.t - this.breathT0;
+    const vt = d.vtml / 1000, crs = d.crs / 1000;
+    let v, flow, paw;
+    const apnea = this.o.apnea || this.t < this.o.holdUntil;
+    const v0 = this.v0 || 0;
+    if (apnea) { v = v0; flow = 0; paw = p.peep + v / crs; }
+    else if (tc < ti) { flow = vt / ti; v = v0 + flow * tc; paw = p.peep + v / crs + K.rawExp * flow; }
+    else {
+      const vEnd = v0 + vt; const te = tc - ti; v = vEnd * Math.exp(-te / (d.tau)); flow = -v / d.tau; paw = p.peep;
+    }
+    this.vol = v;
+    const palv = p.peep + v / crs;
+    let ppl = K.ppl0 + p.peep * (d.crs / p.ccw) + (v * 1000) / p.ccw;
+    if (this.effort > 0 && !apnea) { // patient effort: negative pleural swing early in the breath
+      const s = tc / T - this.effortShift; const e = s > 0 && s < 0.4 ? Math.sin(Math.PI * s / 0.4) : 0;
+      ppl -= this.effort * e;
+    }
+    return { v, flow, paw, palv, ppl, pl: palv - ppl };
+  }
+  beat(r) {
+    const p = this.p;
+    const pplMm = r.ppl / CM;
+    let rr = 60 / p.hr; let fill = 1;
+    if (p.af) { rr *= 0.65 + this.rand() * 0.7; fill = Math.min(1.25, Math.pow(rr / (60 / p.hr), 0.6)); }
+    const hrInst = 60 / rr;
+    const rv = rvAt(p, pplMm, r.pl, this.o.pmsfAdd, this.lastPla);
+    const svRV = (rv.co * 1000 / p.hr) * fill;  // venous return per mean beat interval, filling-time scaled
+    this.vp += svRV;
+    const plaTm = this.vp / K.cp - 4 + K.sigma * (r.pl - (p.peep - p.peep * derived(p).crs / p.ccw - K.ppl0)) / CM;
+    this.lastPla = plaTm;
+    let svLV = (lvCO(p, plaTm, pplMm) * 1000 / p.hr) * fill;
+    svLV = Math.min(svLV, Math.max(0, this.vp - 20));
+    this.vp -= svLV;
+    this.ej = { t0: this.t, sv: svLV };
+    const b = { t: this.t, svRV, svLV, pra: rv.pra, plaTm, ppl: pplMm, pl: r.pl, aRV: rv.aRV, sbp: null, dbp: null };
+    if (this.beats.length) { const n = this.beats.length, prev = this.beats[n - 1], pp2 = this.beats[n - 2]; prev.sbp = this.curMax; prev.dbp = this.curMin; prev.pp = this.wkMax - this.wkMin; }
+    this.curMax = -1e9; this.curMin = 1e9; this.wkMax = -1e9; this.wkMin = 1e9;
+    this.beats.push(b);
+    if (this.beats.length > 400) this.beats.splice(0, 100);
+    this.nextBeat = this.t + rr;
+  }
+  step(dt) {
+    const p = this.p;
+    const T = 60 / p.rr;
+    if (this.t - this.breathT0 >= T) { this.breathT0 += T; this.v0 = this.vol; this.newBreath(); }
+    const r = this.resp();
+    if (this.t >= this.nextBeat) this.beat(r);
+    let q = 0;
+    if (this.ej) { const s = (this.t - this.ej.t0) / K.tej; if (s < 1) q = this.ej.sv * (Math.PI / (2 * K.tej)) * Math.sin(Math.PI * s); else this.ej = null; }
+    this.part += dt * (q - (this.part - K.pven) / (K.svr * p.svr)) / K.ca;
+    const pplZ = (K.ppl0 + p.peep * derived(p).crs / p.ccw) / CM;
+    const art = this.part + (r.ppl / CM - pplZ);
+    if (art > this.curMax) this.curMax = art;
+    if (art < this.curMin) this.curMin = art;
+    if (this.part > this.wkMax) this.wkMax = this.part;
+    if (this.part < this.wkMin) this.wkMin = this.part;
+    this.t += dt;
+    return { t: this.t, ...r, art, cvp: this.beats.length ? this.beats[this.beats.length - 1].pra : 0 };
+  }
+  run(sec, dt = 0.004, cb) { const n = Math.round(sec / dt); for (let i = 0; i < n; i++) { const s = this.step(dt); if (cb) cb(s); } }
+}
+
+// Steady-state numbers over the last `win` seconds.
+function measure(beats, t0, t1, rr) {
+  const bs = beats.filter((b) => b.t >= t0 && b.t < t1 && b.sbp != null);
+  if (bs.length < 3) return null;
+  const T = 60 / rr;
+  const pp = [], sv = [], sbpA = [];
+  let k0 = Math.ceil(t0 / T), k1 = Math.floor(t1 / T);
+  const ppv = [], svv = [], spv = [];
+  for (let k = k0; k < k1; k++) {
+    const c = bs.filter((b) => b.t >= k * T && b.t < (k + 1) * T);
+    if (c.length < 2) continue;
+    const pps = c.map((b) => b.pp), svs = c.map((b) => b.svLV), sb = c.map((b) => b.sbp);
+    const mx = Math.max(...pps), mn = Math.min(...pps);
+    ppv.push((mx - mn) / ((mx + mn) / 2) * 100);
+    const sx = Math.max(...svs), sn = Math.min(...svs);
+    svv.push((sx - sn) / ((sx + sn) / 2) * 100);
+    spv.push(Math.max(...sb) - Math.min(...sb));
+  }
+  const avg = (a) => a.reduce((x, y) => x + y, 0) / a.length;
+  const dur = bs[bs.length - 1].t - bs[0].t;
+  const svM = avg(bs.map((b) => b.svLV));
+  const hrM = (bs.length - 1) / dur * 60;
+  return {
+    ppv: avg(ppv), ppvLo: Math.min(...ppv), ppvHi: Math.max(...ppv), svv: avg(svv), spv: avg(spv), sv: svM, co: svM * hrM / 1000,
+    sbp: avg(bs.map((b) => b.sbp)), dbp: avg(bs.map((b) => b.dbp)),
+    map: avg(bs.map((b) => b.dbp + (b.sbp - b.dbp) / 3)),
+    cvp: avg(bs.map((b) => b.pra)), pla: avg(bs.map((b) => b.plaTm)),
+    sbpMax: Math.max(...bs.map((b) => b.sbp)), sbpMin: Math.min(...bs.map((b) => b.sbp)),
+  };
+}
+
+function steady(p, opts = {}, warm = 40, win = 30) {
+  const s = new Sim(p, opts); s.run(warm + win);
+  return { m: measure(s.beats, warm, warm + win, p.rr), sim: s };
+}
+
+// Run a test: baseline, then a change, measured the same way.
+function tests(p) {
+  const base = steady(p).m;
+  const apnea = steady(p, { apnea: true }, 40, 20).m; // reference SBP for Δup/Δdown
+  const bolus = steady(p, { pmsfAdd: 500 / K.csys }).m;
+  const plr = steady(p, { pmsfAdd: 300 / K.csys }).m;
+  // EEXPO: 15 s at end-expiration; CO over its last 5 s vs baseline
+  const s = new Sim(p); s.run(40);
+  const T = 60 / p.rr; const tEnd = Math.ceil(s.t / T) * T + T * 0.98;
+  s.run(tEnd - s.t); s.o.holdUntil = s.t + 15; s.run(15);
+  const occl = measureCO(s.beats, s.t - 5, s.t);
+  // Vt challenge 6 → 8 mL/kg (only meaningful from 6)
+  const vt8 = steady({ ...p, vt: p.vt + 2 }).m;
+  return {
+    base, apnea, bolus, plr, occlCO: occl, vt8,
+    dUp: base.sbpMax - apnea.sbp, dDown: apnea.sbp - base.sbpMin,
+    bolusSV: (bolus.sv / base.sv - 1) * 100, bolusCO: (bolus.co / base.co - 1) * 100,
+    plrCO: (plr.co / base.co - 1) * 100,
+    eexpoCO: (occl / base.co - 1) * 100,
+    vtdPPV: vt8.ppv - base.ppv, vtdSVV: vt8.svv - base.svv,
+  };
+}
+function measureCO(beats, t0, t1) {
+  const bs = beats.filter((b) => b.t >= t0 && b.t < t1);
+  const sv = bs.reduce((a, b) => a + b.svLV, 0) / bs.length;
+  const hr = (bs.length - 1) / (bs[bs.length - 1].t - bs[0].t) * 60;
+  return sv * hr / 1000;
+}
+
+
+
+</script>
+<script>
+(() => {
+  const PRESETS = [
+    { id: 'hypo', name: 'Hypovolemia', p: { pmsf: 8, hr: 105 }, note: 'Low stressed volume. The heart works on the steep part of its curve.' },
+    { id: 'normo', name: 'Normovolemia', p: { pmsf: 12 }, note: 'Mid-range filling. PPV lands near the gray zone.' },
+    { id: 'full', name: 'Fluid-replete', p: { pmsf: 17.5 }, note: 'High stressed volume. The curve is flat, so the breath barely moves output.' },
+    { id: 'lvf', name: 'LV failure', p: { pmsf: 16, lv: 0.45, svr: 1.4 }, note: 'A weak, afterload-sensitive left ventricle. Compare Δup with Δdown.' },
+    { id: 'acp', name: 'Acute cor pulmonale', p: { pmsf: 17, rv: 0.4, cl: 35, peep: 10 }, note: 'A failing right ventricle, stiff lungs and PEEP 10. PPV is large; run the bolus.' },
+    { id: 'ards', name: 'ARDS, 6 mL/kg', p: { pmsf: 11.5, cl: 22, vt: 6, peep: 12, rr: 24, hr: 100 }, note: 'Low tidal volume and low compliance. PPV is hard to read; try the tidal volume challenge.' },
+    { id: 'iah', name: 'Abdominal hypertension', p: { pmsf: 17.5, ccw: 40 }, note: 'The same circulation as Fluid-replete. Only the chest wall is stiffer.' },
+    { id: 'fast', name: 'Fast breathing', p: { pmsf: 8, hr: 90, rr: 35 }, note: 'Hypovolemic, but 35 breaths/min leaves about 2.6 beats per breath.' },
+    { id: 'af', name: 'Atrial fibrillation', p: { pmsf: 12, af: true }, note: 'Filling varies with the rhythm, not with the breath.' },
+    { id: 'spont', name: 'Triggering patient', p: { pmsf: 12, spont: true }, note: 'Irregular inspiratory efforts on top of the ventilator breaths.' },
+  ];
+  const SL = {
+    circ: [
+      { k: 'pmsf', label: 'Stressed volume (Pmsf)', min: 5, max: 22, step: 0.5, f: (v) => `${v.toFixed(1)} <small>mmHg</small>` },
+      { k: 'lv', label: 'LV contractility', min: 0.3, max: 1.3, step: 0.05, f: (v) => `${Math.round(v * 100)}<small>% of normal</small>` },
+      { k: 'rv', label: 'RV function', min: 0.3, max: 1, step: 0.05, f: (v) => `${Math.round(v * 100)}<small>% of normal</small>` },
+      { k: 'svr', label: 'Arterial tone (SVR)', min: 0.5, max: 1.8, step: 0.05, f: (v) => `${Math.round(v * 14 * 80)} <small>dyn·s/cm⁵</small>` },
+      { k: 'hr', label: 'Heart rate', min: 50, max: 150, step: 1, f: (v) => `${v} <small>/min</small>` },
+    ],
+    vent: [
+      { k: 'vt', label: 'Tidal volume', min: 4, max: 12, step: 0.5, f: (v, p) => `${v.toFixed(1)} <small>mL/kg · ${Math.round(v * p.pbw)} mL</small>` },
+      { k: 'peep', label: 'PEEP', min: 0, max: 20, step: 1, f: (v) => `${v} <small>cmH₂O</small>` },
+      { k: 'rr', label: 'Respiratory rate', min: 8, max: 40, step: 1, f: (v) => `${v} <small>/min</small>` },
+      { k: 'cl', label: 'Lung compliance', min: 15, max: 80, step: 1, f: (v) => `${v} <small>mL/cmH₂O</small>` },
+      { k: 'ccw', label: 'Chest-wall compliance', min: 30, max: 200, step: 5, f: (v) => `${v} <small>mL/cmH₂O</small>` },
+    ],
+  };
+
+  let p = { ...DEF };
+  let presetId = 'normo';
+  const $ = (id) => document.getElementById(id);
+  const css = () => { const s = getComputedStyle(document.documentElement); const g = (n) => s.getPropertyValue(n).trim(); return { paper: g('--paper'), sheet: g('--sheet'), ink: g('--ink'), ink2: g('--ink-2'), ink3: g('--ink-3'), rule: g('--rule'), grid: g('--grid'), grid2: g('--grid-2'), paw: g('--paw'), art: g('--art'), ppl: g('--ppl'), num: g('--f-num'), ui: g('--f-ui') }; };
+  let C = css();
+  const refreshColors = () => { C = css(); };
+  try { matchMedia('(prefers-color-scheme: dark)').addEventListener('change', refreshColors); } catch (e) {}
+  new MutationObserver(refreshColors).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme', 'class'] });
+
+  // ---------------- controls
+  const presetsEl = $('presets');
+  PRESETS.forEach((pr) => {
+    const b = document.createElement('button'); b.type = 'button'; b.textContent = pr.name; b.dataset.id = pr.id;
+    b.addEventListener('click', () => applyPreset(pr.id)); presetsEl.appendChild(b);
+  });
+  const inputs = {};
+  function buildGroup(el, list) {
+    list.forEach((s) => {
+      const row = document.createElement('div'); row.className = 'row';
+      row.innerHTML = `<label for="in-${s.k}">${s.label}</label><output id="out-${s.k}"></output><input type="range" id="in-${s.k}" min="${s.min}" max="${s.max}" step="${s.step}">`;
+      el.appendChild(row);
+      const inp = row.querySelector('input');
+      inp.addEventListener('input', () => { p[s.k] = parseFloat(inp.value); presetId = null; syncUI(); changed(); });
+      inputs[s.k] = { inp, out: row.querySelector('output'), s };
+    });
+  }
+  buildGroup($('ctlCirc'), SL.circ);
+  buildGroup($('ctlVent'), SL.vent);
+  ['spont', 'af'].forEach((k) => $(k).addEventListener('change', (e) => { p[k] = e.target.checked; presetId = null; syncUI(); changed(); }));
+
+  function syncUI() {
+    for (const k in inputs) { const { inp, out, s } = inputs[k]; inp.value = p[k]; out.innerHTML = s.f(p[k], p); }
+    $('spont').checked = !!p.spont; $('af').checked = !!p.af;
+    presetsEl.querySelectorAll('button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.id === presetId)));
+    const pr = PRESETS.find((x) => x.id === presetId);
+    $('presetNote').textContent = pr ? pr.note : 'Custom patient.';
+  }
+  function applyPreset(id) {
+    const pr = PRESETS.find((x) => x.id === id); presetId = id;
+    p = { ...DEF, ...pr.p };
+    sim.p = { ...p };
+    syncUI(); changed();
+  }
+
+  // ---------------- live simulation
+  let sim = new Sim(p, { seed: 11 });
+  sim.run(20);
+  const buf = []; // {t, paw, ppl, art}
+  let lastSample = 0, paused = false, lastFrame = null, monSpan = 10;
+  $('pause').addEventListener('click', () => { paused = !paused; $('pause').textContent = paused ? 'Resume' : 'Pause'; });
+
+  function advance(dtReal) {
+    const steps = Math.round(dtReal / 0.004);
+    for (let i = 0; i < steps; i++) {
+      const s = sim.step(0.004);
+      if (s.t - lastSample >= 0.02) { lastSample = s.t; buf.push({ t: s.t, paw: s.paw, ppl: s.ppl, art: s.art }); }
+    }
+    while (buf.length && buf[0].t < sim.t - 11) buf.shift();
+  }
+
+  // ---------------- steady numbers
+  let M = null, A = null, sdy = null, timer = null, testCache = null;
+  const revealed = new Set();
+  function changed() {
+    sim.p = { ...p };
+    clearTimeout(timer);
+    timer = setTimeout(recompute, 120);
+    testCache = null;
+    if (revealed.size) { revealed.clear(); $('stale').textContent = 'Patient changed. Run again.'; }
+    renderTests();
+  }
+  function recompute() {
+    sdy = steady(p, { seed: 11 }); M = sdy.m;
+    A = steady(p, { apnea: true, seed: 11 }, 40, 20).m;
+    renderNums(); renderCheck();
+  }
+
+  const r1 = (x) => Math.round(x * 10) / 10;
+  const r0 = (x) => Math.round(x);
+  function renderNums() {
+    if (!M) return;
+    const d = derived(p);
+    const v0 = sdy.sim.v0 || 0;
+    const autoPeep = (v0 * 1000) / d.crs;
+    const pplEEmm = (K.ppl0 + p.peep * d.crs / p.ccw + (v0 * 1000) / p.ccw) / CM;
+    const T = 60 / p.rr;
+    const late = sdy.sim.beats.filter((b) => b.t > 40 && ((b.t % T) / T) > 0.8);
+    const use = late.length ? late : sdy.sim.beats.slice(-10);
+    const ee = { cvp: use.reduce((a, b) => a + b.pra, 0) / use.length, paop: use.reduce((a, b) => a + b.plaTm + b.ppl, 0) / use.length };
+    const ppv = r1(M.ppv);
+    $('ppv').innerHTML = `${ppv.toFixed(1)}<small>%</small>`;
+    const band = $('band');
+    const x = (v) => `${Math.min(100, Math.max(0, v / 30 * 100))}%`;
+    band.innerHTML = `<span class="seg" style="left:0;width:${x(9)};background:var(--grid-2)"></span><span class="seg" style="left:${x(9)};width:calc(${x(13)} - ${x(9)});background:var(--ink-3)"></span><span class="seg" style="left:${x(13)};width:calc(100% - ${x(13)});background:var(--ink-2)"></span><span class="mark" style="left:${x(ppv)}"></span>` +
+      [0, 9, 13, 30].map((t) => `<span class="tick" style="left:${x(t)}">${t}</span>`).join('');
+    const items = [
+      ['SVV', `${r1(M.svv).toFixed(1)}<small>%</small>`],
+      ['SPV', `${r1(M.spv).toFixed(1)}<small>mmHg</small>`],
+      ['Δup', `${r1(M.sbpMax - A.sbp).toFixed(1)}<small>mmHg</small>`],
+      ['Δdown', `${r1(A.sbp - M.sbpMin).toFixed(1)}<small>mmHg</small>`],
+      ['Cardiac output', `${M.co.toFixed(1)}<small>L/min</small>`],
+      ['Stroke volume', `${r0(M.sv)}<small>mL</small>`],
+      ['Arterial', `${r0(M.sbp)}/${r0(M.dbp)}<small>(${r0(M.map)})</small>`],
+      ['CVP, end-exp', `${r0(ee.cvp)}<small>mmHg</small>`],
+      ['PAOP, end-exp', `${r0(ee.paop)}<small>mmHg</small>`],
+      ['Plateau', `${r0(p.peep + autoPeep + d.dp)}<small>cmH₂O</small>`],
+      ['Driving', `${r0(d.dp)}<small>cmH₂O</small>`],
+      ['Pleural swing', `${r1(d.dPpl).toFixed(1)}<small>cmH₂O</small>`],
+      ['HR / RR', `${(p.hr / p.rr).toFixed(1)}`],
+      ['Crs', `${r0(d.crs)}<small>mL/cmH₂O</small>`],
+    ];
+    if (autoPeep >= 0.5) items.push(['Auto-PEEP', `${r1(autoPeep).toFixed(1)}<small>cmH₂O</small>`]);
+    $('nums').innerHTML = items.map(([k, v]) => `<div><span class="k">${k}</span><span class="v">${v}</span></div>`).join('');
+    if (p.spont || p.af) $('nums').insertAdjacentHTML('beforeend', `<div><span class="k">PPV breath to breath</span><span class="v">${r0(M.ppvLo)}–${r0(M.ppvHi)}<small>%</small></span></div>`);
+  }
+
+  function checks() {
+    const d = derived(p);
+    return [
+      { ok: !p.spont ? 'good' : 'bad', t: 'Controlled breaths, no efforts', why: p.spont ? 'Efforts make the pleural swing irregular.' : '', ref: [13, 14] },
+      { ok: !p.af ? 'good' : 'bad', t: 'Regular rhythm', why: p.af ? 'Stroke volume follows filling time, not the breath.' : '', ref: [13] },
+      { ok: p.vt >= 8 ? 'good' : 'warn', t: `Tidal volume ≥ 8 mL/kg PBW (now ${p.vt.toFixed(1)})`, why: p.vt < 8 ? 'Small stimulus: false negatives. Try the tidal volume challenge.' : '', ref: [9] },
+      { ok: p.hr / p.rr >= 3.6 ? 'good' : 'bad', t: `HR/RR ≥ 3.6 (now ${(p.hr / p.rr).toFixed(1)})`, why: p.hr / p.rr < 3.6 ? 'Too few beats per breath; the swing averages out.' : '', ref: [10] },
+      { ok: Math.round(d.crs) > 30 ? 'good' : 'warn', t: `Crs > 30 mL/cmH₂O (now ${Math.round(d.crs)})`, why: Math.round(d.crs) <= 30 ? 'Low accuracy; leg raising and occlusion held up better.' : '', ref: [11] },
+      { ok: p.rv >= 0.75 ? 'good' : 'warn', t: 'Normal RV function on echo', why: p.rv < 0.75 ? 'Afterload, not preload, can make the swing: false positives.' : '', ref: [12] },
+      { ok: p.ccw >= 60 ? 'good' : 'warn', t: 'Normal chest wall and abdomen', why: p.ccw < 60 ? 'A stiff chest wall enlarges the pleural swing and PPV.' : '', ref: [13] },
+    ];
+  }
+  const ICON = { good: '✓', warn: '!', bad: '✕' };
+  const refLinks = (rs) => rs.map((r) => `<a href="#r${r}">${r}</a>`).join(',');
+  function renderCheck() {
+    const cs = checks();
+    $('check').innerHTML = cs.map((c) => `<li><span class="chip ${c.ok}" aria-label="${c.ok === 'good' ? 'met' : c.ok === 'warn' ? 'caution' : 'not met'}">${ICON[c.ok]}</span><span>${c.t}<sup>${refLinks(c.ref)}</sup>${c.why ? `<br><span class="why">${c.why}</span>` : ''}</span></li>`).join('');
+    const bad = cs.filter((c) => c.ok !== 'good').length;
+    const ppv = r1(M.ppv);
+    let chip;
+    if (bad) chip = `<span class="chip warn">! Not interpretable here</span>`;
+    else if (ppv > 13) chip = `<span class="chip off">Above 13%: predicts a response</span>`;
+    else if (ppv >= 9) chip = `<span class="chip off">Gray zone, 9–13%: undecided</span>`;
+    else chip = `<span class="chip off">Below 9%: predicts no response</span>`;
+    $('ppvChip').innerHTML = chip;
+  }
+
+  // ---------------- tests
+  const TESTS = [
+    { id: 'plr', name: 'Passive leg raise', how: 'Legs up for about a minute; cardiac output measured, not pulse pressure.', thr: 'Positive if cardiac output rises ≥ 10%', ref: [15] },
+    { id: 'vtc', name: 'Tidal volume challenge', how: 'Tidal volume +2 mL/kg PBW for one minute.', thr: 'Positive if PPV rises ≥ 3.5 points or SVV ≥ 2.5 points', ref: [16] },
+    { id: 'eexpo', name: 'End-expiratory occlusion', how: 'Ventilator held at end-expiration for 15 s.', thr: 'Positive if cardiac output rises ≥ 5%', ref: [17] },
+    { id: 'bolus', name: '500 mL fluid bolus', how: "The model's answer. The tests above try to predict it.", thr: 'Responder if stroke volume rises ≥ 15%', ref: [7], truth: true },
+  ];
+  function result(id, T) {
+    if (id === 'plr') { const v = r1(T.plrCO); return { txt: `Cardiac output ${v >= 0 ? '+' : ''}${v.toFixed(1)}%`, pos: v >= 10 }; }
+    if (id === 'eexpo') { const v = r1(T.eexpoCO); return { txt: `Cardiac output ${v >= 0 ? '+' : ''}${v.toFixed(1)}%`, pos: v >= 5 }; }
+    if (id === 'vtc') { const a = r1(T.vtdPPV), b = r1(T.vtdSVV); return { txt: `PPV ${a >= 0 ? '+' : ''}${a.toFixed(1)} · SVV ${b >= 0 ? '+' : ''}${b.toFixed(1)} points`, pos: a >= 3.5 || b >= 2.5 }; }
+    const v = r1(T.bolusSV); return { txt: `Stroke volume ${v >= 0 ? '+' : ''}${v.toFixed(1)}%`, pos: v >= 15 };
+  }
+  function renderTests() {
+    const T = testCache;
+    const truth = T && revealed.has('bolus') ? result('bolus', T).pos : null;
+    $('tests').innerHTML = TESTS.map((t) => {
+      let res = '';
+      if (T && revealed.has(t.id)) {
+        const r = result(t.id, T);
+        const label = t.truth ? (r.pos ? 'Responder' : 'Non-responder') : (r.pos ? 'Positive' : 'Negative');
+        let agree = '';
+        if (!t.truth && truth !== null) agree = r.pos === truth ? '<span class="chip good">✓ Matches the bolus</span>' : `<span class="chip bad">✕ ${r.pos ? 'False positive' : 'False negative'}</span>`;
+        res = `<div class="res"><b>${r.txt}</b><span class="chip off">${label}</span>${agree}</div>`;
+      }
+      let extra = '';
+      if (t.id === 'vtc' && p.vt !== 6) extra = ` Studied from 6 mL/kg; here ${p.vt.toFixed(1)} → ${(p.vt + 2).toFixed(1)}.`;
+      return `<div class="test${t.truth ? ' truth' : ''}"><h4>${t.name}</h4><button class="mini" type="button" data-run="${t.id}">${revealed.has(t.id) ? 'Shown' : 'Run'}</button><p>${t.how} ${t.thr}.<sup>${refLinks(t.ref)}</sup>${extra}</p>${res}</div>`;
+    }).join('');
+    $('tests').querySelectorAll('[data-run]').forEach((b) => b.addEventListener('click', () => {
+      if (!testCache) testCache = tests(p);
+      revealed.add(b.dataset.run); $('stale').textContent = ''; renderTests();
+    }));
+  }
+
+  // ---------------- canvas helpers
+  function fit(cv) {
+    const dpr = Math.min(2, window.devicePixelRatio || 1);
+    const w = cv.clientWidth, h = cv.clientHeight || parseInt(cv.getAttribute('height'), 10);
+    if (cv.width !== Math.round(w * dpr) || cv.height !== Math.round(h * dpr)) { cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr); }
+    const ctx = cv.getContext('2d'); ctx.setTransform(dpr, 0, 0, dpr, 0, 0); return { ctx, w, h };
+  }
+  const mon = $('mon'), graph = $('graph');
+  mon.style.height = '340px'; graph.style.height = '300px';
+
+  function drawMonitor() {
+    const { ctx, w, h } = fit(mon);
+    ctx.fillStyle = C.sheet; ctx.fillRect(0, 0, w, h);
+    const L = 38, R = 8, W = w - L - R;
+    const span = w < 560 ? 6 : 10;
+    const tEnd = sim.t, t0 = tEnd - span;
+    const X = (t) => L + (t - t0) / span * W;
+    if (monSpan !== span) { monSpan = span; $('monTitle').textContent = `Monitor · ${span} s`; }
+    const lanes = [
+      { y: 20, h: 84, lo: -12, hi: 50, ticks: [0, 20, 40], unit: 'cmH₂O' },
+      { y: 128, h: 122, lo: 20, hi: 150, ticks: [40, 80, 120], unit: 'mmHg' },
+      { y: 274, h: 58, lo: 0, hi: 110, ticks: [0, 50, 100], unit: 'mL' },
+    ];
+    // recorder grid
+    for (let s = Math.ceil(t0 * 5) / 5; s <= tEnd; s += 0.2) {
+      const major = Math.abs(s - Math.round(s)) < 1e-6;
+      ctx.strokeStyle = major ? C.grid2 : C.grid; ctx.lineWidth = 1;
+      const x = Math.round(X(s)) + 0.5;
+      lanes.forEach((ln) => { ctx.beginPath(); ctx.moveTo(x, ln.y); ctx.lineTo(x, ln.y + ln.h); ctx.stroke(); });
+    }
+    ctx.font = `500 11px ${C.num}`; ctx.textBaseline = 'middle';
+    lanes.forEach((ln) => {
+      const Y = (v) => ln.y + ln.h - (v - ln.lo) / (ln.hi - ln.lo) * ln.h;
+      ln.Y = Y;
+      ln.ticks.forEach((v) => { ctx.strokeStyle = C.grid2; ctx.beginPath(); ctx.moveTo(L, Math.round(Y(v)) + 0.5); ctx.lineTo(L + W, Math.round(Y(v)) + 0.5); ctx.stroke(); ctx.fillStyle = C.ink3; ctx.textAlign = 'right'; ctx.fillText(String(v), L - 6, Y(v)); });
+      ctx.save(); ctx.translate(10, ln.y + ln.h / 2); ctx.rotate(-Math.PI / 2); ctx.textAlign = 'center'; ctx.fillStyle = C.ink3; ctx.fillText(ln.unit, 0, 0); ctx.restore();
+    });
+    ctx.save(); ctx.beginPath(); ctx.rect(L, 0, W, h); ctx.clip();
+    const line = (ln, key, color, scale = 1) => {
+      ctx.strokeStyle = color; ctx.lineWidth = 2; ctx.lineJoin = 'round'; ctx.beginPath();
+      let first = true;
+      for (const s of buf) { if (s.t < t0 - 0.05) continue; const x = X(s.t), y = ln.Y(s[key] * scale); if (first) { ctx.moveTo(x, y); first = false; } else ctx.lineTo(x, y); }
+      ctx.stroke();
+    };
+    line(lanes[0], 'paw', C.paw); line(lanes[0], 'ppl', C.ppl); line(lanes[1], 'art', C.art);
+    // stroke volume bars
+    const ln = lanes[2];
+    for (const b of sim.beats) {
+      if (b.t < t0 - 0.5) continue;
+      const x = X(b.t);
+      ctx.fillStyle = C.ink3; bar(ctx, x - 7, ln.Y(b.svRV), 6, ln.Y(0) - ln.Y(b.svRV));
+      ctx.fillStyle = C.art; bar(ctx, x + 1, ln.Y(b.svLV), 6, ln.Y(0) - ln.Y(b.svLV));
+    }
+    ctx.restore();
+    // direct labels at the right edge
+    const last = buf[buf.length - 1];
+    if (last) {
+      ctx.font = `600 12px ${C.ui}`; ctx.textAlign = 'right'; ctx.textBaseline = 'bottom';
+      const vis = buf.filter((s) => s.t >= t0);
+      const pawMax = Math.max(...vis.map((s) => s.paw)), pplMin = Math.min(...vis.map((s) => s.ppl));
+      ctx.fillStyle = C.ink2; ctx.fillText('Paw', L + W - 4, lanes[0].Y(pawMax) - 3);
+      ctx.textBaseline = 'top'; ctx.fillText('Ppl', L + W - 4, lanes[0].Y(pplMin) + 3); ctx.textBaseline = 'bottom';
+      ctx.textBaseline = 'top'; ctx.fillText('RV  LV', L + W - 4, ln.y - 14);
+    }
+    // lane titles
+    ctx.font = `600 11.5px ${C.num}`; ctx.fillStyle = C.ink2; ctx.textAlign = 'left'; ctx.textBaseline = 'top';
+    ctx.fillText('AIRWAY · PLEURAL', L + 4, lanes[0].y - 14);
+    ctx.fillText('ARTERIAL', L + 4, lanes[1].y - 14);
+    ctx.fillText('STROKE VOLUME PER BEAT', L + 4, ln.y - 14);
+  }
+  function bar(ctx, x, y, w, hgt) {
+    if (hgt <= 0) return; const r = Math.min(3, hgt);
+    ctx.beginPath(); ctx.moveTo(x, y + hgt); ctx.lineTo(x, y + r); ctx.quadraticCurveTo(x, y, x + r, y); ctx.lineTo(x + w - r, y); ctx.quadraticCurveTo(x + w, y, x + w, y + r); ctx.lineTo(x + w, y + hgt); ctx.closePath(); ctx.fill();
+  }
+
+  // ---------------- graphs
+  let tab = 'G';
+  $('tabG').addEventListener('click', () => setTab('G'));
+  $('tabS').addEventListener('click', () => setTab('S'));
+  function setTab(t) { tab = t; $('tabG').setAttribute('aria-selected', String(t === 'G')); $('tabS').setAttribute('aria-selected', String(t === 'S')); legendG(); }
+  function legendG() {
+    $('gLegend').innerHTML = `<span><i></i>End-expiration</span><span><i class="dash"></i>End-inspiration</span><span style="color:var(--art)"><i></i><span style="color:var(--ink-2)">Current beat</span></span>`;
+    $('gCap').textContent = tab === 'G'
+      ? 'The straight line is venous return (Pmsf − Pra) ÷ resistance; the curve is right ventricular output. Inspiration slides the curve right, and the crossing point drops along the venous return line.'
+      : 'Each ventricle on its own Starling curve, with the last breath of beats as dots. A steep slope turns the breath into a large swing in stroke volume; a flat slope does not.';
+    graph.setAttribute('aria-label', tab === 'G' ? 'Guyton venous return and cardiac function curves at end-expiration and end-inspiration' : 'Right and left ventricular Starling curves with recent beats');
+  }
+  function phaseStates() {
+    const d = derived(p);
+    const v0 = (sdy && sdy.sim.v0) || 0;
+    const pplEE = K.ppl0 + p.peep * d.crs / p.ccw + (v0 * 1000) / p.ccw;
+    const plEE = p.peep + (v0 * 1000) / d.crs - pplEE;
+    return { ee: { ppl: pplEE, pl: plEE }, ei: { ppl: pplEE + d.dPpl, pl: plEE + d.dPL } };
+  }
+  function axes(ctx, box, xr, yr, xt, yt, xl, yl) {
+    const X = (v) => box.x + (v - xr[0]) / (xr[1] - xr[0]) * box.w;
+    const Y = (v) => box.y + box.h - (v - yr[0]) / (yr[1] - yr[0]) * box.h;
+    ctx.lineWidth = 1; ctx.font = `500 11px ${C.num}`;
+    xt.forEach((v) => { ctx.strokeStyle = C.grid; ctx.beginPath(); ctx.moveTo(Math.round(X(v)) + 0.5, box.y); ctx.lineTo(Math.round(X(v)) + 0.5, box.y + box.h); ctx.stroke(); ctx.fillStyle = C.ink3; ctx.textAlign = 'center'; ctx.textBaseline = 'top'; ctx.fillText(String(v), X(v), box.y + box.h + 4); });
+    yt.forEach((v) => { ctx.strokeStyle = C.grid; ctx.beginPath(); ctx.moveTo(box.x, Math.round(Y(v)) + 0.5); ctx.lineTo(box.x + box.w, Math.round(Y(v)) + 0.5); ctx.stroke(); ctx.fillStyle = C.ink3; ctx.textAlign = 'right'; ctx.textBaseline = 'middle'; ctx.fillText(String(v), box.x - 5, Y(v)); });
+    ctx.strokeStyle = C.ink3; ctx.beginPath(); ctx.moveTo(box.x, box.y); ctx.lineTo(box.x, box.y + box.h); ctx.lineTo(box.x + box.w, box.y + box.h); ctx.stroke();
+    ctx.fillStyle = C.ink2; ctx.font = `500 12px ${C.ui}`; ctx.textAlign = 'center'; ctx.textBaseline = 'bottom'; ctx.fillText(xl, box.x + box.w / 2, box.y + box.h + 32);
+    ctx.save(); ctx.translate(box.x - 34, box.y + box.h / 2); ctx.rotate(-Math.PI / 2); ctx.textBaseline = 'middle'; ctx.fillText(yl, 0, 0); ctx.restore();
+    return { X, Y };
+  }
+  function curve(ctx, f, x0, x1, X, Y, color, dash, yMax) {
+    ctx.strokeStyle = color; ctx.lineWidth = 2; ctx.setLineDash(dash ? [6, 5] : []); ctx.beginPath();
+    let first = true;
+    for (let i = 0; i <= 120; i++) { const x = x0 + (x1 - x0) * i / 120; let y = f(x); if (y == null || isNaN(y)) continue; y = Math.max(0, Math.min(yMax, y)); if (first) { ctx.moveTo(X(x), Y(y)); first = false; } else ctx.lineTo(X(x), Y(y)); }
+    ctx.stroke(); ctx.setLineDash([]);
+  }
+  function dot(ctx, x, y, color, hollow, r = 5) {
+    ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2);
+    ctx.lineWidth = 2; ctx.strokeStyle = C.sheet; ctx.stroke();
+    if (hollow) { ctx.fillStyle = C.sheet; ctx.fill(); ctx.strokeStyle = color; ctx.stroke(); } else { ctx.fillStyle = color; ctx.fill(); }
+  }
+  function drawGraph() {
+    const { ctx, w, h } = fit(graph);
+    ctx.fillStyle = C.sheet; ctx.fillRect(0, 0, w, h);
+    const ph = phaseStates();
+    const lastB = sim.beats[sim.beats.length - 1];
+    if (tab === 'G') {
+      const box = { x: 48, y: 10, w: w - 64, h: h - 52 };
+      const { X, Y } = axes(ctx, box, [-4, 24], [0, 10], [0, 4, 8, 12, 16, 20, 24], [0, 2, 4, 6, 8, 10], 'Right atrial pressure (mmHg)', 'Flow (L/min)');
+      const pla = M ? M.pla : 8;
+      ['ee', 'ei'].forEach((k) => {
+        const st = ph[k]; const r = rvAt(p, st.ppl / CM, st.pl, 0, pla);
+        const dash = k === 'ei';
+        curve(ctx, (x) => r.vr(x), -4, r.pmsf, X, Y, C.ink3, dash, 10);
+        curve(ctx, (x) => r.heart(x), -4, 24, X, Y, C.ink, dash, 10);
+        dot(ctx, X(r.pra), Y(r.co), C.ink, dash);
+        if (k === 'ee') {
+          ctx.fillStyle = C.ink2; ctx.font = `600 11.5px ${C.num}`; ctx.textAlign = 'center'; ctx.textBaseline = 'bottom';
+          if (r.pmsf < 24) ctx.fillText('Pmsf', X(r.pmsf), Y(0) - 4);
+          ctx.font = `500 12px ${C.ui}`; ctx.textAlign = 'left'; ctx.textBaseline = 'top';
+          const vy = Math.min(9.4, r.vr(-4)); ctx.fillText('Venous return', X(-3.6), Y(vy) + 6); ctx.textBaseline = 'bottom';
+          ctx.textAlign = 'right'; const hy = Math.min(9.4, r.heart(23.5)); ctx.fillText('RV output', X(23.6), Y(hy) - 5);
+        }
+      });
+      if (lastB) dot(ctx, X(lastB.pra), Y(lastB.svRV * p.hr / 1000), C.art, false, 5.5);
+    } else {
+      const stack = w < 560;
+      const pw = stack ? w - 64 : (w - 120) / 2, phh = stack ? (h - 104) / 2 : h - 52;
+      const boxes = stack ? [{ x: 48, y: 10, w: pw, h: phh }, { x: 48, y: 10 + phh + 52, w: pw, h: phh }] : [{ x: 48, y: 10, w: pw, h: phh }, { x: 48 + pw + 56, y: 10, w: pw, h: phh }];
+      if (stack) { graph.style.height = '420px'; } else graph.style.height = '300px';
+      const recent = sim.beats.filter((b) => b.t > sim.t - 60 / p.rr);
+      // RV
+      let ax = axes(ctx, boxes[0], [0, 20], [0, 110], [0, 5, 10, 15, 20], [0, 50, 100], 'RA transmural pressure (mmHg)', 'RV stroke vol. (mL)');
+      const pla = M ? M.pla : 8;
+      ['ee', 'ei'].forEach((k) => {
+        const st = ph[k]; const r = rvAt(p, st.ppl / CM, st.pl, 0, pla);
+        curve(ctx, (tm) => r.heart(tm + st.ppl / CM) * 1000 / p.hr, 0, 20, ax.X, ax.Y, C.ink, k === 'ei', 110);
+      });
+      recent.forEach((b) => dot(ctx, ax.X(b.pra - b.ppl), ax.Y(b.svRV), C.ink3, false, 3.5));
+      if (lastB) dot(ctx, ax.X(lastB.pra - lastB.ppl), ax.Y(lastB.svRV), C.art, false, 5.5);
+      // LV
+      ax = axes(ctx, boxes[1], [0, 30], [0, 110], [0, 10, 20, 30], [0, 50, 100], 'LA transmural pressure (mmHg)', 'LV stroke vol. (mL)');
+      ['ee', 'ei'].forEach((k) => curve(ctx, (x) => lvCO(p, x, ph[k].ppl / CM) * 1000 / p.hr, 0, 30, ax.X, ax.Y, C.ink, k === 'ei', 110));
+      recent.forEach((b) => dot(ctx, ax.X(b.plaTm), ax.Y(b.svLV), C.ink3, false, 3.5));
+      if (lastB) dot(ctx, ax.X(lastB.plaTm), ax.Y(lastB.svLV), C.art, false, 5.5);
+    }
+    if (tab === 'G' && graph.style.height !== '300px') graph.style.height = '300px';
+  }
+
+  // ---------------- loop
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function frame(ts) {
+    if (lastFrame == null) lastFrame = ts;
+    const dt = Math.min(0.1, (ts - lastFrame) / 1000); lastFrame = ts;
+    if (!paused) advance(reduce ? dt * 0.5 : dt);
+    drawMonitor(); drawGraph();
+    requestAnimationFrame(frame);
+  }
+
+  // first paint: fill the strip so the page is complete at rest
+  advance(10.5);
+  setTab('G');
+  // a bedside card can open the model with its patient's ventilator: /learn/heart-lung?vt=6&peep=12&rr=24...
+  let qs; try { qs = new URLSearchParams(location.search); } catch (e) { qs = new URLSearchParams(); }
+  const QK = ['vt', 'peep', 'rr', 'hr', 'cl', 'ccw', 'pbw', 'rv', 'lv', 'pmsf', 'svr'];
+  if (QK.some((k) => qs.has(k)) || qs.get('af') === '1' || qs.get('spont') === '1') {
+    presetId = null; p = { ...DEF };
+    QK.forEach((k) => { const v = parseFloat(qs.get(k)); if (qs.has(k) && isFinite(v)) p[k] = v; });
+    if (qs.get('af') === '1') p.af = true;
+    if (qs.get('spont') === '1') p.spont = true;
+    sim.p = { ...p }; syncUI(); changed();
+    $('presetNote').textContent = "This patient's ventilator, from the bedside card. Slide Stressed volume until PPV matches the monitor, then run the bolus.";
+  } else applyPreset('normo');
+  recompute();
+  renderTests();
+  requestAnimationFrame(frame);
+})();
+
+</script>
+
+</body>
+</html>

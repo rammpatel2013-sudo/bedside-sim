@@ -1006,6 +1006,7 @@ function Lobby(){
  <h1>Bedside Sim</h1><p>Two-screen ICU/ED simulator. One iPad is the patient's monitor and vent; the other is your control console with virtual-patient scenarios, branching on what the learner does.</p>
  <div class="field"><label for="code">Room code — use the same code on both iPads</label><input id="code" value="${esc(code)}" maxlength="10" autocomplete="off" autocapitalize="characters"></div>
  <div class="roles"><button class="role" id="asIns"><b>Instructor</b><span>Control vitals, vent, results, scenario path</span></button><button class="role rmon" id="asMon"><b>Bedside monitor</b><span>Learner-facing screen with sound</span></button><button class="role" id="asChart" style="grid-column:1/-1"><b>Student chart</b><span>History, results and ordering — for each learner's own device</span></button></div>
+ <p class="note"><a href="/learn">Learn</a> — interactive physiology and ultrasound chapters. No room code needed.</p>
  <p class="note">Learners need no account — just this page and the room code. The instructor console uses your HALO Tracker sign-in. Sound needs the monitor iPad's ring/silent switch off. For teaching use only — not a medical device.</p></div></div>`;
  const go=async role=>{const c=($('#code').value||'ICU1').toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,10)||'ICU1';LS.set('room',c);LS.set('role',role);
   let who={instructor:false};try{who=await (await fetch('/api/whoami',{credentials:'same-origin'})).json()}catch(e){}

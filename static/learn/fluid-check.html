@@ -1,0 +1,306 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Fluid Check · Bedside</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600&family=Barlow:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap">
+<style>
+/* Layout: one phone-width column for rounds — patient numbers in, a verdict card, then the test to run with its own calculator, then three teaching questions. */
+:root {
+  --paper: #f5f7f8; --sheet: #ffffff; --ink: #13202a; --ink-2: #4a5965; --ink-3: #7f8e99; --rule: #d9e1e7; --grid: #e8eef2; --open: #2a78d6;
+  --good: #23784f; --good-bg: #e3f2ea; --warn: #9a5b00; --warn-bg: #fbefd9; --bad: #b53333; --bad-bg: #f9e3e1;
+  --f-text: "Source Serif 4", "Iowan Old Style", Georgia, serif;
+  --f-ui: "Barlow", "Segoe UI", system-ui, sans-serif;
+  --f-num: "Barlow Condensed", "Arial Narrow", "Roboto Condensed", sans-serif;
+  padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --paper: #0e1418; --sheet: #151d23; --ink: #e5ebef; --ink-2: #a7b4be; --ink-3: #6e7d88; --rule: #26323b; --grid: #1b252c; --open: #3987e5;
+    --good: #6fcf9b; --good-bg: #173226; --warn: #f0b552; --warn-bg: #352812; --bad: #f08a84; --bad-bg: #3a1c1b; color-scheme: dark; }
+}
+:root[data-theme="dark"] { --paper: #0e1418; --sheet: #151d23; --ink: #e5ebef; --ink-2: #a7b4be; --ink-3: #6e7d88; --rule: #26323b; --grid: #1b252c; --open: #3987e5;
+  --good: #6fcf9b; --good-bg: #173226; --warn: #f0b552; --warn-bg: #352812; --bad: #f08a84; --bad-bg: #3a1c1b; color-scheme: dark; }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--f-ui); font-size: 15px; line-height: 1.45; }
+.topbar { display: flex; gap: 10px; align-items: center; padding-inline: 16px; padding-block: 10px; border-bottom: 1px solid var(--rule); font-size: 14px; }
+.topbar b { font-family: var(--f-num); letter-spacing: .06em; text-transform: uppercase; font-weight: 600; }
+.topbar a { color: var(--ink); }
+.topbar .right { margin-left: auto; }
+.wrap { max-width: 640px; margin: 0 auto; padding-inline: 16px; padding-block: 18px 56px; display: grid; gap: 14px; }
+.eyebrow { font-family: var(--f-num); font-weight: 600; letter-spacing: .08em; text-transform: uppercase; font-size: 13px; color: var(--ink-2); }
+h1 { font-family: var(--f-text); font-weight: 600; font-size: 34px; line-height: 1.05; margin: 2px 0 4px; }
+.deck { margin: 0; color: var(--ink-2); font-size: 15px; }
+.card { background: var(--sheet); border: 1px solid var(--rule); border-radius: 8px; padding: 12px 14px; display: grid; gap: 10px; }
+.card h2 { margin: 0; font-family: var(--f-num); font-weight: 600; font-size: 14px; letter-spacing: .07em; text-transform: uppercase; color: var(--ink-2); display: flex; justify-content: space-between; gap: 8px; }
+.fields { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+@media (max-width: 420px) { .fields { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.f { display: grid; gap: 3px; min-width: 0; }
+.f label { font-size: 12.5px; color: var(--ink-2); }
+.f input, .f select { font: 600 20px/1.1 var(--f-num); font-variant-numeric: tabular-nums; padding: 8px 9px; border: 1px solid var(--rule); border-radius: 6px; background: var(--paper); color: var(--ink); width: 100%; min-width: 0; }
+.f .calc { font: 600 20px/1.1 var(--f-num); padding: 9px 0; font-variant-numeric: tabular-nums; }
+.f .calc small, .f label small { font: 500 12px var(--f-ui); color: var(--ink-3); }
+.seg { display: inline-flex; border: 1px solid var(--rule); border-radius: 6px; overflow: hidden; }
+.seg button { font: 600 14px/1 var(--f-ui); padding: 9px 12px; border: 0; background: transparent; color: var(--ink-2); cursor: pointer; }
+.seg button[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+.f .seg { width: 100%; } .f .seg button { flex: 1; }
+.qs { display: grid; gap: 8px; }
+.q { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; align-items: center; font-size: 14.5px; }
+.verdict { border-radius: 8px; padding: 12px 14px; display: grid; gap: 8px; border: 1px solid var(--rule); background: var(--sheet); }
+.verdict .big { font-family: var(--f-text); font-size: 22px; font-weight: 600; line-height: 1.2; }
+.chip { display: inline-flex; align-items: center; gap: 5px; font: 600 12.5px/1.2 var(--f-ui); padding: 5px 8px; border-radius: 4px; }
+.chip.good { color: var(--good); background: var(--good-bg); }
+.chip.warn { color: var(--warn); background: var(--warn-bg); }
+.chip.bad { color: var(--bad); background: var(--bad-bg); }
+.chip.off { color: var(--ink-2); background: var(--grid); }
+ul.why { margin: 0; padding: 0; list-style: none; display: grid; gap: 6px; font-size: 14px; }
+ul.why li { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 8px; align-items: start; }
+.tabs { display: flex; gap: 4px; flex-wrap: wrap; }
+.tabs button { font: 600 13px/1 var(--f-num); letter-spacing: .05em; text-transform: uppercase; padding: 8px 10px; border: 1px solid var(--rule); background: transparent; color: var(--ink-2); border-radius: 4px; cursor: pointer; }
+.tabs button[aria-selected="true"] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.tabs button .rec { font-family: var(--f-ui); text-transform: none; letter-spacing: 0; font-weight: 500; opacity: .8; }
+ol.steps { margin: 0; padding-left: 1.3em; display: grid; gap: 4px; font-size: 14.5px; }
+.res { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; font-size: 14px; min-height: 30px; }
+.res b { font: 600 24px/1 var(--f-num); font-variant-numeric: tabular-nums; }
+.teach { font-family: var(--f-text); font-size: 16.5px; line-height: 1.5; display: grid; gap: 10px; }
+.teach p { margin: 0; }
+.teach .a { font-family: var(--f-ui); font-size: 14px; color: var(--ink-2); }
+details.ans summary { cursor: pointer; font: 600 13px var(--f-ui); color: var(--open); }
+.note { font-size: 12.5px; color: var(--ink-2); margin: 0; }
+sup a, .src a { color: var(--ink-2); font-size: 11.5px; text-decoration: none; }
+a.btn { display: inline-block; font: 600 14px/1 var(--f-ui); padding: 10px 12px; border-radius: 6px; border: 1px solid var(--ink); color: var(--ink); text-decoration: none; }
+ol.refs { font-size: 12.5px; color: var(--ink-2); padding-left: 1.5em; margin: 0; display: grid; gap: 4px; }
+ol.refs a { color: var(--ink); }
+button:focus-visible, input:focus-visible, select:focus-visible, a:focus-visible, summary:focus-visible { outline: 2px solid var(--open); outline-offset: 2px; }
+</style>
+</head>
+<body>
+<nav class="topbar"><a href="/learn"><b>Learn</b></a><span style="color:var(--ink-3)">Bedside card</span><a class="right" href="/learn/heart-lung">Chapter 01</a></nav>
+<div class="wrap">
+  <div>
+    <div class="eyebrow">Bedside · goes with Chapter 01</div>
+    <h1>Fluid check</h1>
+    <p class="deck">Enter this patient's numbers from the vent and monitor. The card says whether PPV can be read, which test to run, and scores it. Nothing is saved.</p>
+  </div>
+
+  <section class="card" aria-labelledby="h-vent">
+    <h2 id="h-vent">Ventilator</h2>
+    <div class="fields">
+      <div class="f"><label>Sex</label><div class="seg" role="group" aria-label="Sex"><button type="button" id="sexM" aria-pressed="true">M</button><button type="button" id="sexF" aria-pressed="false">F</button></div></div>
+      <div class="f"><label for="ht">Height <small>cm</small></label><input id="ht" type="number" inputmode="decimal" value="175"></div>
+      <div class="f"><label>Predicted weight</label><div class="calc" id="pbw"></div></div>
+      <div class="f"><label for="vt">Tidal volume <small>mL</small></label><input id="vt" type="number" inputmode="decimal" value="500"></div>
+      <div class="f"><label>Tidal volume</label><div class="calc" id="vtkg"></div></div>
+      <div class="f"><label for="rr">Resp. rate <small>/min, actual</small></label><input id="rr" type="number" inputmode="decimal" value="18"></div>
+      <div class="f"><label for="peep">PEEP <small>cmH₂O</small></label><input id="peep" type="number" inputmode="decimal" value="8"></div>
+      <div class="f"><label for="pplat">Plateau <small>cmH₂O</small></label><input id="pplat" type="number" inputmode="decimal" value="22"></div>
+      <div class="f"><label>Compliance (Crs)</label><div class="calc" id="crs"></div></div>
+    </div>
+  </section>
+
+  <section class="card" aria-labelledby="h-mon">
+    <h2 id="h-mon">Monitor and patient</h2>
+    <div class="fields">
+      <div class="f"><label for="hr">Heart rate <small>/min</small></label><input id="hr" type="number" inputmode="decimal" value="96"></div>
+      <div class="f"><label for="ppv">PPV <small>% (or blank)</small></label><input id="ppv" type="number" inputmode="decimal" value="14"></div>
+      <div class="f"><label for="svv">SVV <small>% (or blank)</small></label><input id="svv" type="number" inputmode="decimal" placeholder="–"></div>
+    </div>
+    <div class="qs" id="qs"></div>
+  </section>
+
+  <section class="verdict" id="verdict" aria-live="polite"></section>
+
+  <section class="card" aria-labelledby="h-test">
+    <h2 id="h-test">Run a test</h2>
+    <div class="tabs" role="tablist" id="tabs"></div>
+    <div id="testBody"></div>
+  </section>
+
+  <section class="card" aria-labelledby="h-teach">
+    <h2 id="h-teach">Teach it at the bedside</h2>
+    <div class="teach" id="teach"></div>
+    <div><a class="btn" id="model" href="/learn/heart-lung">Open this ventilator in the model</a></div>
+    <p class="note">The model opens with this patient's tidal volume, PEEP, rate, heart rate and compliance. Slide the stressed volume to find a PPV like the monitor's, then run the bolus.</p>
+  </section>
+
+  <section class="card">
+    <h2>Sources</h2>
+    <ol class="refs">
+      <li id="r1">Michard F, et al. <i>Am J Respir Crit Care Med</i> 2000;162:134–8. <a href="https://pubmed.ncbi.nlm.nih.gov/10903232/" target="_blank" rel="noopener">PubMed</a></li>
+      <li id="r2">Cannesson M, et al. <i>Anesthesiology</i> 2011;115:231–41. <a href="https://pubmed.ncbi.nlm.nih.gov/21705869/" target="_blank" rel="noopener">PubMed</a></li>
+      <li id="r3">De Backer D, et al. <i>Intensive Care Med</i> 2005;31:517–23. <a href="https://pubmed.ncbi.nlm.nih.gov/15754196/" target="_blank" rel="noopener">PubMed</a></li>
+      <li id="r4">De Backer D, et al. <i>Anesthesiology</i> 2009;110:1092–7. <a href="https://pubmed.ncbi.nlm.nih.gov/19352152/" target="_blank" rel="noopener">PubMed</a></li>
+      <li id="r5">Monnet X, et al. <i>Crit Care Med</i> 2012;40:152–7. <a href="https://pubmed.ncbi.nlm.nih.gov/21926581/" target="_blank" rel="noopener">PubMed</a></li>
+      <li id="r6">Mahjoub Y, et al. <i>Crit Care Med</i> 2009;37:2570–5. <a href="https://pubmed.ncbi.nlm.nih.gov/19623051/" target="_blank" rel="noopener">PubMed</a></li>
+      <li id="r7">Monnet X, Marik PE, Teboul JL. <i>Ann Intensive Care</i> 2016;6:111. <a href="https://pubmed.ncbi.nlm.nih.gov/27858374/" target="_blank" rel="noopener">PubMed</a></li>
+      <li id="r8">Monnet X, Marik P, Teboul JL. <i>Intensive Care Med</i> 2016;42:1935–47. <a href="https://pubmed.ncbi.nlm.nih.gov/26825952/" target="_blank" rel="noopener">PubMed</a></li>
+      <li id="r9">Myatra SN, et al. <i>Crit Care Med</i> 2017;45:415–21. <a href="https://pubmed.ncbi.nlm.nih.gov/27922879/" target="_blank" rel="noopener">PubMed</a></li>
+      <li id="r10">Monnet X, et al. <i>Crit Care Med</i> 2009;37:951–6. <a href="https://pubmed.ncbi.nlm.nih.gov/19237902/" target="_blank" rel="noopener">PubMed</a></li>
+      <li id="r11">Pinsky MR. <i>Ann Am Thorac Soc</i> 2018;15(Suppl 1):S45–S48. <a href="https://pubmed.ncbi.nlm.nih.gov/28820609/" target="_blank" rel="noopener">PubMed</a></li>
+    </ol>
+    <p class="note">A teaching aid built on published thresholds. It does not replace bedside judgment, and nothing entered here leaves this page.</p>
+  </section>
+</div>
+
+<script>
+(() => {
+  const $ = (id) => document.getElementById(id);
+  const num = (id) => { const v = parseFloat($(id).value); return isFinite(v) ? v : null; };
+  const ref = (...n) => `<sup>${n.map((x) => `<a href="#r${x}">${x}</a>`).join(',')}</sup>`;
+  let sex = 'M';
+  const Q = [
+    { k: 'passive', t: 'Passive — no triggering or efforts', yes: true },
+    { k: 'regular', t: 'Regular rhythm', yes: true },
+    { k: 'rv', t: 'RV normal on echo', yes: true, alt: 'Not looked' },
+    { k: 'chest', t: 'Chest closed', yes: true },
+    { k: 'abd', t: 'Abdomen soft, no suspected high pressure', yes: true },
+  ];
+  const ans = Object.fromEntries(Q.map((q) => [q.k, 'yes']));
+  $('qs').innerHTML = Q.map((q) => `<div class="q"><span>${q.t}</span><div class="seg" role="group" aria-label="${q.t}">${['yes', 'no'].concat(q.alt ? ['unk'] : []).map((v) => `<button type="button" data-q="${q.k}" data-v="${v}" aria-pressed="${v === 'yes'}">${v === 'yes' ? 'Yes' : v === 'no' ? 'No' : q.alt}</button>`).join('')}</div></div>`).join('');
+  $('qs').addEventListener('click', (e) => { const b = e.target.closest('button[data-q]'); if (!b) return; ans[b.dataset.q] = b.dataset.v; $('qs').querySelectorAll(`button[data-q="${b.dataset.q}"]`).forEach((x) => x.setAttribute('aria-pressed', String(x === b))); update(); });
+  $('sexM').addEventListener('click', () => { sex = 'M'; $('sexM').setAttribute('aria-pressed', 'true'); $('sexF').setAttribute('aria-pressed', 'false'); update(); });
+  $('sexF').addEventListener('click', () => { sex = 'F'; $('sexF').setAttribute('aria-pressed', 'true'); $('sexM').setAttribute('aria-pressed', 'false'); update(); });
+  document.querySelectorAll('input').forEach((i) => i.addEventListener('input', update));
+
+  let tab = null, userTab = false;
+  const TESTS = {
+    plr: { name: 'Leg raise' },
+    vtc: { name: 'Tidal volume challenge' },
+    eexpo: { name: 'End-exp. occlusion' },
+  };
+
+  function state() {
+    const ht = num('ht'), vt = num('vt'), peep = num('peep'), pplat = num('pplat'), rr = num('rr'), hr = num('hr');
+    const pbw = ht ? (sex === 'M' ? 50 : 45.5) + 0.91 * (ht - 152.4) : null;
+    const vtkg = pbw && vt ? vt / pbw : null;
+    const crs = vt && pplat != null && peep != null && pplat > peep ? vt / (pplat - peep) : null;
+    const hrrr = hr && rr ? hr / rr : null;
+    return { ht, vt, peep, pplat, rr, hr, pbw, vtkg, crs, hrrr, ppv: num('ppv'), svv: num('svv') };
+  }
+  function problems(s) {
+    const P = [];
+    if (ans.passive !== 'yes') P.push({ lvl: 'bad', t: 'Spontaneous efforts make the pleural swing irregular.', r: [7] });
+    if (ans.regular !== 'yes') P.push({ lvl: 'bad', t: 'Arrhythmia: stroke volume follows filling time, not the breath.', r: [7] });
+    if (s.vtkg != null && Math.round(s.vtkg * 10) / 10 < 8) P.push({ lvl: 'warn', t: `Tidal volume ${s.vtkg.toFixed(1)} mL/kg PBW, below 8: small stimulus, false negatives.`, r: [3], vt: true });
+    if (s.hrrr != null && Math.round(s.hrrr * 10) / 10 < 3.6) P.push({ lvl: 'bad', t: `HR/RR ${s.hrrr.toFixed(1)}, below 3.6: too few beats per breath.`, r: [4] });
+    if (s.crs != null && Math.round(s.crs) <= 30) P.push({ lvl: 'warn', t: `Crs ${Math.round(s.crs)} mL/cmH₂O, 30 or less: PPV loses accuracy.`, r: [5] });
+    if (ans.rv === 'no') P.push({ lvl: 'warn', t: 'RV dysfunction: a high PPV can come from RV afterload, not preload.', r: [6] });
+    if (ans.rv === 'unk') P.push({ lvl: 'off', t: 'RV not assessed: a high PPV may be a false positive if the RV is failing.', r: [6] });
+    if (ans.chest !== 'yes') P.push({ lvl: 'warn', t: 'Open chest: the pleural swing is small.', r: [7] });
+    if (ans.abd !== 'yes') P.push({ lvl: 'warn', t: 'Raised abdominal pressure enlarges the pleural swing and PPV.', r: [7] });
+    return P;
+  }
+  function recommend(s, P) {
+    const hard = P.filter((p) => p.lvl === 'bad' || p.lvl === 'warn');
+    const passive = ans.passive === 'yes';
+    // low tidal volume (with or without low compliance) is fixed by enlarging the stimulus for one minute
+    const lowVtOnly = hard.length && hard.some((p) => p.vt) && hard.every((p) => p.vt || /Crs/.test(p.t));
+    if (lowVtOnly && s.vtkg >= 5.5 && s.vtkg <= 7) return 'vtc';
+    if (!hard.length) {
+      const v = s.ppv != null ? s.ppv : s.svv;
+      if (v != null && v >= 9 && v <= 13) return 'plr';
+      return null;
+    }
+    if (passive && hard.some((p) => /Crs/.test(p.t)) && !hard.some((p) => /Arrhythmia/.test(p.t))) return 'eexpo';
+    return 'plr';
+  }
+  function verdictHTML(s, P) {
+    const hard = P.filter((p) => p.lvl === 'bad' || p.lvl === 'warn');
+    const v = s.ppv != null ? s.ppv : s.svv; const lab = s.ppv != null ? 'PPV' : 'SVV';
+    let big, chip;
+    if (hard.length) { big = `${lab} can't be read in this patient.`; chip = `<span class="chip warn">! ${hard.length} problem${hard.length > 1 ? 's' : ''}</span>`; }
+    else if (v == null) { big = 'PPV can be read here. Enter it from the monitor.'; chip = '<span class="chip good">✓ Readable</span>'; }
+    else if (Math.round(v * 10) / 10 > 13) { big = `${lab} ${v}% predicts a rise in cardiac output with fluid.`; chip = `<span class="chip good">✓ Readable</span><span class="chip off">Above 13%${ref(1)}</span>`; }
+    else if (v >= 9) { big = `${lab} ${v}% is in the gray zone. Run a leg raise.`; chip = `<span class="chip good">✓ Readable</span><span class="chip off">9–13%${ref(2)}</span>`; }
+    else { big = `${lab} ${v}% predicts no rise in cardiac output with fluid.`; chip = `<span class="chip good">✓ Readable</span><span class="chip off">Below 9%${ref(2)}</span>`; }
+    const list = P.length ? `<ul class="why">${P.map((p) => `<li><span class="chip ${p.lvl}">${p.lvl === 'bad' ? '✕' : p.lvl === 'warn' ? '!' : '?'}</span><span>${p.t}${ref(...p.r)}</span></li>`).join('')}</ul>` : '';
+    const rec = recommend(s, P);
+    const next = rec ? `<p class="note" style="font-size:14px;color:var(--ink)"><b>Next:</b> ${TESTS[rec].name}, below.</p>` : '';
+    const caveat = '<p class="note">Responsiveness is not a reason to give fluid. Ask whether the patient needs more flow and will tolerate the volume.</p>';
+    return `<div class="big">${big}</div><div class="res">${chip}</div>${list}${next}${caveat}`;
+  }
+
+  // ---- test calculators
+  const pct = (a, b) => (a && b != null ? (b / a - 1) * 100 : null);
+  function testBody(id, s) {
+    if (id === 'plr') return `
+      <ol class="steps"><li>Start semi-recumbent, head of bed at 45°.</li><li>Measure cardiac output, stroke volume or LVOT VTI.</li><li>Lower the trunk flat and raise the legs to 45°.</li><li>Measure again within about a minute, at the peak effect, then return the bed.</li></ol>
+      <div class="fields"><div class="f"><label for="plrA">Before <small>CO, SV or VTI</small></label><input id="plrA" type="number" inputmode="decimal"></div><div class="f"><label for="plrB">During <small>same measure</small></label><input id="plrB" type="number" inputmode="decimal"></div></div>
+      <div class="res" id="plrR"></div>
+      <p class="note">Positive if output rises 10% or more. Judge by cardiac output, stroke volume or VTI; pulse pressure alone performs worse.${ref(8)} VTI tracks stroke volume because the LVOT diameter does not change.</p>`;
+    if (id === 'vtc') return `
+      <ol class="steps"><li>At 6 mL/kg PBW (${s.pbw ? Math.round(6 * s.pbw) : '–'} mL), note PPV or SVV.</li><li>Raise tidal volume to 8 mL/kg (${s.pbw ? Math.round(8 * s.pbw) : '–'} mL) for one minute.</li><li>Note PPV or SVV again, then return to 6 mL/kg.</li></ol>
+      <div class="fields"><div class="f"><label for="vtA">PPV at 6 <small>%</small></label><input id="vtA" type="number" inputmode="decimal"></div><div class="f"><label for="vtB">PPV at 8 <small>%</small></label><input id="vtB" type="number" inputmode="decimal"></div>
+      <div class="f"><label for="vtC">SVV at 6 <small>%</small></label><input id="vtC" type="number" inputmode="decimal"></div><div class="f"><label for="vtD">SVV at 8 <small>%</small></label><input id="vtD" type="number" inputmode="decimal"></div></div>
+      <div class="res" id="vtR"></div>
+      <p class="note">Positive if PPV rises 3.5 points or more, or SVV 2.5 points or more (absolute). Studied in patients ventilated at 6 mL/kg; their baseline PPV did not predict.${ref(9)}</p>`;
+    return `
+      <ol class="steps"><li>Confirm the patient will not trigger during a 15-second pause.</li><li>Note cardiac output or arterial pulse pressure.</li><li>Hold the ventilator at end-expiration for 15 seconds.</li><li>Read the value over the last 5 seconds of the hold.</li></ol>
+      <div class="fields"><div class="f"><label for="exA">Before <small>CO or pulse pressure</small></label><input id="exA" type="number" inputmode="decimal"></div><div class="f"><label for="exB">End of hold <small>same measure</small></label><input id="exB" type="number" inputmode="decimal"></div></div>
+      <div class="res" id="exR"></div>
+      <p class="note">Positive if cardiac output or pulse pressure rises 5% or more.${ref(10)} Held up better than PPV when compliance is low.${ref(5)}</p>`;
+  }
+  function wireTest(id) {
+    const show = (el, txt, pos) => { $(el).innerHTML = txt == null ? '' : `<b>${txt}</b><span class="chip ${pos ? 'good' : 'off'}">${pos ? 'Positive: predicts a response' : 'Negative'}</span>`; };
+    const r1 = (x) => Math.round(x * 10) / 10;
+    const sg = (x) => (x >= 0 ? '+' : '') + x.toFixed(1);
+    if (id === 'plr') { const f = () => { const v = pct(num('plrA'), num('plrB')); if (v == null) return show('plrR', null); const r = r1(v); show('plrR', `${sg(r)}%`, r >= 10); }; ['plrA', 'plrB'].forEach((i) => $(i).addEventListener('input', f)); }
+    if (id === 'vtc') { const f = () => { const a = num('vtA'), b = num('vtB'), c = num('vtC'), d = num('vtD'); const dp = a != null && b != null ? r1(b - a) : null, ds = c != null && d != null ? r1(d - c) : null; if (dp == null && ds == null) return show('vtR', null); const parts = []; if (dp != null) parts.push(`ΔPPV ${sg(dp)}`); if (ds != null) parts.push(`ΔSVV ${sg(ds)}`); show('vtR', parts.join(' · '), (dp != null && dp >= 3.5) || (ds != null && ds >= 2.5)); }; ['vtA', 'vtB', 'vtC', 'vtD'].forEach((i) => $(i).addEventListener('input', f)); }
+    if (id === 'eexpo') { const f = () => { const v = pct(num('exA'), num('exB')); if (v == null) return show('exR', null); const r = r1(v); show('exR', `${sg(r)}%`, r >= 5); }; ['exA', 'exB'].forEach((i) => $(i).addEventListener('input', f)); }
+  }
+  function renderTabs(s, rec) {
+    if (!userTab) tab = rec || tab || 'plr';
+    $('tabs').innerHTML = Object.entries(TESTS).map(([id, t]) => `<button type="button" role="tab" data-t="${id}" aria-selected="${id === tab}">${t.name}${id === rec ? ' <span class="rec">· suggested</span>' : ''}</button>`).join('');
+    $('tabs').querySelectorAll('button').forEach((b) => b.addEventListener('click', () => { tab = b.dataset.t; userTab = true; renderTabs(state(), recommend(state(), problems(state()))); drawTest(); }));
+  }
+  let drawn = null;
+  function drawTest(force) {
+    const s = state();
+    if (!force && drawn === tab + (s.pbw ? Math.round(s.pbw) : '')) return;
+    drawn = tab + (s.pbw ? Math.round(s.pbw) : '');
+    $('testBody').innerHTML = testBody(tab, s); wireTest(tab);
+  }
+
+  // ---- teaching prompts
+  function teach(s, P) {
+    const hard = P.filter((p) => p.lvl === 'bad' || p.lvl === 'warn');
+    const v = s.ppv != null ? s.ppv : s.svv;
+    const items = [];
+    items.push(['Where is this patient on the Starling curve, and what at the bedside tells you?', 'A large swing in stroke volume with each breath means the steep part of the curve: both ventricles are preload-responsive. A small swing means the flat part, or a stimulus too small to tell.']);
+    if (hard.length) items.push([`Why can't we use PPV here?`, hard.map((p) => p.t).join(' ')]);
+    else if (v != null && v > 13) items.push(['PPV is high. Will fluid help, and could it hurt?', 'It predicts a rise in cardiac output. Whether to give fluid depends on whether more flow is needed and on the cost: oxygenation, B-lines, venous congestion.']);
+    else items.push(['What would make this PPV wrong?', 'Efforts, arrhythmia, tidal volume below 8 mL/kg, HR/RR below 3.6, low compliance, RV failure, open chest, raised abdominal pressure.']);
+    items.push([`Draw it: why does inspiration lower venous return on this ventilator?`, `Pleural pressure rises with each breath (tidal volume ÷ chest-wall compliance), right atrial pressure rises with it, and the gradient from mean systemic filling pressure falls. Lung inflation also loads the RV.${ref(11)} Tidal volume here is ${s.vt || '–'} mL.`]);
+    $('teach').innerHTML = items.map(([q, a]) => `<div><p>${q}</p><details class="ans"><summary>Answer</summary><p class="a">${a}</p></details></div>`).join('');
+    // model link with this ventilator
+    const params = new URLSearchParams();
+    if (s.vtkg) params.set('vt', (Math.round(s.vtkg * 2) / 2).toString());
+    if (s.peep != null) params.set('peep', String(Math.round(s.peep)));
+    if (s.rr) params.set('rr', String(Math.round(s.rr)));
+    if (s.hr) params.set('hr', String(Math.round(s.hr)));
+    if (s.pbw) params.set('pbw', String(Math.round(s.pbw)));
+    if (s.crs) { const cl = 1 / (1 / s.crs - 1 / 100); params.set('cl', String(Math.max(15, Math.min(80, Math.round(cl > 0 ? cl : 80))))); }
+    if (ans.regular === 'no') params.set('af', '1');
+    if (ans.passive === 'no') params.set('spont', '1');
+    if (ans.rv === 'no') params.set('rv', '0.45');
+    if (ans.abd === 'no') params.set('ccw', '45');
+    $('model').href = '/learn/heart-lung?' + params.toString();
+  }
+
+  function update() {
+    const s = state();
+    $('pbw').innerHTML = s.pbw ? `${s.pbw.toFixed(1)} <small>kg</small>` : '–';
+    $('vtkg').innerHTML = s.vtkg ? `${s.vtkg.toFixed(1)} <small>mL/kg</small>` : '–';
+    $('crs').innerHTML = s.crs ? `${Math.round(s.crs)} <small>mL/cmH₂O</small>` : '–';
+    const P = problems(s);
+    $('verdict').innerHTML = verdictHTML(s, P);
+    const rec = recommend(s, P);
+    renderTabs(s, rec); drawTest(); teach(s, P);
+  }
+  update();
+})();
+</script>
+</body>
+</html>

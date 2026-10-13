@@ -44,6 +44,13 @@ Set `HALO_SECURE_COOKIES=1` once it runs behind HTTPS.
 - Prices are approximate Medicare reference amounts for cost awareness, not hospital charges.
 - **Debrief → Order report** compares orders against the case's expected actions and flags low-value tests.
 
+### Learn (physiology and ultrasound chapters)
+
+- `http://<nas-ip>:5050/learn` — open to learners with no sign-in, like `/sim` and `/chart`. Linked from the sim lobby and the tracker menu.
+- **Chapter 01 · Heart–lung interactions** (`/learn/heart-lung`): live heart–lung model following Pinsky — pleural vs transpulmonary pressure, venous return, both ventricles, PPV and its limits, leg raise / tidal volume challenge / end-expiratory occlusion scored against a fluid bolus. For teaching before or after rounds.
+- **Bedside card · Fluid check** (`/learn/fluid-check`): for rounds. Enter the real patient's vent and monitor numbers; it says whether PPV can be read, which test to run, scores the test, and gives three teaching questions. Nothing is saved. "Open this ventilator in the model" loads the patient's settings into Chapter 01.
+- Pages are static files in `static/learn/` (one self-contained HTML file each). Add a chapter by dropping in `<slug>.html` and listing it in `static/learn/index.html`. The chapter plan and verified sources are in the claude.ai project doc `icu-ultrasound-plan.md`.
+
 ### Content
 
 - `content/catalog.json` — orderable catalog (built by `tools/build_catalog.py`; edit that file and re-run it).
