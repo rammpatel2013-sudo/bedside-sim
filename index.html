@@ -3,7 +3,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>HALO Teaching Tools</title>
-<meta name="description" content="Free ICU teaching tools from the HALO program: Vent Lab ventilator simulator with graded cases and tutorials.">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#13202a">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="HALO">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="description" content="Free ICU teaching tools from the HALO program: Vent Lab, heart–lung physiology chapters and bedside cards.">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -37,6 +44,14 @@ svg{display:block;width:100%;height:auto;max-width:100%}
 .note h3{font:600 1.2rem var(--num);letter-spacing:.03em;margin:0 0 6px}
 .note p{margin:0;color:var(--mute);max-width:66ch}
 .foot{font-size:.82rem;color:var(--mute)}
+.learn{background:var(--panel);color:var(--ink);border:1px solid var(--line)}
+.learn h2{color:var(--ink)}
+.learn p,.learn li{color:var(--mute)}
+.learn a.btn{color:var(--ink);background:transparent;border-color:var(--line)}
+.learn a.btn.pri{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.learn svg .ax{stroke:var(--line)} .learn svg .vr{stroke:var(--mute)} .learn svg .cf{stroke:var(--ink)} .learn svg text{fill:var(--mute)}
+.install{display:grid;gap:4px}
+.install b{color:var(--ink)}
 </style>
 </head>
 <body>
@@ -69,6 +84,40 @@ svg{display:block;width:100%;height:auto;max-width:100%}
     </svg>
   </section>
 
+  <section class="tool learn" aria-labelledby="ln">
+    <div>
+      <h2 id="ln">Learn</h2>
+      <p>Critical care physiology and ultrasound, following Pinsky. Each topic has a chapter with a live model, for before or after rounds, and a bedside card for the real patient in front of you.</p>
+      <ul>
+        <li>Chapter 01, heart–lung interactions: venous return, both ventricles, PPV and when it misleads</li>
+        <li>Bedside card, Fluid check: is PPV readable here, which test to run, and its result</li>
+        <li>26 more chapters planned: shock, lung, pleural, vascular access and nerve sheath ultrasound</li>
+      </ul>
+      <div class="row">
+        <a class="btn pri" href="learn/fluid-check.html">Fluid check</a>
+        <a class="btn" href="learn/heart-lung.html">Chapter 01</a>
+        <a class="btn" href="learn/">All chapters</a>
+      </div>
+    </div>
+    <svg viewBox="0 0 360 200" role="img" aria-label="Venous return line crossing the cardiac function curve at end-expiration and, shifted right, at end-inspiration">
+      <g class="ax" stroke-width="1.5" fill="none"><path d="M40 20 V176 H340"/></g>
+      <path class="vr" d="M40 52 H96 L268 176" fill="none" stroke-width="2.4"/>
+      <path class="vr" d="M40 46 H96 L276 176" fill="none" stroke-width="2.4" stroke-dasharray="7 6"/>
+      <path class="cf" d="M84 176 C104 110 140 64 200 50 S300 40 340 38" fill="none" stroke-width="2.6"/>
+      <path class="cf" d="M128 176 C148 116 184 72 244 58 S320 50 340 49" fill="none" stroke-width="2.6" stroke-dasharray="7 6"/>
+      <circle cx="141" cy="84" r="6" fill="var(--c-art,#eb6834)"/>
+      <circle cx="178" cy="113" r="6" fill="var(--panel)" stroke="#eb6834" stroke-width="2.4"/>
+      <g font-family="IBM Plex Sans, system-ui, sans-serif" font-size="11" font-weight="600"><text x="48" y="40">Venous return</text><text x="262" y="30">Cardiac output</text><text x="250" y="194">Right atrial pressure</text></g>
+    </svg>
+  </section>
+
+  <section class="note install">
+    <h3>Use it like an app</h3>
+    <p><b>iPhone or iPad:</b> open this page in Safari, tap Share, then Add to Home Screen.</p>
+    <p><b>Android:</b> open it in Chrome, tap the menu, then Install app.</p>
+    <p>It opens full screen from your home screen and works offline after the first visit.</p>
+  </section>
+
   <section class="note">
     <h3>Live bedside simulation</h3>
     <p>The two-screen bedside monitor and the student chart run on the HALO program's own server during instructor-led sessions. Your instructor sends that link at the start of a session.</p>
@@ -76,4 +125,5 @@ svg{display:block;width:100%;height:auto;max-width:100%}
 
   <p class="foot">Educational use only. These simulators use teaching models, not predictions for a real patient, and must not guide patient care. Source code: <a href="https://github.com/rammpatel2013-sudo/bedside-sim">github.com/rammpatel2013-sudo/bedside-sim</a>.</p>
 </main>
+<script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(function () {});</script>
 </body></html>
