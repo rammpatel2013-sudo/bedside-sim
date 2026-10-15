@@ -10,10 +10,11 @@ a mounted volume so nothing is lost on container rebuild.
 import hmac
 import json
 import os
+import re
 import secrets
 import sqlite3
 from datetime import date, timedelta
-from flask import Flask, g, render_template, request, redirect, session, url_for
+from flask import Flask, abort, g, render_template, request, redirect, send_from_directory, session, url_for
 from werkzeug.security import check_password_hash, generate_password_hash
 
 DB_PATH = os.environ.get("HALO_DB_PATH", os.path.join(os.path.dirname(__file__), "data", "halo.db"))
@@ -82,7 +83,7 @@ def check_login(username, password):
     return hmac.compare_digest(username, a["username"]) and check_password_hash(a["hash"], password)
 
 # Open to learners without a login: the sim page, its live socket, read API, media.
-PUBLIC_PREFIXES = ("/sim", "/chart", "/vent", "/ws/", "/api/", "/media/", "/static/", "/login", "/setup")
+PUBLIC_PREFIXES = ("/sim", "/chart", "/vent", "/learn", "/ws/", "/api/", "/media/", "/static/", "/login", "/setup")
 
 
 @app.before_request
@@ -382,6 +383,31 @@ def session_detail(session_id):
         "session_detail.html", session=session_row, participants=participants, all_staff=all_staff,
         sim_run=sim_run, sim_log=sim_log,
     )
+
+
+# ---------------------------------------------------------------- Learn
+# Interactive physiology / ultrasound chapters. Static pages in static/learn/, open to learners
+# without a sign-in (like /sim and /chart). /learn/ lists them; /learn/<slug>(.html) opens static/learn/<slug>.html.
+# The same files are published to GitHub Pages (gh-pages branch, learn/), so links between them are relative.
+LEARN_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "static", "learn")
+
+
+@app.route("/learn")
+def learn_root():
+    return redirect("/learn/")  # pages link to each other relatively ("heart-lung.html"), so keep the slash
+
+
+@app.route("/learn/")
+def learn_index():
+    return send_from_directory(LEARN_DIR, "index.html")
+
+
+@app.route("/learn/<page>")
+def learn_page(page):
+    slug = page[:-5] if page.endswith(".html") else page
+    if not re.fullmatch(r"[a-z0-9-]+", slug) or not os.path.isfile(os.path.join(LEARN_DIR, slug + ".html")):
+        abort(404)
+    return send_from_directory(LEARN_DIR, slug + ".html")
 
 
 def _raw_conn():

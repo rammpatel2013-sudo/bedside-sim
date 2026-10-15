@@ -1,12 +1,13 @@
-name: Publish Vent Lab to GitHub Pages
+name: Publish Vent Lab and Learn to GitHub Pages
 
-# Every push to main that touches Vent Lab or the landing page runs the simulator tests,
-# then publishes site/ + static/vent/ to the gh-pages branch, which GitHub Pages serves at
-# https://<owner>.github.io/<repo>/  (Vent Lab at /vent/). No server, no cost.
+# Every push to main that touches Vent Lab or the Learn pages runs the simulator tests, then
+# updates the gh-pages branch (the HALO Teaching Tools web app at https://<owner>.github.io/<repo>/)
+# with tools/publish_pages.py. It commits on top of gh-pages, so the web-app shell kept there
+# (landing page, manifest, icons, sw.js) is preserved. A failing test blocks the publish.
 on:
   push:
     branches: [main]
-    paths: ['static/vent/**', 'site/**', 'tests/**', '.github/workflows/pages.yml']
+    paths: ['static/vent/**', 'static/learn/**', 'tests/**', 'tools/publish_pages.py', '.github/workflows/pages.yml']
   workflow_dispatch:
 
 permissions:
@@ -14,13 +15,17 @@ permissions:
 
 concurrency:
   group: pages
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+          path: _pages
       - uses: actions/setup-node@v4
         with:
           node-version: 20
@@ -28,18 +33,14 @@ jobs:
         run: |
           node tests/vent_engine.test.js
           node tests/vent_curriculum.test.js
-      - name: Assemble the site
+      - name: Copy Vent Lab and Learn into the web app
+        run: python3 tools/publish_pages.py _pages
+      - name: Commit to gh-pages
+        working-directory: _pages
         run: |
-          mkdir -p _site/vent
-          cp site/index.html _site/
-          cp static/vent/*.html static/vent/*.js _site/vent/
-          touch _site/.nojekyll
-      - name: Publish to gh-pages
-        run: |
-          cd _site
-          git init -q -b gh-pages
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A
+          if git diff --cached --quiet; then echo "Nothing to publish"; exit 0; fi
           git commit -q -m "Publish ${GITHUB_SHA::7}"
-          git push -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" gh-pages
+          git push origin HEAD:gh-pages

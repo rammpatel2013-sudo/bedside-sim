@@ -47,13 +47,13 @@ Set `HALO_SECURE_COOKIES=1` once it runs behind HTTPS.
 - Physics runs in the learner's browser (single-compartment equation of motion with flow limitation, recruitment, Pes/Ptp and steady-state gas exchange). Files: `static/vent/` — `engine.js`, `curriculum.js`, `app.js`, `index.html`.
 - Tests: `node tests/vent_engine.test.js` (physiology vs hand calculations) and `node tests/vent_curriculum.test.js` (every case's starting state fails and its model answer passes).
 
-### Vent Lab on GitHub Pages (public link, no server)
+### GitHub Pages web app (public link, no server)
 
-- Live at **https://rammpatel2013-sudo.github.io/bedside-sim/vent/** (landing page at `/bedside-sim/`). Anyone can open it — no Tailscale, no account.
-- Every push to `main` that touches `static/vent/`, `site/` or `tests/` runs the simulator tests, then publishes to the `gh-pages` branch (`.github/workflows/pages.yml`). A failing test blocks the publish.
-- One-time setting (only if the site does not appear): GitHub → repo **Settings → Pages → Build and deployment → Source: Deploy from a branch → Branch: `gh-pages` / root → Save**.
-- Deep links work: `…/vent/?case=<case-id>`, `…/vent/?view=tutorials&tut=tour`, and scenario-builder share links (`…/vent/?s=…`).
-- Only Vent Lab lives here. The two-screen bedside sim, student chart and tracker need the Flask server (live rooms, uploads, sign-in, database) and stay on the NAS.
+- **https://rammpatel2013-sudo.github.io/bedside-sim/** — HALO Teaching Tools: Vent Lab at `/vent/`, Learn at `/learn/`. Anyone can open it — no Tailscale, no account — and it installs to a phone's home screen and works offline.
+- Every push to `main` that touches `static/vent/`, `static/learn/`, `tests/` or `tools/publish_pages.py` runs the simulator tests, then `tools/publish_pages.py` copies Vent Lab and Learn onto the `gh-pages` branch and sets the offline cache version to the commit (`.github/workflows/pages.yml`). A failing test blocks the publish. The workflow commits on top of `gh-pages`, never replaces it.
+- The web-app shell lives only on `gh-pages`: landing page `index.html`, `manifest.webmanifest`, `icons/`, `sw.js`. Edit those there (see the docstring in `tools/publish_pages.py`).
+- Deep links work: `…/vent/?case=<case-id>`, `…/vent/?view=tutorials&tut=tour`, scenario-builder share links (`…/vent/?s=…`), `…/learn/fluid-check.html`.
+- Only static pages live here. The two-screen bedside sim, student chart and tracker need the Flask server (live rooms, uploads, sign-in, database) and stay on the NAS.
 
 ### Student chart (orders, results, cost)
 
@@ -62,6 +62,13 @@ Set `HALO_SECURE_COOKIES=1` once it runs behind HTTPS.
 - Orders the system can't match land in the instructor's **Orders** box as "needs you": write a result, mark done, or use it to pick the scenario path.
 - Prices are approximate Medicare reference amounts for cost awareness, not hospital charges.
 - **Debrief → Order report** compares orders against the case's expected actions and flags low-value tests.
+
+### Learn (physiology and ultrasound chapters)
+
+- `http://<nas-ip>:5050/learn` — open to learners with no sign-in, like `/sim` and `/chart`. Linked from the sim lobby and the tracker menu.
+- **Chapter 01 · Heart–lung interactions** (`/learn/heart-lung`): live heart–lung model following Pinsky — pleural vs transpulmonary pressure, venous return, both ventricles, PPV and its limits, leg raise / tidal volume challenge / end-expiratory occlusion scored against a fluid bolus. For teaching before or after rounds.
+- **Bedside card · Fluid check** (`/learn/fluid-check`): for rounds. Enter the real patient's vent and monitor numbers; it says whether PPV can be read, which test to run, scores the test, and gives three teaching questions. Nothing is saved. "Open this ventilator in the model" loads the patient's settings into Chapter 01.
+- Pages are static files in `static/learn/` (one self-contained HTML file each, linked relatively). Add a chapter by dropping in `<slug>.html` and listing it in `static/learn/index.html`. The same files are published to the GitHub Pages web app (`gh-pages` branch, `learn/`). The chapter plan and verified sources are in the claude.ai project doc `icu-ultrasound-plan.md`.
 
 ### Content
 
