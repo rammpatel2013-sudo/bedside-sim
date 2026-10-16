@@ -83,7 +83,7 @@ def check_login(username, password):
     return hmac.compare_digest(username, a["username"]) and check_password_hash(a["hash"], password)
 
 # Open to learners without a login: the sim page, its live socket, read API, media.
-PUBLIC_PREFIXES = ("/sim", "/chart", "/learn", "/ws/", "/api/", "/media/", "/static/", "/login", "/setup")
+PUBLIC_PREFIXES = ("/sim", "/chart", "/vent", "/learn", "/ws/", "/api/", "/media/", "/static/", "/login", "/setup")
 
 
 @app.before_request

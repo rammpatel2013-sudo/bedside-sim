@@ -370,6 +370,17 @@ def sim_page():
     return send_from_directory(os.path.join(current_app.root_path, "static"), "sim.html")
 
 
+@bp.route("/vent/")
+def vent_page():
+    """Vent Lab — ventilator simulator, curriculum, tutorials and scenario builder (no sign-in)."""
+    return send_from_directory(os.path.join(current_app.root_path, "static", "vent"), "index.html")
+
+
+@bp.route("/vent/<path:fname>")
+def vent_asset(fname):
+    return send_from_directory(os.path.join(current_app.root_path, "static", "vent"), fname)
+
+
 @bp.route("/api/version")
 def version():
     return jsonify({"version": os.environ.get("HALO_VERSION", "local")[:7],

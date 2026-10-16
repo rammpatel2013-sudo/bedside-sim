@@ -1,0 +1,46 @@
+name: Publish Vent Lab and Learn to GitHub Pages
+
+# Every push to main that touches Vent Lab or the Learn pages runs the simulator tests, then
+# updates the gh-pages branch (the HALO Teaching Tools web app at https://<owner>.github.io/<repo>/)
+# with tools/publish_pages.py. It commits on top of gh-pages, so the web-app shell kept there
+# (landing page, manifest, icons, sw.js) is preserved. A failing test blocks the publish.
+on:
+  push:
+    branches: [main]
+    paths: ['static/vent/**', 'static/learn/**', 'tests/**', 'tools/publish_pages.py', '.github/workflows/pages.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+          path: _pages
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Test the simulator (physiology + every case)
+        run: |
+          node tests/vent_engine.test.js
+          node tests/vent_curriculum.test.js
+      - name: Copy Vent Lab and Learn into the web app
+        run: python3 tools/publish_pages.py _pages
+      - name: Commit to gh-pages
+        working-directory: _pages
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then echo "Nothing to publish"; exit 0; fi
+          git commit -q -m "Publish ${GITHUB_SHA::7}"
+          git push origin HEAD:gh-pages
