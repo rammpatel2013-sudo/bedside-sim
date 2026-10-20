@@ -1,0 +1,430 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>2026 Multisociety PE Guidelines</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Public+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap">
+<style>
+/* Layout: one centred brief card on the ICU-monitor navy ground; V4 Guidelines shell (violet accent, sage In Brief). Deliberately single dark theme. */
+:root{
+  --bg:#0b0f16; --panel:#12171f; --panel-2:#0f141b; --line:#232b36;
+  --fg:#e6e9ee; --body:#c7ced7; --muted:#8b93a1;
+  --violet:#b39ddb; --violet-bg:#1a1626;
+  --sage:#7fc8a9; --sage-bg:#0f1e1c;
+  --gold:#d9b44a; --orange:#d38a4c; --green:#4fae80; --red:#d0564b; --red-bg:#2a1414; --green-bg:#0f2219; --gold-bg:#251f0d;
+  --f-display:"Fraunces", Georgia, "Times New Roman", serif;
+  --f-body:"Public Sans", Arial, Helvetica, sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--bg); color:var(--body); font-family:var(--f-body); font-size:17.5px; line-height:1.66; -webkit-font-smoothing:antialiased}
+.page{max-width:920px; margin:0 auto; padding-block:28px 56px; padding-left:max(16px, env(safe-area-inset-left, 0px)); padding-right:max(16px, env(safe-area-inset-right, 0px))}
+a{color:var(--violet); text-underline-offset:3px}
+a:hover{color:var(--fg)}
+a:focus-visible{outline:2px solid var(--violet); outline-offset:2px; border-radius:3px}
+strong{color:var(--fg); font-weight:600}
+p{margin:0}
+.card{background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:clamp(20px, 4.2vw, 44px); display:flex; flex-direction:column; gap:34px}
+
+/* header */
+.eyebrow{display:flex; flex-wrap:wrap; align-items:center; gap:10px; font-size:13px; letter-spacing:.13em; text-transform:uppercase; font-weight:600; color:var(--violet)}
+.dot{width:9px; height:9px; border-radius:50%; background:var(--violet); box-shadow:0 0 0 4px rgba(179,157,219,.16)}
+.eyebrow .fam{color:var(--muted); letter-spacing:.12em}
+.eyebrow .sep{color:var(--line)}
+h1{font-family:var(--f-display); font-weight:700; font-size:clamp(28px, 4.6vw, 40px); line-height:1.14; color:var(--fg); margin:14px 0 0; text-wrap:balance; font-variation-settings:"opsz" 96}
+h1 a{color:inherit; text-decoration:none; border-bottom:1px solid rgba(179,157,219,.45)}
+h1 a:hover{border-bottom-color:var(--violet)}
+.meta{margin-top:14px; font-size:15px; color:var(--muted); line-height:1.6; overflow-wrap:anywhere}
+.meta b{color:var(--body); font-weight:600}
+.q{margin-top:18px; font-family:var(--f-display); font-style:italic; font-size:20px; line-height:1.5; color:var(--fg); max-width:62ch}
+
+/* tiles */
+.tiles{display:grid; grid-template-columns:repeat(auto-fit, minmax(190px, 1fr)); gap:12px}
+.tile{background:var(--panel-2); border:1px solid var(--line); border-radius:12px; padding:16px 18px 18px; display:flex; flex-direction:column; gap:8px; min-width:0}
+.tile .v{font-family:var(--f-display); font-weight:600; font-size:36px; line-height:1; letter-spacing:-.01em; font-variant-numeric:tabular-nums; white-space:nowrap}
+.tile .v small{font-size:19px; font-weight:400; color:var(--muted); margin-left:4px}
+.tile .c{font-size:14.5px; line-height:1.45; color:var(--muted)}
+.v.def{color:var(--violet)} .v.amb{color:var(--gold)} .v.grn{color:var(--green)} .v.red{color:var(--red)}
+
+/* in brief */
+.inbrief{background:var(--sage-bg); border:1px solid #1d3a33; border-radius:14px; padding:22px clamp(18px,3vw,28px)}
+.inbrief .lab{font-size:13px; letter-spacing:.14em; text-transform:uppercase; font-weight:700; color:var(--sage); margin-bottom:10px}
+.inbrief p{color:#d6e9e0; font-size:18px; line-height:1.66}
+.inbrief p + p{margin-top:12px}
+
+/* sections */
+section{display:flex; flex-direction:column; gap:14px}
+.sh{display:flex; align-items:center; gap:14px; font-size:13.5px; letter-spacing:.14em; text-transform:uppercase; font-weight:700; color:var(--violet)}
+.sh::after{content:""; flex:1; height:1px; background:var(--line)}
+.prose{display:flex; flex-direction:column; gap:14px; max-width:70ch}
+h3{font-family:var(--f-display); font-weight:600; font-size:21px; color:var(--fg); margin:6px 0 0; line-height:1.3}
+
+/* category ladder */
+.ladder{display:grid; grid-template-columns:repeat(5, minmax(0,1fr)); gap:8px}
+.rung{border:1px solid var(--line); border-radius:10px; padding:12px 12px 14px; background:var(--panel-2); display:flex; flex-direction:column; gap:8px; min-width:0}
+.rung .L{font-family:var(--f-display); font-weight:700; font-size:30px; line-height:1}
+.rung .n{font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:var(--fg); line-height:1.3}
+.rung .s{font-size:14px; line-height:1.45; color:var(--body)}
+.rung .s b{color:var(--fg)}
+.rung .r{font-size:13px; line-height:1.4; color:var(--muted); border-top:1px dashed var(--line); padding-top:8px}
+.rung.a .L{color:#9fb3c8} .rung.b .L{color:#9ccfb6} .rung.c .L{color:var(--gold)} .rung.d .L{color:var(--orange)} .rung.e .L{color:#e07a6a}
+.risk{display:flex; justify-content:space-between; font-size:12.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); margin-top:4px}
+.riskbar{height:4px; border-radius:2px; background:linear-gradient(90deg, #9fb3c8, #9ccfb6, var(--gold), var(--orange), #e07a6a); opacity:.85}
+
+/* matrix */
+.fig{background:var(--panel-2); border:1px solid var(--line); border-radius:12px; padding:16px 16px 14px; display:flex; flex-direction:column; gap:12px}
+.fig .ft{font-size:13px; letter-spacing:.12em; text-transform:uppercase; font-weight:700; color:var(--fg)}
+.scroll{overflow-x:auto; -webkit-overflow-scrolling:touch}
+.scroll svg{display:block; width:100%; min-width:680px; height:auto}
+.legend{display:flex; flex-wrap:wrap; gap:8px 16px; font-size:13.5px; color:var(--muted)}
+.legend span{display:inline-flex; align-items:center; gap:7px}
+.legend i{width:16px; height:12px; border-radius:3px; display:inline-block}
+.fig .cap{font-size:14px; color:var(--muted); line-height:1.5}
+
+/* recommendation rows */
+.recs{display:flex; flex-direction:column; gap:8px}
+.rec{display:grid; grid-template-columns:104px minmax(0,1fr) auto; gap:14px; align-items:start; padding:13px 14px; border:1px solid var(--line); border-radius:10px; background:var(--panel-2)}
+.tag{font-size:12px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; padding:4px 8px; border-radius:6px; text-align:center; border:1px solid}
+.tag.do{color:#8fdcb3; background:var(--green-bg); border-color:#24543e}
+.tag.co{color:#ecd07a; background:var(--gold-bg); border-color:#5a4a1c}
+.tag.av{color:#f2a198; background:var(--red-bg); border-color:#5e2621}
+.tag.pi{color:#cfc0ee; background:var(--violet-bg); border-color:#3e3460}
+.rec .t{font-size:16.5px; line-height:1.55; color:var(--body); min-width:0}
+.rec .t b{color:var(--fg); font-weight:600}
+.cor{font-size:13px; font-weight:700; font-variant-numeric:tabular-nums; white-space:nowrap; color:var(--muted); padding-top:3px}
+.cor em{font-style:normal; color:var(--fg)}
+
+/* changes */
+.chg{display:flex; flex-direction:column; gap:10px}
+.ch{border:1px solid var(--line); border-radius:10px; padding:14px 16px; background:var(--panel-2); display:flex; flex-direction:column; gap:8px}
+.ch .h{font-weight:700; color:var(--fg); font-size:17px}
+.ch .ba{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:10px}
+.ch .ba div{font-size:15px; line-height:1.5; padding:9px 11px; border-radius:8px; min-width:0}
+.ch .was{background:#151a22; color:var(--muted)}
+.ch .now{background:var(--violet-bg); color:#ddd3f3}
+.ch .ba b{display:block; font-size:11.5px; letter-spacing:.12em; text-transform:uppercase; margin-bottom:3px; font-weight:700}
+.ch .was b{color:#6f7886} .ch .now b{color:var(--violet)}
+.ch .why{font-size:15.5px; line-height:1.58; color:var(--body)}
+
+/* bottom line */
+.bl{border:1px solid #3e3460; background:var(--violet-bg); border-radius:14px; padding:20px clamp(18px,3vw,26px)}
+.bl p{font-size:18px; color:#e4dcf6; line-height:1.64}
+.bl p + p{margin-top:10px}
+
+/* bedside */
+.bed{display:flex; flex-direction:column; gap:10px; margin:0; padding:0; list-style:none}
+.bed li{display:grid; grid-template-columns:150px minmax(0,1fr); gap:14px; padding:12px 0; border-top:1px solid var(--line)}
+.bed li:first-child{border-top:0; padding-top:0}
+.bed .k{font-size:13px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--sage); padding-top:3px}
+.bed .x{font-size:16.5px; line-height:1.58}
+
+/* fits */
+.trial{font-weight:600; color:var(--fg)}
+.pending{display:grid; grid-template-columns:repeat(auto-fit, minmax(220px,1fr)); gap:10px}
+.pend{border:1px dashed #3a4350; border-radius:10px; padding:12px 14px; background:#0e1319}
+.pend .nm{font-weight:700; color:var(--fg); font-size:15.5px}
+.pend .st{font-size:14px; color:var(--muted); line-height:1.5; margin-top:4px}
+
+/* provenance */
+.prov{border:1px dashed #3a4350; border-radius:12px; padding:16px 18px; font-size:14.5px; line-height:1.6; color:var(--muted); display:flex; flex-direction:column; gap:8px}
+.prov b{color:var(--body)}
+.src{font-size:14.5px; line-height:1.7; color:var(--muted); margin:0; padding-left:18px}
+.src a{word-break:break-word}
+
+@media (max-width:760px){
+  .ladder{grid-template-columns:1fr 1fr}
+  .rung.e{grid-column:1 / -1}
+  .rec{grid-template-columns:minmax(0,1fr) auto; gap:8px 12px}
+  .rec .tag{justify-self:start}
+  .rec .t{grid-column:1 / -1}
+  .rec .cor{grid-row:1; grid-column:2; padding-top:4px}
+  .ch .ba{grid-template-columns:1fr}
+  .bed li{grid-template-columns:1fr; gap:4px}
+}
+@media (max-width:420px){
+  body{font-size:17px}
+  .ladder{grid-template-columns:1fr}
+  .tile .v{font-size:32px}
+}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+
+<main class="page">
+<article class="card">
+
+<header>
+  <p style="margin:0 0 8px;font-size:13px"><a href="index.html" style="color:#8b93a1;text-decoration:none">&larr; Learn</a></p>
+  <div class="eyebrow"><span class="dot" aria-hidden="true"></span><span>Guidelines</span><span class="sep">/</span><span class="fam">Synthesis &amp; opinion</span><span class="sep">/</span><span class="fam">Expert perspective on a guideline</span></div>
+  <h1><a href="https://doi.org/10.1053/j.jvca.2026.06.003" target="_blank" rel="noopener">The 2026 Multisociety Acute Pulmonary Embolism Guidelines: An Expert Perspective</a></h1>
+  <p class="meta"><b>Elmadhoun O, Balanescu DV, Seelhammer TG, &hellip; Wieruszewski PM, Ramakrishna H</b> (13 authors, mostly Mayo Clinic critical care anesthesiology, cardiology, pulmonary/critical care, thoracic surgery and pharmacy) &middot; <i>J Cardiothorac Vasc Anesth</i> 2026;40(10):3428&ndash;3441 &middot; online Jun 3, 2026 &middot; PMID 42342484 &middot; 131 references<br>
+  Guideline discussed: Creager MA, Barnes GD, Giri J, et al. <a href="https://doi.org/10.1161/CIR.0000000000001415" target="_blank" rel="noopener">2026 AHA/ACC/ACCP/ACEP/CHEST/SCAI/SHM/SIR/SVM/SVN guideline for the evaluation and management of acute PE in adults</a>, <i>Circulation</i>, online Feb 19, 2026 (also <a href="https://doi.org/10.1016/j.jacc.2025.11.005" target="_blank" rel="noopener">JACC</a>).</p>
+  <p class="meta" style="margin-top:10px"><a href="pe-guideline.html">Open the interactive PE Guideline Explorer &rarr;</a></p>
+  <p class="q">The first AHA/ACC acute PE guideline: does a five-letter severity language change what we actually do for the patient in the ICU bed?</p>
+</header>
+
+<div class="tiles">
+  <div class="tile"><div class="v def">A&ndash;E <small>+R</small></div><div class="c">Five clinical categories with subcategories replace massive / submassive and the ESC four-tier scheme</div></div>
+  <div class="tile"><div class="v amb">2a</div><div class="c">Ceiling for every reperfusion option, even in shock. Systemic lysis sits level with catheter therapy in E1</div></div>
+  <div class="tile"><div class="v grn">Class 1</div><div class="c">Multidisciplinary PERT assessment for every patient in categories C through E</div></div>
+  <div class="tile"><div class="v red">3: Harm</div><div class="c">Deep sedation and intubation in C&ndash;E unless clinically indicated, because of induction collapse</div></div>
+</div>
+
+<div class="inbrief">
+  <div class="lab">In brief</div>
+  <p>The AHA, ACC and eight partner societies published their first acute PE guideline in February 2026. It drops &ldquo;massive&rdquo; and &ldquo;submassive&rdquo; for five clinical categories, A through E, each split into subcategories, with an R flag added when breathing is the dominant problem. A patient with normotensive shock on a non-rebreather is now a &ldquo;D2R.&rdquo;</p>
+  <p>Three things matter most at the bedside. No reperfusion option is rated above 2a, even in cardiogenic shock, and systemic lysis no longer outranks catheter therapy. Everything in the gray zone between C3 and D2 is a 2b, because the outcome trials had not reported by the April 2025 evidence cutoff; HI-PEITHO has since reported a positive clinical endpoint in that zone. And the supportive care is now explicit: enoxaparin over a heparin drip, PERT for C&ndash;E, high-flow oxygen, vasopressors for shock, and a Harm grade on deep sedation and intubation.</p>
+  <p>This JCVA paper is a Mayo multidisciplinary group&rsquo;s expert read of that guideline. Its full text is paywalled and it carries no abstract, so this brief is built from the guideline itself. The authors&rsquo; own judgments are not represented here.</p>
+</div>
+
+<section>
+  <div class="sh">Focus</div>
+  <div class="prose">
+    <p>The guideline covers adults (18 years and older) from the onset of symptoms through follow-up at a year: pretest probability and imaging, severity assignment, where to treat, anticoagulant choice and duration, reperfusion, ICU support, filters, and screening for chronic thromboembolic disease. Its organizing device is the new <strong>AHA/ACC Acute PE Clinical Categories</strong>. Patients are assigned by their single worst clinical, laboratory or imaging finding, and they are expected to move between categories on reassessment.</p>
+  </div>
+  <div class="ladder" role="list" aria-label="AHA/ACC Acute PE Clinical Categories">
+    <div class="rung a" role="listitem"><div class="L">A</div><div class="n">Subclinical</div><div class="s">Incidental, asymptomatic (the staging CT finding)</div></div>
+    <div class="rung b" role="listitem"><div class="L">B</div><div class="n">Symptomatic, low severity</div><div class="s">PESI &le;85, sPESI 0 or Bova &le;4<br><b>B1</b> subsegmental only<br><b>B2</b> segmental or larger</div></div>
+    <div class="rung c" role="listitem"><div class="L">C</div><div class="n">Symptomatic, elevated severity</div><div class="s">PESI &gt;85, sPESI &ge;1 or Bova &gt;4<br><b>C1</b> normal RV and biomarkers<br><b>C2</b> abnormal RV <i>or</i> &ge;1 biomarker<br><b>C3</b> abnormal RV <i>and</i> &ge;1 biomarker</div><div class="r">R: SpO&#8322; &lt;90%, RR &ge;30, or needs O&#8322;</div></div>
+    <div class="rung d" role="listitem"><div class="L">D</div><div class="n">Incipient cardiopulmonary failure</div><div class="s"><b>D1</b> transient hypotension: SBP &lt;90 or a fall &gt;40 mm Hg lasting &lt;15 min or fluid-responsive<br><b>D2</b> normotensive shock: lactate &gt;2, AKI, UO &lt;0.5 mL/kg/h, altered mentation, CI &lt;2.2, MAP &lt;60, or rising SCAI/CPES stage</div><div class="r">R: &gt;6 L nasal cannula or non-rebreather</div></div>
+    <div class="rung e" role="listitem"><div class="L">E</div><div class="n">Cardiopulmonary failure</div><div class="s"><b>E1</b> recurrent or persistent hypotension with cardiogenic shock (about SCAI C)<br><b>E2</b> refractory shock (SCAI D&ndash;E) or arrest without ROSC after 30 min</div><div class="r">R: NIV or invasive ventilation</div></div>
+  </div>
+  <div><div class="riskbar" aria-hidden="true"></div><div class="risk"><span>Lowest risk</span><span>Highest risk</span></div></div>
+  <div class="prose">
+    <p><strong>What the perspective engages.</strong> Without the text, the only visible signal is its 131-item reference list. It cites the guideline in both journals alongside the 2019 ESC guideline and an inter-guideline comparison (Zuin, <i>JACC</i> 2024). The remaining clusters are risk granularity (SCAI shock stages, the CPES score, venous lactate, MAP thresholds, shock index, NEWS), anticoagulant pharmacology including bivalirudin, argatroban and direct thrombin inhibitor dosing on ECMO, reduced-dose extended DOACs, and mechanical thrombectomy versus catheter lysis (PEERLESS plus registry and readmission data). It also cites PERT meta-analyses and AI-triggered PERT activation, VA-ECMO series, the group&rsquo;s own work on thrombectomy safety outside the OR, IVC filters, and CTEPH. What the authors conclude on any of these is not visible without the full text.</p>
+  </div>
+</section>
+
+<section>
+  <div class="sh">Why it exists</div>
+  <div class="prose">
+    <p>Until February 2026, North American clinicians had no comprehensive guideline for acute PE management; the CHEST antithrombotic guidelines covered anticoagulation only. Clinicians worked from the 2011 AHA scientific statement (Jaff), which sorted patients into massive, submassive and low-risk, and borrowed the 2019 ESC guideline, which split intermediate risk into low and high by RV findings and troponin. Both schemes left the same problem unsolved. &ldquo;Intermediate-high risk&rdquo; holds patients who are comfortable on room air alongside patients in occult shock with a lactate of 4. Neither scheme had a slot for the patient whose main problem is hypoxemia rather than blood pressure.</p>
+    <p>Meanwhile practice moved faster than evidence. Catheter-directed lysis and large-bore thrombectomy spread through US hospitals on the strength of single-arm studies and RV/LV surrogates, and PERTs multiplied with mixed outcome data. Ten societies, spanning cardiology, emergency medicine, chest medicine, hospital medicine, interventional radiology, vascular medicine and nursing, and pharmacy, convened to write one common reference. The literature search ran February to October 2024, with selected key studies added through April 2025. That cutoff matters, because three randomized trials of catheter therapy against anticoagulation alone reported within a year after it.</p>
+  </div>
+</section>
+
+<section>
+  <div class="sh">Key recommendations</div>
+  <figure class="fig" style="margin:0">
+    <div class="ft">Where each therapy switches on</div>
+    <div class="scroll"><svg viewBox="0 0 772 482" width="772" height="482" role="img" aria-labelledby="mx-t mx-d" xmlns="http://www.w3.org/2000/svg">
+<title id="mx-t">Where each therapy switches on across the A to E categories</title>
+<desc id="mx-d">Class of recommendation by AHA/ACC acute PE clinical category for systemic lysis, catheter-directed lysis, mechanical thrombectomy, surgical embolectomy, VA-ECMO, vasopressors, inhaled pulmonary vasodilators, PERT and first anticoagulant.</desc>
+<rect x="206" y="4" width="52" height="40" rx="6" fill="#171d27" stroke="#232b36"/>
+<text x="232.0" y="27" text-anchor="middle" font-family="Fraunces, Georgia, serif" font-size="21" font-weight="700" fill="#e6e9ee">A</text>
+<text x="232.0" y="40" text-anchor="middle" font-family="Public Sans, Arial, sans-serif" font-size="9.5" fill="#8b93a1">subclinical</text>
+<rect x="262" y="4" width="108" height="40" rx="6" fill="#171d27" stroke="#232b36"/>
+<text x="316.0" y="27" text-anchor="middle" font-family="Fraunces, Georgia, serif" font-size="21" font-weight="700" fill="#e6e9ee">B</text>
+<text x="316.0" y="40" text-anchor="middle" font-family="Public Sans, Arial, sans-serif" font-size="9.5" fill="#8b93a1">low severity</text>
+<rect x="374" y="4" width="164" height="40" rx="6" fill="#171d27" stroke="#232b36"/>
+<text x="456.0" y="27" text-anchor="middle" font-family="Fraunces, Georgia, serif" font-size="21" font-weight="700" fill="#e6e9ee">C</text>
+<text x="456.0" y="40" text-anchor="middle" font-family="Public Sans, Arial, sans-serif" font-size="9.5" fill="#8b93a1">elevated severity</text>
+<rect x="542" y="4" width="108" height="40" rx="6" fill="#171d27" stroke="#232b36"/>
+<text x="596.0" y="27" text-anchor="middle" font-family="Fraunces, Georgia, serif" font-size="21" font-weight="700" fill="#e6e9ee">D</text>
+<text x="596.0" y="40" text-anchor="middle" font-family="Public Sans, Arial, sans-serif" font-size="9.5" fill="#8b93a1">incipient failure</text>
+<rect x="654" y="4" width="108" height="40" rx="6" fill="#171d27" stroke="#232b36"/>
+<text x="708.0" y="27" text-anchor="middle" font-family="Fraunces, Georgia, serif" font-size="21" font-weight="700" fill="#e6e9ee">E</text>
+<text x="708.0" y="40" text-anchor="middle" font-family="Public Sans, Arial, sans-serif" font-size="9.5" fill="#8b93a1">failure</text>
+<text x="232.0" y="64" text-anchor="middle" font-family="Public Sans, Arial, sans-serif" font-size="12.5" font-weight="600" fill="#c7ced7">A</text>
+<text x="288.0" y="64" text-anchor="middle" font-family="Public Sans, Arial, sans-serif" font-size="12.5" font-weight="600" fill="#c7ced7">B1</text>
+<text x="344.0" y="64" text-anchor="middle" font-family="Public Sans, Arial, sans-serif" font-size="12.5" font-weight="600" fill="#c7ced7">B2</text>
+<text x="400.0" y="64" text-anchor="middle" font-family="Public Sans, Arial, sans-serif" font-size="12.5" font-weight="600" fill="#c7ced7">C1</text>
+<text x="456.0" y="64" text-anchor="middle" font-family="Public Sans, Arial, sans-serif" font-size="12.5" font-weight="600" fill="#c7ced7">C2</text>
+<text x="512.0" y="64" text-anchor="middle" font-family="Public Sans, Arial, sans-serif" font-size="12.5" font-weight="600" fill="#c7ced7">C3</text>
+<text x="568.0" y="64" text-anchor="middle" font-family="Public Sans, Arial, sans-serif" font-size="12.5" font-weight="600" fill="#c7ced7">D1</text>
+<text x="624.0" y="64" text-anchor="middle" font-family="Public Sans, Arial, sans-serif" font-size="12.5" font-weight="600" fill="#c7ced7">D2</text>
+<text x="680.0" y="64" text-anchor="middle" font-family="Public Sans, Arial, sans-serif" font-size="12.5" font-weight="600" fill="#c7ced7">E1</text>
+<text x="736.0" y="64" text-anchor="middle" font-family="Public Sans, Arial, sans-serif" font-size="12.5" font-weight="600" fill="#c7ced7">E2</text>
+<line x1="204" y1="72" x2="764" y2="72" stroke="#232b36"/>
+<text x="8" y="97.0" font-family="Public Sans, Arial, sans-serif" font-size="13.5" font-weight="600" fill="#e6e9ee">Systemic lysis</text>
+<text x="8" y="111.0" font-family="Public Sans, Arial, sans-serif" font-size="10.5" fill="#8b93a1">full or lower dose</text>
+<rect x="204" y="78" width="560" height="38" rx="5" fill="#0f141b" stroke="#1c232d"/>
+<rect x="206" y="81" width="276" height="32" rx="4" fill="#b8443c"/>
+<text x="344.0" y="101.5" text-anchor="middle" font-family="Public Sans, Arial, sans-serif" font-size="12.5" font-weight="700" fill="#fff3f1">3: Harm</text>
+<rect x="486" y="81" width="164" height="32" rx="4" fill="#d38a4c"/>
+<text x="568.0" y="101.5" text-anchor="middle" font-family="Public Sans, Arial, sans-serif" font-size="12.5" font-weight="700" fill="#140b04">2b</text>
+<rect x="654" y="81" width="108" height="32" rx="4" fill="#d9b44a"/>
+<text x="708.0" y="101.5" text-anchor="middle" font-family="Public Sans, Arial, sans-serif" font-size="12.5" font-weight="700" fill="#141005">2a</text>
+<text x="8" y="146.0" font-family="Public Sans, Arial, sans-serif" font-size="13.5" font-weight="600" fill="#e6e9ee">Catheter-directed lysis</text>
+<rect x="204" y="122" width="560" height="38" rx="5" fill="#0f141b" stroke="#1c232d"/>
+<rect x="206" y="125" width="220" height="32" rx="4" fill="#3a2c33" stroke="#8a5a63" stroke-dasharray="3 3"/>
+<text x="316.0" y="145.5" text-anchor="middle" font-family="Public Sans, Arial, sans-serif" font-size="11.5" font-weight="700" fill="#e2bcc3">3: No benefit</text>
+<rect x="430" y="125" width="220" height="32" rx="4" fill="#d38a4c"/>
+<text x="540.0" y="145.5" text-anchor="middle" font-family="Public Sans, Arial, sans-serif" font-size="12.5" font-weight="700" fill="#140b04">2b</text>
+<rect x="654" y="125" width="52" height="32" rx="4" fill="#d9b44a"/>
+<text x="680.0" y="145.5" text-anchor="middle" font-family="Public Sans, Arial, sans-serif" font-size="12.5" font-weight="700" fill="#141005">2a</text>
+<rect x="710" y="125" width="52" height="32" rx="4" fill="#151b23" stroke="#2a323d"/>
+<text x="736.0" y="145.5" text-anchor="middle" font-family="Public Sans, Arial, sans-serif" font-size="12.5" font-weight="700" fill="#6f7886">n/a</text>
+<text x="8" y="190.0" font-family="Public Sans, Arial, sans-serif" font-size="13.5" font-weight="600" fill="#e6e9ee">Mechanical thrombectomy</text>
+<rect x="204" y="166" width="560" height="38" rx="5" fill="#0f141b" stroke="#1c232d"/>
+<rect x="206" y="169" width="220" height="32" rx="4" fill="#3a2c33" stroke="#8a5a63" stroke-dasharray="3 3"/>
+<text x="316.0" y="189.5" text-anchor="middle" font-family="Public Sans, Arial, sans-serif" font-size="11.5" font-weight="700" fill="#e2bcc3">3: No benefit</text>
+<rect x="430" y="169" width="220" height="32" rx="4" fill="#d38a4c"/>
+<text x="540.0" y="189.5" text-anchor="middle" font-family="Public Sans, Arial, sans-serif" font-size="12.5" font-weight="700" fill="#140b04">2b</text>
+<rect x="654" y="169" width="52" height="32" rx="4" fill="#d9b44a"/>
+<text x="680.0" y="189.5" text-anchor="middle" font-family="Public Sans, Arial, sans-serif" font-size="12.5" font-weight="700" fill="#141005">2a</text>
+<rect x="710" y="169" width="52" height="32" rx="4" fill="#151b23" stroke="#2a323d"/>
+<text x="736.0" y="189.5" text-anchor="middle" font-family="Public Sans, Arial, sans-serif" font-size="12.5" font-weight="700" fill="#6f7886">n/a</text>
+<text x="8" y="234.0" font-family="Public Sans, Arial, sans-serif" font-size="13.5" font-weight="600" fill="#e6e9ee">Surgical embolectomy</text>
+<rect x="204" y="210" width="560" height="38" rx="5" fill="#0f141b" stroke="#1c232d"/>
+<rect x="206" y="213" width="332" height="32" rx="4" fill="#3a2c33" stroke="#8a5a63" stroke-dasharray="3 3"/>
+<text x="372.0" y="233.5" text-anchor="middle" font-family="Public Sans, Arial, sans-serif" font-size="11.5" font-weight="700" fill="#e2bcc3">3: No benefit</text>
+<rect x="542" y="213" width="108" height="32" rx="4" fill="#d38a4c"/>
+<text x="596.0" y="233.5" text-anchor="middle" font-family="Public Sans, Arial, sans-serif" font-size="12.5" font-weight="700" fill="#140b04">2b</text>
+<rect x="654" y="213" width="52" height="32" rx="4" fill="#d9b44a"/>
+<text x="680.0" y="233.5" text-anchor="middle" font-family="Public Sans, Arial, sans-serif" font-size="12.5" font-weight="700" fill="#141005">2a</text>
+<rect x="710" y="213" width="52" height="32" rx="4" fill="#3a2c33" stroke="#8a5a63" stroke-dasharray="3 3"/>
+<text x="736.0" y="233.5" text-anchor="middle" font-family="Public Sans, Arial, sans-serif" font-size="12.5" font-weight="700" fill="#e2bcc3">NB</text>
+<text x="8" y="273.0" font-family="Public Sans, Arial, sans-serif" font-size="13.5" font-weight="600" fill="#e6e9ee">VA-ECMO</text>
+<text x="8" y="287.0" font-family="Public Sans, Arial, sans-serif" font-size="10.5" fill="#8b93a1">refractory shock / arrest</text>
+<rect x="204" y="254" width="560" height="38" rx="5" fill="#0f141b" stroke="#1c232d"/>
+<rect x="710" y="257" width="52" height="32" rx="4" fill="#d9b44a"/>
+<text x="736.0" y="277.5" text-anchor="middle" font-family="Public Sans, Arial, sans-serif" font-size="12.5" font-weight="700" fill="#141005">2a</text>
+<text x="8" y="317.0" font-family="Public Sans, Arial, sans-serif" font-size="13.5" font-weight="600" fill="#e6e9ee">Vasopressor / inotrope</text>
+<text x="8" y="331.0" font-family="Public Sans, Arial, sans-serif" font-size="10.5" fill="#8b93a1">cardiogenic shock</text>
+<rect x="204" y="298" width="560" height="38" rx="5" fill="#0f141b" stroke="#1c232d"/>
+<rect x="598" y="301" width="164" height="32" rx="4" fill="#4fae80"/>
+<text x="680.0" y="321.5" text-anchor="middle" font-family="Public Sans, Arial, sans-serif" font-size="12.5" font-weight="700" fill="#06110c">1</text>
+<text x="8" y="366.0" font-family="Public Sans, Arial, sans-serif" font-size="13.5" font-weight="600" fill="#e6e9ee">Inhaled pulm. vasodilator</text>
+<rect x="204" y="342" width="560" height="38" rx="5" fill="#0f141b" stroke="#1c232d"/>
+<rect x="430" y="345" width="332" height="32" rx="4" fill="#d38a4c"/>
+<text x="596.0" y="365.5" text-anchor="middle" font-family="Public Sans, Arial, sans-serif" font-size="12.5" font-weight="700" fill="#140b04">2b</text>
+<text x="8" y="410.0" font-family="Public Sans, Arial, sans-serif" font-size="13.5" font-weight="600" fill="#e6e9ee">PERT assessment</text>
+<rect x="204" y="386" width="560" height="38" rx="5" fill="#0f141b" stroke="#1c232d"/>
+<rect x="374" y="389" width="388" height="32" rx="4" fill="#4fae80"/>
+<text x="568.0" y="409.5" text-anchor="middle" font-family="Public Sans, Arial, sans-serif" font-size="12.5" font-weight="700" fill="#06110c">1</text>
+<text x="8" y="454.0" font-family="Public Sans, Arial, sans-serif" font-size="13.5" font-weight="600" fill="#e6e9ee">First anticoagulant</text>
+<rect x="204" y="430" width="560" height="38" rx="5" fill="#0f141b" stroke="#1c232d"/>
+<rect x="206" y="433" width="164" height="32" rx="4" fill="#4fae80"/>
+<text x="288.0" y="453.5" text-anchor="middle" font-family="Public Sans, Arial, sans-serif" font-size="12.5" font-weight="700" fill="#06110c">DOAC</text>
+<rect x="374" y="433" width="332" height="32" rx="4" fill="#4fae80"/>
+<text x="540.0" y="453.5" text-anchor="middle" font-family="Public Sans, Arial, sans-serif" font-size="11.5" font-weight="700" fill="#06110c">LMWH over UFH</text>
+<rect x="710" y="433" width="52" height="32" rx="4" fill="#4fae80"/>
+<text x="736.0" y="453.5" text-anchor="middle" font-family="Public Sans, Arial, sans-serif" font-size="12.5" font-weight="700" fill="#06110c">either</text>
+</svg></div>
+    <div class="legend" aria-label="Legend">
+      <span><i style="background:#4fae80"></i>Class 1</span>
+      <span><i style="background:#d9b44a"></i>2a</span>
+      <span><i style="background:#d38a4c"></i>2b</span>
+      <span><i style="background:#3a2c33; outline:1px dashed #8a5a63"></i>3: No benefit</span>
+      <span><i style="background:#b8443c"></i>3: Harm</span>
+      <span><i style="background:#151b23; outline:1px solid #2a323d"></i>not applicable</span>
+    </div>
+    <figcaption class="cap">Class of recommendation by category, drawn from the guideline&rsquo;s advanced-therapy summary table, its initial-management figure and the anticoagulation, hemodynamic and circulatory-support recommendation tables. Blank track means the guideline makes no recommendation for that category. Scroll sideways on a phone.</figcaption>
+  </figure>
+
+  <div class="recs">
+    <div class="rec"><span class="tag pi">Pillar</span><div class="t"><b>Name the category, and re-name it.</b> Assign A&ndash;E by the single worst indicator and add R for respiratory compromise. Reassess, especially in the first 24&ndash;72 h, when PEITHO patients decompensated (mean about 1.5 days).</div><span class="cor">framework</span></div>
+    <div class="rec"><span class="tag do">Do</span><div class="t"><b>PERT assessment</b> for patients at increased risk (C&ndash;E), to improve timeliness of in-hospital care. Selected A or B patients with complex comorbidity may also benefit.</div><span class="cor"><em>1</em> &middot; B-NR</span></div>
+    <div class="rec"><span class="tag do">Do</span><div class="t"><b>LMWH over UFH</b> when parenteral anticoagulation is needed in C1&ndash;E1. After an endovascular procedure or thrombolysis, LMWH is preferred too (1, B-NR). It is reasonable even when a procedure is likely (2a). In E2, either is acceptable.</div><span class="cor"><em>1</em> &middot; B-R</span></div>
+    <div class="rec"><span class="tag do">Do</span><div class="t"><b>Measure lactate</b> across C&ndash;E, at least one cardiac biomarker in C, and RV size and function by CT or echo from C1 to E1. Use Hestia, PESI or sPESI to find the low-risk A/B patient who can go home.</div><span class="cor"><em>1</em></span></div>
+    <div class="rec"><span class="tag do">Do</span><div class="t"><b>Vasopressors and/or inotropes</b> for cardiogenic shock (D2&ndash;E2). The text favors norepinephrine first and adding a second agent such as vasopressin rather than pushing norepinephrine above about 15 &micro;g/min, where it starts to raise PVR. Dobutamine is an adjunct for low output.</div><span class="cor"><em>1</em> &middot; C-LD</span></div>
+    <div class="rec"><span class="tag do">Do</span><div class="t"><b>Have support ready before induction.</b> If a C&ndash;E patient needs sedation for intubation, vasopressors, inotropes and, where available, VA-ECMO should be at the bedside.</div><span class="cor"><em>1</em> &middot; C-LD</span></div>
+    <div class="rec"><span class="tag co">Consider</span><div class="t"><b>Reperfusion in E1:</b> systemic lysis if bleeding risk is acceptable (2a, C-LD), catheter-directed lysis (2a, C-LD), mechanical thrombectomy (2a, B-NR) or surgical embolectomy (2a, B-NR). The four options are presented as peers.</div><span class="cor"><em>2a</em></span></div>
+    <div class="rec"><span class="tag co">Consider</span><div class="t"><b>VA-ECMO</b> for refractory shock or arrest (E2), with continued systemic anticoagulation once on support (1). Systemic lysis is also 2a in E2. Catheter therapy layered onto ECMO has uncertain value (2b).</div><span class="cor"><em>2a</em> &middot; B-NR</span></div>
+    <div class="rec"><span class="tag co">Consider</span><div class="t"><b>High-flow nasal cannula</b> rather than standard nasal cannula for moderate to severe hypoxemia.</div><span class="cor"><em>2a</em> &middot; C-LD</span></div>
+    <div class="rec"><span class="tag co">Consider</span><div class="t"><b>Look for normotensive shock in D2</b> (lactate &gt;2, urine &lt;720 mL/24 h, creatinine up &ge;0.3 mg/dL, cardiac index &le;2.2). In C3, a <b>MAP below 80</b> flags patients who may need escalation.</div><span class="cor"><em>2a</em> &middot; B-NR</span></div>
+    <div class="rec"><span class="tag co">Consider</span><div class="t"><b>Advanced therapy for clot-in-transit</b> in C3&ndash;E2, rather than anticoagulation alone.</div><span class="cor"><em>2a</em> &middot; C-LD</span></div>
+    <div class="rec"><span class="tag co">Consider</span><div class="t"><b>The gray zone.</b> In D1&ndash;D2, lysis, catheter lysis, thrombectomy or surgery &ldquo;may be considered&rdquo;. In C2&ndash;C3, benefit is uncertain, and the choice between catheter lysis and thrombectomy is uncertain too. Lower-dose systemic lytics may be considered to reduce bleeding. Inhaled pulmonary vasodilators may be considered from C2 to E. Cautious volume, the text suggesting boluses of 500 mL or less, may be considered in D1&ndash;D2.</div><span class="cor"><em>2b</em></span></div>
+    <div class="rec"><span class="tag av">Avoid</span><div class="t"><b>Deep sedation and mechanical ventilation</b> in C&ndash;E unless clinically indicated. Case series report CPR after anesthesia induction in 19% and in 28% (9/32) of patients brought for surgical embolectomy.</div><span class="cor"><em>3: Harm</em> &middot; C-LD</span></div>
+    <div class="rec"><span class="tag av">Avoid</span><div class="t"><b>Systemic lysis in A1&ndash;C2</b>, where bleeding and ICH outweigh benefit. Catheter lysis and thrombectomy offer no benefit in A&ndash;C1 (3: No benefit, C-EO).</div><span class="cor"><em>3: Harm</em> &middot; B-R</span></div>
+    <div class="rec"><span class="tag av">Avoid</span><div class="t"><b>Routine IVC filters</b> in patients who are therapeutically anticoagulated. When a filter is needed because anticoagulation is impossible, use a retrievable one and attempt retrieval as soon as risk allows (both Class 1).</div><span class="cor"><em>3: Harm</em> &middot; A</span></div>
+    <div class="rec"><span class="tag av">Avoid</span><div class="t"><b>Routine anti-Xa monitoring</b> of weight-based LMWH in most patients. Its value in the ICU and above 150 kg is not established. When you do check, draw a peak 3&ndash;5 h after the dose once at steady state (at least 3 doses).</div><span class="cor"><em>3: No benefit</em> &middot; A</span></div>
+    <div class="rec"><span class="tag do">Do</span><div class="t"><b>Afterwards:</b> a touchpoint within a week of discharge (1, C-LD) and a visit by 3 months (1, C-EO). Ask about dyspnea and function at every visit for a year to screen for CTEPD (1, C-LD). For a first PE without a major reversible risk factor, continue into the extended phase (1, A), with half-dose apixaban or rivaroxaban recommended (1, A). Use DOACs over VKAs throughout, except in antiphospholipid syndrome and Child-Pugh C liver disease (VKA) and pregnancy (LMWH or UFH).</div><span class="cor"><em>1</em></span></div>
+  </div>
+</section>
+
+<section>
+  <div class="sh">What changed &amp; why</div>
+  <div class="prose"><p>This is a de novo guideline, so &ldquo;prior version&rdquo; here means the 2011 AHA statement and the 2019 ESC guideline that North American practice leaned on.</p></div>
+  <div class="chg">
+    <div class="ch"><div class="h">Severity language</div>
+      <div class="ba"><div class="was"><b>Was</b>Massive / submassive / low risk (AHA 2011); high / intermediate-high / intermediate-low / low (ESC 2019)</div><div class="now"><b>Now</b>A&ndash;E with nine subcategories, an R modifier, and named pre-failure states (transient hypotension, normotensive shock)</div></div>
+      <div class="why">The intermediate tier was too broad to guide therapy. Splitting out D captures patients who are hypoperfused but not yet hypotensive. The FLASH registry found isolated hypoperfusion in 34% of intermediate-risk patients undergoing thrombectomy. The R modifier recognizes presentations driven by gas exchange rather than blood pressure.</div></div>
+    <div class="ch"><div class="h">Systemic lysis in shock</div>
+      <div class="ba"><div class="was"><b>Was</b>ESC 2019: recommended for high-risk PE (Class I, B), with catheter therapy and surgery as fallbacks when lysis fails or is contraindicated</div><div class="now"><b>Now</b>2a (C-LD) in E1 and E2, the same class as catheter lysis, thrombectomy and surgery in E1</div></div>
+      <div class="why">The randomized base for lysis in shock is four small trials totaling 224 patients. The ICH cost is real: one meta-analysis reported severe bleeding of 9.9% and ICH of 1.7%. Nonrandomized catheter data have matured; in FLAME, in-hospital mortality was 1.9% with thrombectomy against 29.5% with other therapies, though that comparison was not randomized. The guideline flattens the hierarchy rather than reversing it.</div></div>
+    <div class="ch"><div class="h">Reperfusion without shock</div>
+      <div class="ba"><div class="was"><b>Was</b>ESC 2019: routine primary lysis not recommended in intermediate or low risk (III, B); rescue lysis on deterioration</div><div class="now"><b>Now</b>Graded by category: lysis is Harm in A1&ndash;C2, and every modality is 2b in C3 and D</div></div>
+      <div class="why">PEITHO (2014) showed prevention of collapse paid for with bleeding and stroke. Meta-analyses in C3&ndash;D2-like patients show lower mortality with a matching ICH excess. The 2b is an honest statement that the catheter trials were still running at the cutoff.</div></div>
+    <div class="ch"><div class="h">First anticoagulant in sick patients</div>
+      <div class="ba"><div class="was"><b>Was</b>ESC 2019: LMWH preferred generally, but UFH started without delay in high-risk PE and customary for anyone who might go to lysis</div><div class="now"><b>Now</b>LMWH over UFH from C1 through E1 (1, B-R), including after procedures (1) and when one is likely (2a); E2 either</div></div>
+      <div class="why">A meta-analysis found less recurrent VTE with LMWH without more major bleeding. LMWH has predictable kinetics, needs no titration, and causes less HIT. A UFH drip that sits subtherapeutic for a day is a quiet hazard that the &ldquo;in case we lyse&rdquo; logic tends to ignore.</div></div>
+    <div class="ch"><div class="h">Team, circuit, airway</div>
+      <div class="ba"><div class="was"><b>Was</b>ESC 2019: multidisciplinary teams &ldquo;should be considered&rdquo; (IIa, C); ECMO &ldquo;may be considered&rdquo; (IIb, C); no graded airway guidance</div><div class="now"><b>Now</b>PERT Class 1 for C&ndash;E; VA-ECMO 2a in E2; HFNC 2a; deep sedation and intubation 3: Harm; induction readiness Class 1</div></div>
+      <div class="why">Observational evidence for PERT and ECMO grew, though PERT&rsquo;s mortality effect is still not established. The airway grades codify RV physiology: induction removes the sympathetic tone that holds up a failing RV, and positive pressure raises its afterload.</div></div>
+    <div class="ch"><div class="h">Follow-up and the long tail</div>
+      <div class="ba"><div class="was"><b>Was</b>ESC 2019: routine reassessment at 3&ndash;6 months; reduced-dose extended DOAC &ldquo;should be considered&rdquo; (IIa, A)</div><div class="now"><b>Now</b>A one-week touchpoint, a visit by 3 months, a symptom screen at every visit for a year; half-dose extended apixaban or rivaroxaban Class 1, A</div></div>
+      <div class="why">Early touchpoints catch bleeding, adherence and access problems. Structured screening catches CTEPD, which is otherwise found late and is treatable at expert centers.</div></div>
+  </div>
+</section>
+
+<section>
+  <div class="sh">Bottom line</div>
+  <div class="bl">
+    <p>The guideline gives everyone at the bedside, from ED to cath lab to ICU, a common and finer severity language. It is deliberately modest about reperfusion. No modality rises above 2a even in shock, and the entire C3&ndash;D zone sits at 2b because the outcome trials had not reported by April 2025.</p>
+    <p>That 2b is already dated at the edges. HI-PEITHO (2026) showed that ultrasound-facilitated catheter lysis cut early decompensation in a C3&ndash;D2-type population without ICH, though the effect leaned on a NEWS-based endpoint. The most durable, immediately usable content is the supportive care: enoxaparin rather than a drip, lactate and RV assessment for everyone in C and above, PERT, high-flow oxygen, norepinephrine with early vasopressin, and protecting the RV from the induction drug.</p>
+  </div>
+</section>
+
+<section>
+  <div class="sh">At the bedside</div>
+  <ul class="bed">
+    <li><span class="k">Document it</span><span class="x">Write the category in the admission note and the PERT call (&ldquo;C3R&rdquo;, &ldquo;D2&rdquo;). It tells the interventionalist, the ICU and the next shift the same thing, and it forces a re-score at 24&ndash;72 h, when deterioration clusters.</span></li>
+    <li><span class="k">Order set</span><span class="x">For C and above: lactate, troponin and/or BNP, RV assessment by CT or echo, and a PERT page. In C3, treat a MAP below 80 as a reason to watch closely. In a normotensive patient, a lactate above 2, falling urine output, rising creatinine or low cardiac index means D2, not C3.</span></li>
+    <li><span class="k">Anticoagulant</span><span class="x">Start enoxaparin, even if catheter therapy is on the table. If your order sets default to a UFH drip &ldquo;in case we lyse,&rdquo; this guideline argues the other way except in E2. Skip routine anti-Xa levels. If you need one, for example in severe CKD, draw a peak 3&ndash;5 h after the third or later dose.</span></li>
+    <li><span class="k">Hypotension</span><span class="x">Start norepinephrine. Around 15 &micro;g/min, add vasopressin rather than climbing, because higher norepinephrine doses raise PVR. Add dobutamine for low output. Give volume only in small boluses of 500 mL or less, when preload depletion is genuinely suspected. An inhaled pulmonary vasodilator is a 2b option.</span></li>
+    <li><span class="k">Airway</span><span class="x">Put the patient on HFNC early. Avoid intubation if at all possible. If it is unavoidable, use a hemodynamically neutral induction with a vasopressor running and an inotrope drawn up, and alert the ECMO team and the cath lab or OR before the induction drug goes in.</span></li>
+    <li><span class="k">E1 / E2</span><span class="x">For E1, choose among lysis, catheter therapy and surgery by bleeding risk and by what your center can do fastest. For E2, consider VA-ECMO as the bridge (2a), with lysis an alternative, and keep the patient anticoagulated on the circuit.</span></li>
+    <li><span class="k">Discharge</span><span class="x">Arrange contact within a week and a visit by 3 months. Ask about breathlessness at each visit for a year. For an unprovoked first PE, plan extended anticoagulation, with half-dose apixaban or rivaroxaban after the initial phase.</span></li>
+  </ul>
+</section>
+
+<section>
+  <div class="sh">Where it fits &mdash; the research around it</div>
+  <div class="prose">
+    <h3>The lineage of risk</h3>
+    <p>The <span class="trial">2011 AHA scientific statement</span> (Jaff) gave us massive and submassive. The <span class="trial">2019 ESC guideline</span> (Konstantinides) layered sPESI (Jim&eacute;nez, 2010), RV imaging and troponin into four tiers, and made systemic lysis Class I for high-risk PE. Hestia and PESI-based home treatment, tested in trials such as Aujesky&rsquo;s outpatient RCT and the 114-patient US Hestia/troponin trial, underpin the A/B &ldquo;go home&rdquo; recommendations. The D and E definitions borrow directly from <span class="trial">SCAI cardiogenic shock staging</span> (2019, updated 2022). The normotensive-shock concept comes from cardiogenic-shock work dating to the <span class="trial">SHOCK trial</span> (1999).</p>
+    <h3>Lysis: the trade that defines C3</h3>
+    <p><span class="trial">PEITHO</span> (2014, 1,006 patients, tenecteplase) is the anchor. It prevented hemodynamic collapse, but major extracranial bleeding was 6.3% against 1.2%, and stroke 2.4% against 0.2%. Its population maps onto C3&ndash;D2. Rescue lysis worked for patients who decompensated on heparin, which favors watchful waiting over immediate lysis. A meta-analysis of 16 trials (2,115 patients) the guideline cites found lower all-cause mortality (OR 0.53, NNT 59) at the price of ICH (OR 4.6, NNH 78). <span class="trial">MOPETT</span> (2013) and later low-dose regimens support the 2b nod to reduced-dose lysis, pending <span class="trial">PEITHO-3</span>.</p>
+    <h3>Catheters: from surrogate to outcome</h3>
+    <p><span class="trial">ULTIMA</span> (2014), <span class="trial">SEATTLE II</span> (2015) and <span class="trial">OPTALYSE</span> (2018) established that catheter lysis improves RV/LV ratio at small lytic doses. <span class="trial">FLARE</span> (2019), <span class="trial">EXTRACT-PE</span> (2021) and the 1,000-patient <span class="trial">FLASH</span> registry did the same for thrombectomy without any lytic. <span class="trial">FLAME</span> (2023) brought nonrandomized high-risk data. <span class="trial">PEERLESS</span> (2025, 550 patients in C2&ndash;D2) compared thrombectomy with catheter lysis. It found no difference in 30-day mortality or major bleeding, but more deterioration and bailout with catheter lysis. That is why choosing between the two remains a 2b.</p>
+    <p>The guideline&rsquo;s cutoff fell just before the first trials against anticoagulation alone. <span class="trial">STORM-PE</span> (TCT 2025, 100 patients) showed a larger 48-hour RV/LV reduction with computer-assisted vacuum thrombectomy (0.52 versus 0.24); that is still a surrogate. <span class="trial">HI-PEITHO</span> (<i>NEJM</i> 2026, 544 patients with RV/LV &ge;1, raised troponin and at least two signs of distress) is the first clinical-endpoint win. PE death, decompensation or recurrence at 7 days fell from 10.3% to 4.0% (RR 0.39, 95% CI 0.20&ndash;0.77). There was no ICH, and major bleeding was 4.1% against 2.2% (not significant). Caveats: the trial was open-label and device-sponsored, decompensation could be triggered by NEWS &ge;9 alone, and 30-day mortality was 1.8% against 1.1%. Its patients are the guideline&rsquo;s C3&ndash;D2 &ldquo;may be considered&rdquo; group.</p>
+    <h3>Anticoagulation, filters, the long tail</h3>
+    <p><span class="trial">PREPIC</span> (1998) and <span class="trial">PREPIC2</span> (2015) are why a routine filter in an anticoagulated patient is now graded Harm. <span class="trial">AMPLIFY-EXT</span> (2013) and <span class="trial">EINSTEIN CHOICE</span> (2017) support Class 1 half-dose extended therapy. The guideline&rsquo;s structured screening for CTEPD reflects how often post-PE dyspnea goes uninvestigated.</p>
+  </div>
+  <div class="pending">
+    <div class="pend"><div class="nm">PEITHO-3</div><div class="st">Reduced-dose alteplase vs placebo, intermediate-high risk. Primary completion April 2026; no results posted.</div></div>
+    <div class="pend"><div class="nm">PEERLESS II</div><div class="st">Large-bore thrombectomy vs anticoagulation alone (about 1,200 patients). Primary completion July 2026; no results posted.</div></div>
+    <div class="pend"><div class="nm">PE-TRACT</div><div class="st">NIH catheter-directed therapy vs anticoagulation, functional outcomes. Primary completion estimated March 2027.</div></div>
+  </div>
+</section>
+
+<section>
+  <div class="sh">Provenance</div>
+  <div class="prov">
+    <p><b>Expert perspective (the DOI you sent):</b> paywalled. ScienceDirect returned 403, Unpaywall and OpenAlex list it as closed, and PubMed and Europe PMC carry no abstract. Authors, affiliations, pagination and the full 131-item reference list came from Crossref and Europe PMC. Nothing in this brief is attributed to the authors beyond the topics their references show.</p>
+    <p><b>Guideline:</b> full text read; the <i>Circulation</i> site blocked direct access, so a third-party-hosted copy of the published version was used. Classes and levels of evidence were taken from its recommendation tables, its advanced-therapy summary table and its initial-management figure.</p>
+    <p><b>Post-cutoff trials:</b> HI-PEITHO figures come from ACC and TCTMD coverage of the <i>NEJM</i> report; STORM-PE figures from TCTMD coverage of the TCT 2025 presentation. Pending-trial status comes from ClinicalTrials.gov, checked October 20, 2026 (registry provenance). ESC 2019 classes are cited from the published ESC guideline and were not re-retrieved this session.</p>
+  </div>
+  <ol class="src">
+    <li><a href="https://doi.org/10.1053/j.jvca.2026.06.003" target="_blank" rel="noopener">Elmadhoun O et al. J Cardiothorac Vasc Anesth 2026;40:3428&ndash;41</a></li>
+    <li><a href="https://doi.org/10.1161/CIR.0000000000001415" target="_blank" rel="noopener">Creager MA et al. 2026 AHA/ACC acute PE guideline. Circulation 2026</a></li>
+    <li><a href="https://professional.heart.org/en/science-news/2026-guideline-for-the-evaluation-and-management-of-acute-pulmonary-embolism-in-adults/top-things-to-know" target="_blank" rel="noopener">AHA: Top things to know</a></li>
+    <li><a href="https://www.acc.org/latest-in-cardiology/articles/2026/09/08/14/17/hi-peitho-and-the-evolution-of-reperfusion-strategies-in-pulmonary-embolism" target="_blank" rel="noopener">ACC: HI-PEITHO and the evolution of reperfusion strategies</a></li>
+    <li><a href="https://www.tctmd.com/news/hi-peitho-catheter-directed-therapy-bests-anticoagulation-intermediate-risk-pe" target="_blank" rel="noopener">TCTMD: HI-PEITHO</a></li>
+    <li><a href="https://www.tctmd.com/news/mechanical-thrombectomy-outshines-anticoagulation-alone-storm-pe" target="_blank" rel="noopener">TCTMD: STORM-PE</a></li>
+    <li><a href="https://evtoday.com/articles/2026-july-supplement/the-2026-ahaacc-guideline-for-the-management-of-acute-pulmonary-embolism" target="_blank" rel="noopener">Endovascular Today: the 2026 AHA/ACC guideline (writing-committee summary)</a></li>
+    <li><a href="https://clinicaltrials.gov/study/NCT04430569" target="_blank" rel="noopener">ClinicalTrials.gov: PEITHO-3</a> &middot; <a href="https://clinicaltrials.gov/study/NCT06055920" target="_blank" rel="noopener">PEERLESS II</a> &middot; <a href="https://clinicaltrials.gov/study/NCT05591118" target="_blank" rel="noopener">PE-TRACT</a></li>
+  </ol>
+</section>
+
+</article>
+</main>
+
+</body>
+</html>

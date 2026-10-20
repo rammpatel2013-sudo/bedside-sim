@@ -92,12 +92,15 @@ const PARTS = [
     ['26', 'Gastric ultrasound', 'Antral grading before intubation.'],
     ['27', 'FAST and abdomen', 'Free fluid, bladder, hydronephrosis.'],
   ]],
+  ['VII · Guidelines', [
+    ['G1', 'Acute PE: 2026 AHA/ACC guideline', 'Illustrated A–E categories, all 139 recommendations with class and level of evidence, and the trials behind them.', 'pe-guideline', 'pe-brief', 'Brief: the JCVA expert perspective'],
+  ]],
   ['VI · Integration', [
     ['28', 'Unknown patient', 'Choose the views, read them, decide; links to Bedside Sim cases.'],
   ]],
 ];
-document.getElementById('toc').innerHTML = PARTS.map(([part, chs]) => `<section><h2>Part ${part}</h2><ol>${chs.map(([n, t, d, slug, card]) => slug
-  ? `<li class="open"><span class="n">${n}</span><span class="t"><a href="${slug}.html">${t}</a></span><span class="s">Open</span><span class="d">${d}${card ? ` <a href="${card}.html" style="color:var(--open);font-weight:600">Bedside card: Fluid check →</a>` : ''}</span></li>`
+document.getElementById('toc').innerHTML = PARTS.map(([part, chs]) => `<section><h2>Part ${part}</h2><ol>${chs.map(([n, t, d, slug, card, cardLabel]) => slug
+  ? `<li class="open"><span class="n">${n}</span><span class="t"><a href="${slug}.html">${t}</a></span><span class="s">Open</span><span class="d">${d}${card ? ` <a href="${card}.html" style="color:var(--open);font-weight:600">${cardLabel || 'Bedside card: Fluid check'} →</a>` : ''}</span></li>`
   : `<li><span class="n">${n}</span><span class="t">${t}</span><span class="s">Planned</span><span class="d">${d}</span></li>`).join('')}</ol></section>`).join('');
 </script>
 <script>if (location.pathname.indexOf('/learn') === 0) document.querySelectorAll('[data-nas]').forEach(function (a) { a.hidden = false; });</script>
