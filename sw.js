@@ -1,6 +1,6 @@
 // HALO Teaching Tools — offline cache. Pages: network first (so updates show), cache when offline.
 // Everything else (scripts, icons, fonts): cache first. Bump VERSION when files are added or renamed.
-const VERSION = 'halo-bd6f7a8';
+const VERSION = 'halo-1c4d723';
 const SHELL = [
   './', './index.html', './manifest.webmanifest',
   './icons/icon-192.png', './icons/icon-512.png', './icons/apple-touch-icon.png',
